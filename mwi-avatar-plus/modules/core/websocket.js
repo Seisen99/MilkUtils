@@ -67,12 +67,13 @@ function handleMessage(message) {
             playersMP[userIndex] = pMap[userIndex].cMP;
         });
 
-        // Debug logging - only interesting cases
-        if (monsterIndices.length > 0) {
-            console.log('🔥 DAMAGE:', {playerIndices, castPlayer, monsterIndices});
+        // Debug logging - only for player index 1
+        const debugPlayerIndex = '1';
+        if (monsterIndices.length > 0 && playerIndices.includes(debugPlayerIndex)) {
+            console.log('🔥 PLAYER 1 DAMAGE:', {playerIndices, castPlayer, monsterIndices});
         }
-        if (castPlayer === -1 && monsterIndices.length > 0) {
-            console.log('💀 DOT DETECTED:', {playerIndices, monsterIndices});
+        if (castPlayer === -1 && monsterIndices.length > 0 && playerIndices.includes(debugPlayerIndex)) {
+            console.log('💀 PLAYER 1 DOT DETECTED:', {playerIndices, monsterIndices});
         }
 
         let hurtMonster = false;
