@@ -1171,67 +1171,48 @@
 
         const uniqueId = Date.now() + Math.random().toString(36).substr(2, 9);
 
-        let defs = svg.querySelector('defs');
-        if (!defs) {
-            defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
-            svg.appendChild(defs);
-        }
-
-        const swordGradient = document.createElementNS("http://www.w3.org/2000/svg", "linearGradient");
-        swordGradient.id = `swordGradient_${uniqueId}`;
-        swordGradient.setAttribute("x1", "0%");
-        swordGradient.setAttribute("y1", "0%");
-        swordGradient.setAttribute("x2", "0%");
-        swordGradient.setAttribute("y2", "100%");
-        swordGradient.innerHTML = `
-            <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.9" />
-            <stop offset="50%" style="stop-color:#e0e0e0;stop-opacity:0.8" />
-            <stop offset="100%" style="stop-color:#c0c0c0;stop-opacity:0.6" />
-        `;
-        defs.appendChild(swordGradient);
-
         const hammerGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
         hammerGroup.style.opacity = '0';
         hammerGroup.style.transformOrigin = '0 0'; // Origine au bout du manche
 
-        const handle = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-        handle.setAttribute("x", "-3");
-        handle.setAttribute("y", "0"); // Le manche part du centre de rotation
-        handle.setAttribute("width", "6");
-        handle.setAttribute("height", "80"); // Plus long pour l'effet de swing
-        handle.setAttribute("rx", "3");
-        handle.setAttribute("fill", "#5a4a3a");
-        handle.setAttribute("stroke", "#3a2a1a");
-        handle.setAttribute("stroke-width", "1");
-
-        const hammerHead = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-        hammerHead.setAttribute("x", "-18");
-        hammerHead.setAttribute("y", "75"); // Au bout du manche
-        hammerHead.setAttribute("width", "36");
-        hammerHead.setAttribute("height", "20");
-        hammerHead.setAttribute("rx", "3");
-        hammerHead.setAttribute("fill", `url(#swordGradient_${uniqueId})`);
-        hammerHead.setAttribute("stroke", "#808080");
-        hammerHead.setAttribute("stroke-width", "2");
-        hammerHead.style.filter = "drop-shadow(0 0 6px rgba(200,200,200,0.6))";
-
-        const detail1 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        detail1.setAttribute("cx", "-10");
-        detail1.setAttribute("cy", "85");
-        detail1.setAttribute("r", "2");
-        detail1.setAttribute("fill", "#404040");
-
-        const detail2 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        detail2.setAttribute("cx", "0");
-        detail2.setAttribute("cy", "85");
-        detail2.setAttribute("r", "2");
-        detail2.setAttribute("fill", "#404040");
-
-        const detail3 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        detail3.setAttribute("cx", "10");
-        detail3.setAttribute("cy", "85");
-        detail3.setAttribute("r", "2");
-        detail3.setAttribute("fill", "#404040");
+        // Créer un groupe pour contenir le SVG du Granite Bludgeon
+        const bludgeonGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        
+        // Facteur d'échelle pour ajuster la taille
+        const imageScale = 1.6;
+        
+        // Le SVG a son coin inférieur gauche (bout du manche) à (0,51)
+        // Le manche est incliné à ~45° dans le SVG original
+        // On applique une rotation de 135° (-45 + 180) pour que le manche soit vertical et dans le bon sens
+        const svgRotationCompensation = 135;
+        
+        // Transformation appliquée de droite à gauche :
+        // 1. translate(0, -51) : met le bout du manche à l'origine
+        // 2. scale : applique l'échelle
+        // 3. rotate : compense l'inclinaison du SVG
+        bludgeonGroup.setAttribute("transform", `rotate(${svgRotationCompensation}) scale(${imageScale}) translate(0, -51)`);
+        
+        // Intégrer directement le contenu du SVG
+        bludgeonGroup.innerHTML = `
+            <path d="M12.8103 41.4993L29.1548 25.1548L25.6925 21.6925L9.34796 38.037L12.8103 41.4993Z" fill="#898989"/>
+            <path d="M12.8103 41.4993L29.1548 25.1548L25.6925 21.6925L9.34796 38.037L12.8103 41.4993Z" fill="white" fill-opacity="0.6"/>
+            <path d="M12.8555 42.8391L8.00818 37.9918L4.34245e-07 46L-4.08692e-07 48L3 51L5 51L12.8555 42.8391Z" fill="#898989"/>
+            <path d="M12.8555 42.8391L8.00818 37.9918L4.34245e-07 46L-4.08692e-07 48L3 51L5 51L12.8555 42.8391Z" fill="white" fill-opacity="0.6"/>
+            <path d="M45.6162 6.82575L44.2202 5.42207C40.7187 6.1124 36.2458 9.76641 34 12C31.7541 14.2336 28.7823 19.845 27.376 22.1742L28.772 23.5779C31.3416 22.4184 35.4908 20.4901 39 17C41.8073 14.208 44.9067 10.3234 45.6162 6.82575Z" fill="#898989"/>
+            <path d="M45.6162 6.82575L44.2202 5.42207C40.7187 6.1124 36.2458 9.76641 34 12C31.7541 14.2336 28.7823 19.845 27.376 22.1742L28.772 23.5779C31.3416 22.4184 35.4908 20.4901 39 17C41.8073 14.208 44.9067 10.3234 45.6162 6.82575Z" fill="white" fill-opacity="0.4"/>
+            <path d="M39.4999 18C44.0619 13.463 44.9067 10.3234 46.3142 7.52759L47.7102 8.93127C47.6987 13.1308 46.3626 16.9677 42.7782 20.8165C39.1937 24.6653 35.0656 25.6949 30.8661 25.6834L29.47 24.2797C32.2736 22.8876 35.9907 21.49 39.4999 18Z" fill="#898989"/>
+            <path d="M39.4999 18C44.0619 13.463 44.9067 10.3234 46.3142 7.52759L47.7102 8.93127C47.6987 13.1308 46.3626 16.9677 42.7782 20.8165C39.1937 24.6653 35.0656 25.6949 30.8661 25.6834L29.47 24.2797C32.2736 22.8876 35.9907 21.49 39.4999 18Z" fill="white" fill-opacity="0.2"/>
+            <path d="M43.4763 21.5184C47.968 17.0512 48.4032 11.4996 48.4083 9.63312L49.8043 11.0368C50.4947 14.5383 49.562 19.654 45.5703 23.6239C41.5786 27.5938 36.4579 28.4984 32.9602 27.7889L31.5642 26.3853C34.3639 26.3929 38.9845 25.9856 43.4763 21.5184Z" fill="#898989"/>
+            <path d="M33 11.5C37.1872 6.61495 40.7187 6.11239 43.5222 4.72021L42.1262 3.31653C37.9267 3.30503 34.0825 4.62009 30.2141 8.1834C26.3457 11.7467 25.2935 15.8691 25.282 20.0687L26.6781 21.4724C28.0856 18.6765 30 15 33 11.5Z" fill="#898989"/>
+            <path d="M33 11.5C37.1872 6.61495 40.7187 6.11239 43.5222 4.72021L42.1262 3.31653C37.9267 3.30503 34.0825 4.62009 30.2141 8.1834C26.3457 11.7467 25.2935 15.8691 25.282 20.0687L26.6781 21.4724C28.0856 18.6765 30 15 33 11.5Z" fill="white" fill-opacity="0.2"/>
+            <path d="M29.5161 7.48155C34.0079 3.01432 39.5618 2.60957 41.4282 2.61469L40.0322 1.211C36.5345 0.501496 31.4138 1.40613 27.4221 5.37603C23.4304 9.34594 22.4977 14.4616 23.188 17.9631L24.5841 19.3668C24.5917 16.5671 25.0243 11.9488 29.5161 7.48155Z" fill="#898989"/>
+            <path d="M49.5 9.49997L41.5 1.49997C43 1.99997 43.6191 1.91205 46.2426 4.53551C48.8661 7.15897 49 7.99997 49.5 9.49997Z" fill="#898989"/>
+            <path d="M49.5 9.49997L41.5 1.49997C43 1.99997 43.6191 1.91205 46.2426 4.53551C48.8661 7.15897 49 7.99997 49.5 9.49997Z" fill="white" fill-opacity="0.4"/>
+            <path d="M50 1L45.5 3C46.6794 3.85937 47.2168 4.411 48 5.5L50 1Z" fill="#898989"/>
+            <path d="M50 1L45.5 3C46.6794 3.85937 47.2168 4.411 48 5.5L50 1Z" fill="white" fill-opacity="0.6"/>
+        `;
+        
+        bludgeonGroup.style.filter = "drop-shadow(0 0 6px rgba(200,200,200,0.6))";
 
         // Créer un groupe séparé pour les particules de splash qui n'est pas affecté par la rotation du marteau
         const splashGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
@@ -1252,11 +1233,7 @@
             splashParticles.push({element: particle, angle: angle});
         }
 
-        hammerGroup.appendChild(handle);
-        hammerGroup.appendChild(hammerHead);
-        hammerGroup.appendChild(detail1);
-        hammerGroup.appendChild(detail2);
-        hammerGroup.appendChild(detail3);
+        hammerGroup.appendChild(bludgeonGroup);
         svg.appendChild(hammerGroup);
 
         // Animation avec rotation autour du centre
@@ -1331,7 +1308,6 @@
                 if (splashGroup.parentNode) {
                     svg.removeChild(splashGroup);
                 }
-                if (defs.contains(swordGradient)) defs.removeChild(swordGradient);
                 AnimationManager.removePath(hammerGroup);
             } catch(e) {
             }
