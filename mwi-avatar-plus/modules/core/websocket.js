@@ -106,13 +106,16 @@ function handleMessage(message) {
                 if (dmgSplat && hpDiff >= 0 && playerIndices.length > 0) {
                     if (playerIndices.length > 1) {
                         playerIndices.forEach((userIndex) => {
-                            if(userIndex === castPlayer) {
-                                // Detect DoT: no cast + last ability was a DoT spell + not auto-attack
-                                const isAutoAttack = playersIsAutoAtk[userIndex] === true;
-                                const lastAbility = playersLastAbility[userIndex];
-                                const isDoTAbility = DOT_ABILITIES.includes(lastAbility);
-                                const isDot = (castPlayer === -1 || castPlayer === '-1') && isDoTAbility && !isAutoAttack;
-                                
+                            // Check player state
+                            const isAutoAttack = playersIsAutoAtk[userIndex] === true;
+                            const lastAbility = playersLastAbility[userIndex];
+                            const isDoTAbility = DOT_ABILITIES.includes(lastAbility);
+                            
+                            // DoT tick: castPlayer = -1, find player with active DoT
+                            const isDot = (castPlayer === -1) && isDoTAbility && !isAutoAttack;
+                            
+                            // Animate if: it's a DoT OR it's the player who cast
+                            if (isDot || userIndex === castPlayer) {
                                 if (isDot) {
                                     // DoT damage - show burn effect
                                     if (userIndex === '1') {
@@ -131,11 +134,10 @@ function handleMessage(message) {
                     } else {
                         // Solo player
                         const userIndex = playerIndices[0];
-                        // Detect DoT: no cast + last ability was a DoT spell + not auto-attack
                         const isAutoAttack = playersIsAutoAtk[userIndex] === true;
                         const lastAbility = playersLastAbility[userIndex];
                         const isDoTAbility = DOT_ABILITIES.includes(lastAbility);
-                        const isDot = (castPlayer === -1 || castPlayer === '-1') && isDoTAbility && !isAutoAttack;
+                        const isDot = (castPlayer === -1) && isDoTAbility && !isAutoAttack;
                         
                         if (isDot) {
                             // DoT damage in solo
