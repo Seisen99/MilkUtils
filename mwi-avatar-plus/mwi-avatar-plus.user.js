@@ -3,8 +3,8 @@
 // @name:en      MWI-Avatar-Plus
 // @namespace    http://tampermonkey.net/
 // @version      2.0
-// @description:en Visualizing Attack/Heal Effects with Animated Lines + Custom Avatar Support (Modular Edition)
-// @author       Artintel
+// @description:en Visualizing Attack/Heal Effects with SVG Animations + Custom Avatar Support (Modular Edition)
+// @author       Seisen
 // @license MIT
 // @match        https://www.milkywayidle.com/*
 // @match        https://test.milkywayidle.com/*
