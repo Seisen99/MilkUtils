@@ -67,9 +67,6 @@ function handleMessage(message) {
             playersMP[userIndex] = pMap[userIndex].cMP;
         });
 
-        // DEBUG: Log full battle_updated to see all available data
-        console.log('FULL battle_updated:', JSON.stringify(obj, null, 2));
-
         let hurtMonster = false;
         let hurtPlayer = false;
         let monsterLifeSteal = {from:null, to:null, hpDiff:null};
@@ -84,38 +81,48 @@ function handleMessage(message) {
                 monstersHP[mIndex] = monster.cHP;
                 monstersDmgCounter[mIndex] = monster.dmgCounter;
                 if (dmgSplat && hpDiff >= 0 && playerIndices.length > 0) {
-                    // Detect DoT: damage splat but no one cast this turn
-                    const isDot = (castPlayer === -1 || castPlayer === '-1');
-                    
                     if (playerIndices.length > 1) {
-                        if (isDot) {
-                            // DoT damage - show burn effect on all affected monsters
-                            createDotLine(mIndex, hpDiff);
-                        } else {
-                            // Normal cast damage
-                            playerIndices.forEach((userIndex) => {
-                                if(userIndex === castPlayer) {
-                                    // Debug: log player 1 attacks only
+                        playerIndices.forEach((userIndex) => {
+                            if(userIndex === castPlayer) {
+                                // Check if it's a DoT (no cast) vs auto-attack
+                                const playerData = pMap[userIndex];
+                                const isAutoAttack = playerData?.isAutoAtk === true;
+                                const isDot = (castPlayer === -1 || castPlayer === '-1') && !isAutoAttack;
+                                
+                                if (isDot) {
+                                    // DoT damage - show burn effect
                                     if (userIndex === '1') {
-                                        console.log('🔥 PLAYER 1 ATTACK:', {castPlayer, mIndex, hpDiff, dmgCounter: monster.dmgCounter});
+                                        console.log('💀 PLAYER 1 DOT:', {castPlayer, mIndex, hpDiff, dmgCounter: monster.dmgCounter});
+                                    }
+                                    createDotLine(mIndex, hpDiff);
+                                } else {
+                                    // Normal cast or auto-attack - show projectile
+                                    if (userIndex === '1') {
+                                        console.log('🔥 PLAYER 1 ATTACK:', {castPlayer, mIndex, hpDiff, isAutoAttack, dmgCounter: monster.dmgCounter});
                                     }
                                     createLine(userIndex, mIndex, hpDiff);
                                 }
-                            });
-                        }
+                            }
+                        });
                     } else {
+                        // Solo player
+                        const userIndex = playerIndices[0];
+                        const playerData = pMap[userIndex];
+                        const isAutoAttack = playerData?.isAutoAtk === true;
+                        const isDot = (castPlayer === -1 || castPlayer === '-1') && !isAutoAttack;
+                        
                         if (isDot) {
                             // DoT damage in solo
-                            if (playerIndices[0] === '1') {
+                            if (userIndex === '1') {
                                 console.log('💀 PLAYER 1 DOT:', {castPlayer, mIndex, hpDiff, dmgCounter: monster.dmgCounter});
                             }
                             createDotLine(mIndex, hpDiff);
                         } else {
-                            // Normal cast damage
-                            if (playerIndices[0] === '1') {
-                                console.log('🔥 PLAYER 1 ATTACK (solo):', {castPlayer, mIndex, hpDiff, dmgCounter: monster.dmgCounter});
+                            // Normal cast or auto-attack
+                            if (userIndex === '1') {
+                                console.log('🔥 PLAYER 1 ATTACK (solo):', {castPlayer, mIndex, hpDiff, isAutoAttack, dmgCounter: monster.dmgCounter});
                             }
-                            createLine(playerIndices[0], mIndex, hpDiff);
+                            createLine(userIndex, mIndex, hpDiff);
                         }
                     }
                 }
