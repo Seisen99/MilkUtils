@@ -10,6 +10,13 @@ let playersHP = [];
 let playersMP = [];
 let playersDmgCounter = [];
 let playersIsAutoAtk = []; // Track auto-attack state per player
+let playersLastAbility = []; // Track last ability cast per player
+
+// Abilities that apply Damage over Time effects
+const DOT_ABILITIES = [
+    '/abilities/maim',      // Bleed DoT (melee)
+    '/abilities/firestorm'  // Burn DoT (fire magic)
+];
 
 /**
  * Hook into WebSocket to intercept battle messages
@@ -52,6 +59,7 @@ function handleMessage(message) {
         playersMP = obj.players.map((player) => player.currentManapoints);
         playersDmgCounter = obj.players.map((player) => player.damageSplatCounter);
         playersIsAutoAtk = obj.players.map(() => false); // Initialize auto-attack state
+        playersLastAbility = obj.players.map(() => null); // Initialize last ability tracker
     } else if (obj && obj.type === "battle_updated" && monstersHP.length) {
         const mMap = obj.mMap;
         const pMap = obj.pMap;
@@ -75,8 +83,9 @@ function handleMessage(message) {
             if (playerData.hasOwnProperty('isAutoAtk')) {
                 playersIsAutoAtk[userIndex] = playerData.isAutoAtk;
             }
-            // If abilityHrid is present, it's NOT an auto-attack
+            // If abilityHrid is present, track it and set auto-attack to false
             if (playerData.hasOwnProperty('abilityHrid')) {
+                playersLastAbility[userIndex] = playerData.abilityHrid;
                 playersIsAutoAtk[userIndex] = false;
             }
         });
@@ -98,20 +107,22 @@ function handleMessage(message) {
                     if (playerIndices.length > 1) {
                         playerIndices.forEach((userIndex) => {
                             if(userIndex === castPlayer) {
-                                // Use tracked auto-attack state (persistent across messages)
+                                // Detect DoT: no cast + last ability was a DoT spell + not auto-attack
                                 const isAutoAttack = playersIsAutoAtk[userIndex] === true;
-                                const isDot = (castPlayer === -1 || castPlayer === '-1') && !isAutoAttack;
+                                const lastAbility = playersLastAbility[userIndex];
+                                const isDoTAbility = DOT_ABILITIES.includes(lastAbility);
+                                const isDot = (castPlayer === -1 || castPlayer === '-1') && isDoTAbility && !isAutoAttack;
                                 
                                 if (isDot) {
                                     // DoT damage - show burn effect
                                     if (userIndex === '1') {
-                                        console.log('💀 PLAYER 1 DOT:', {castPlayer, mIndex, hpDiff, dmgCounter: monster.dmgCounter});
+                                        console.log('💀 PLAYER 1 DOT:', {castPlayer, lastAbility, mIndex, hpDiff, dmgCounter: monster.dmgCounter});
                                     }
                                     createDotLine(mIndex, hpDiff);
                                 } else {
                                     // Normal cast or auto-attack - show projectile
                                     if (userIndex === '1') {
-                                        console.log('🔥 PLAYER 1 ATTACK:', {castPlayer, mIndex, hpDiff, isAutoAttack, dmgCounter: monster.dmgCounter});
+                                        console.log('🔥 PLAYER 1 ATTACK:', {castPlayer, lastAbility, mIndex, hpDiff, isAutoAttack, dmgCounter: monster.dmgCounter});
                                     }
                                     createLine(userIndex, mIndex, hpDiff);
                                 }
@@ -120,20 +131,22 @@ function handleMessage(message) {
                     } else {
                         // Solo player
                         const userIndex = playerIndices[0];
-                        // Use tracked auto-attack state (persistent across messages)
+                        // Detect DoT: no cast + last ability was a DoT spell + not auto-attack
                         const isAutoAttack = playersIsAutoAtk[userIndex] === true;
-                        const isDot = (castPlayer === -1 || castPlayer === '-1') && !isAutoAttack;
+                        const lastAbility = playersLastAbility[userIndex];
+                        const isDoTAbility = DOT_ABILITIES.includes(lastAbility);
+                        const isDot = (castPlayer === -1 || castPlayer === '-1') && isDoTAbility && !isAutoAttack;
                         
                         if (isDot) {
                             // DoT damage in solo
                             if (userIndex === '1') {
-                                console.log('💀 PLAYER 1 DOT:', {castPlayer, mIndex, hpDiff, dmgCounter: monster.dmgCounter});
+                                console.log('💀 PLAYER 1 DOT:', {castPlayer, lastAbility, mIndex, hpDiff, dmgCounter: monster.dmgCounter});
                             }
                             createDotLine(mIndex, hpDiff);
                         } else {
                             // Normal cast or auto-attack
                             if (userIndex === '1') {
-                                console.log('🔥 PLAYER 1 ATTACK (solo):', {castPlayer, mIndex, hpDiff, isAutoAttack, dmgCounter: monster.dmgCounter});
+                                console.log('🔥 PLAYER 1 ATTACK (solo):', {castPlayer, lastAbility, mIndex, hpDiff, isAutoAttack, dmgCounter: monster.dmgCounter});
                             }
                             createLine(userIndex, mIndex, hpDiff);
                         }
