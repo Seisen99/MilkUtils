@@ -11,11 +11,12 @@ let playersMP = [];
 let playersDmgCounter = [];
 let playersIsAutoAtk = []; // Track auto-attack state per player
 let playersLastAbility = []; // Track last ability cast per player
+let playersActiveDoTs = []; // Track active DoTs with remaining ticks per player
 
 // Abilities that apply Damage over Time effects
 const DOT_ABILITIES = [
     '/abilities/maim',      // Bleed DoT (melee)
-    '/abilities/firestorm'  // Burn DoT (fire magic)
+    '/abilities/firestorm'  // Burn DoT (fire magic) - 2 ticks after cast
 ];
 
 /**
@@ -60,6 +61,7 @@ function handleMessage(message) {
         playersDmgCounter = obj.players.map((player) => player.damageSplatCounter);
         playersIsAutoAtk = obj.players.map(() => false); // Initialize auto-attack state
         playersLastAbility = obj.players.map(() => null); // Initialize last ability tracker
+        playersActiveDoTs = obj.players.map(() => ({ ticksRemaining: 0 })); // Initialize DoT tracker
     } else if (obj && obj.type === "battle_updated" && monstersHP.length) {
         const mMap = obj.mMap;
         const pMap = obj.pMap;
@@ -87,6 +89,11 @@ function handleMessage(message) {
             if (playerData.hasOwnProperty('abilityHrid')) {
                 playersLastAbility[userIndex] = playerData.abilityHrid;
                 playersIsAutoAtk[userIndex] = false;
+                
+                // If a DoT ability is cast, activate DoT tracking (2 ticks for Firestorm)
+                if (DOT_ABILITIES.includes(playerData.abilityHrid)) {
+                    playersActiveDoTs[userIndex] = { ticksRemaining: 2, ability: playerData.abilityHrid };
+                }
             }
         });
 
@@ -108,24 +115,39 @@ function handleMessage(message) {
                         playerIndices.forEach((userIndex) => {
                             // Check player state
                             const isAutoAttack = playersIsAutoAtk[userIndex] === true;
-                            const lastAbility = playersLastAbility[userIndex];
-                            const isDoTAbility = DOT_ABILITIES.includes(lastAbility);
+                            const hasDotActive = playersActiveDoTs[userIndex]?.ticksRemaining > 0;
                             
-                            // DoT tick: castPlayer = -1, find player with active DoT
-                            const isDot = (castPlayer === -1) && isDoTAbility && !isAutoAttack;
+                            // DoT tick: castPlayer = -1 AND player has active DoT AND not auto-attack
+                            const isDot = (castPlayer === -1) && hasDotActive && !isAutoAttack;
                             
                             // Animate if: it's a DoT OR it's the player who cast
                             if (isDot || userIndex === castPlayer) {
                                 if (isDot) {
                                     // DoT damage - show burn effect
                                     if (userIndex === '1') {
-                                        console.log('💀 PLAYER 1 DOT:', {castPlayer, lastAbility, mIndex, hpDiff, dmgCounter: monster.dmgCounter});
+                                        console.log('💀 PLAYER 1 DOT:', {
+                                            castPlayer, 
+                                            dotAbility: playersActiveDoTs[userIndex].ability,
+                                            ticksRemaining: playersActiveDoTs[userIndex].ticksRemaining,
+                                            mIndex, 
+                                            hpDiff, 
+                                            dmgCounter: monster.dmgCounter
+                                        });
                                     }
                                     createDotLine(mIndex, hpDiff);
+                                    // Consume one DoT tick
+                                    playersActiveDoTs[userIndex].ticksRemaining--;
                                 } else {
                                     // Normal cast or auto-attack - show projectile
                                     if (userIndex === '1') {
-                                        console.log('🔥 PLAYER 1 ATTACK:', {castPlayer, lastAbility, mIndex, hpDiff, isAutoAttack, dmgCounter: monster.dmgCounter});
+                                        console.log('🔥 PLAYER 1 ATTACK:', {
+                                            castPlayer, 
+                                            lastAbility: playersLastAbility[userIndex],
+                                            mIndex, 
+                                            hpDiff, 
+                                            isAutoAttack, 
+                                            dmgCounter: monster.dmgCounter
+                                        });
                                     }
                                     createLine(userIndex, mIndex, hpDiff);
                                 }
@@ -135,20 +157,35 @@ function handleMessage(message) {
                         // Solo player
                         const userIndex = playerIndices[0];
                         const isAutoAttack = playersIsAutoAtk[userIndex] === true;
-                        const lastAbility = playersLastAbility[userIndex];
-                        const isDoTAbility = DOT_ABILITIES.includes(lastAbility);
-                        const isDot = (castPlayer === -1) && isDoTAbility && !isAutoAttack;
+                        const hasDotActive = playersActiveDoTs[userIndex]?.ticksRemaining > 0;
+                        const isDot = (castPlayer === -1) && hasDotActive && !isAutoAttack;
                         
                         if (isDot) {
                             // DoT damage in solo
                             if (userIndex === '1') {
-                                console.log('💀 PLAYER 1 DOT:', {castPlayer, lastAbility, mIndex, hpDiff, dmgCounter: monster.dmgCounter});
+                                console.log('💀 PLAYER 1 DOT (solo):', {
+                                    castPlayer, 
+                                    dotAbility: playersActiveDoTs[userIndex].ability,
+                                    ticksRemaining: playersActiveDoTs[userIndex].ticksRemaining,
+                                    mIndex, 
+                                    hpDiff, 
+                                    dmgCounter: monster.dmgCounter
+                                });
                             }
                             createDotLine(mIndex, hpDiff);
+                            // Consume one DoT tick
+                            playersActiveDoTs[userIndex].ticksRemaining--;
                         } else {
                             // Normal cast or auto-attack
                             if (userIndex === '1') {
-                                console.log('🔥 PLAYER 1 ATTACK (solo):', {castPlayer, lastAbility, mIndex, hpDiff, isAutoAttack, dmgCounter: monster.dmgCounter});
+                                console.log('🔥 PLAYER 1 ATTACK (solo):', {
+                                    castPlayer, 
+                                    lastAbility: playersLastAbility[userIndex],
+                                    mIndex, 
+                                    hpDiff, 
+                                    isAutoAttack, 
+                                    dmgCounter: monster.dmgCounter
+                                });
                             }
                             createLine(userIndex, mIndex, hpDiff);
                         }
