@@ -316,3 +316,7 @@ function createEffect(startElem, endElem, hpDiff, index, reversed = false) {
     const forceCleanupTimer = setTimeout(cleanUp, 5000);
     path.addEventListener('transitionend', () => clearTimeout(forceCleanupTimer));
 }
+
+// Export to global scope for Tampermonkey
+window.createEffect = createEffect;
+window.getPlayerName = getPlayerName;

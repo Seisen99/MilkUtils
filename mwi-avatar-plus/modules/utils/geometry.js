@@ -20,3 +20,6 @@ function getElementCenter(element) {
         y: rect.top + rect.height/2
     };
 }
+
+// Export to global scope for Tampermonkey
+window.getElementCenter = getElementCenter;

@@ -31,3 +31,6 @@ function calculateHueRotation(targetR, targetG, targetB) {
 
     return `hue-rotate(${targetHue}deg)`;
 }
+
+// Export to global scope for Tampermonkey
+window.calculateHueRotation = calculateHueRotation;

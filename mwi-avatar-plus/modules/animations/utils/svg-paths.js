@@ -24,3 +24,6 @@ function createParabolaPath(startElem, endElem, reversed = false) {
     if (reversed) {return `M ${end.x} ${end.y} Q ${controlPoint.x} ${controlPoint.y}, ${start.x} ${start.y}`;}
     return `M ${start.x} ${start.y} Q ${controlPoint.x} ${controlPoint.y}, ${end.x} ${end.y}`;
 }
+
+// Export to global scope for Tampermonkey
+window.createParabolaPath = createParabolaPath;

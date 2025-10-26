@@ -110,3 +110,6 @@ function createHealingParticles(startElem, endElem, pathD, svg, trackerSetting) 
 
     return healGroup;
 }
+
+// Export to global scope for Tampermonkey
+window.createHealingParticles = createHealingParticles;

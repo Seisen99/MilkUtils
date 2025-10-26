@@ -95,3 +95,6 @@ function initializeStyles() {
     injectPartyAvatarStyles();
     injectSettingsPanelStyles();
 }
+
+// Export to global scope for Tampermonkey
+window.initializeStyles = initializeStyles;

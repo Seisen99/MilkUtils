@@ -106,3 +106,6 @@ function createColorPicker(initialColor, callback, title = "", settingId) {
 
     return backdrop;
 }
+
+// Export to global scope for Tampermonkey
+window.createColorPicker = createColorPicker;

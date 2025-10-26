@@ -173,3 +173,6 @@ function createFireballAnimation(startElem, endElem, pathD, svg, trackerSetting,
 
     return fireballGroup;
 }
+
+// Export to global scope for Tampermonkey
+window.createFireballAnimation = createFireballAnimation;

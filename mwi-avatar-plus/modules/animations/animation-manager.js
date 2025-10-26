@@ -44,3 +44,6 @@ const AnimationManager = {
         }, 5000);
     }
 };
+
+// Export to global scope for Tampermonkey
+window.AnimationManager = AnimationManager;

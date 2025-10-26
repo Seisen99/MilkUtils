@@ -251,3 +251,6 @@ function createSimpleSetting(insertElem, setting) {
     <span style="margin-right:5px">${setting.desc}</span></div>`
     );
 }
+
+// Export to global scope for Tampermonkey
+window.waitForSetttins = waitForSetttins;

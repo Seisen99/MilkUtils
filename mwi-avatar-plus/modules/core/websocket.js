@@ -221,3 +221,6 @@ function createLine(from, to, hpDiff, reversed = false) {
         }
     }
 }
+
+// Export to global scope for Tampermonkey
+window.hookWS = hookWS;

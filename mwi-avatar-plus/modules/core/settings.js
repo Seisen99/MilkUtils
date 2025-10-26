@@ -44,3 +44,7 @@ function saveSettings() {
     appliedAvatars.clear();
     setTimeout(applyCustomAvatar, 200);
 }
+
+// Export to global scope for Tampermonkey
+window.readSettings = readSettings;
+window.saveSettings = saveSettings;

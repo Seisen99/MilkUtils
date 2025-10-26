@@ -177,3 +177,7 @@ function applyCustomAvatar() {
         isApplyingAvatar = false;
     }
 }
+
+// Export to global scope for Tampermonkey
+window.appliedAvatars = appliedAvatars;
+window.applyCustomAvatar = applyCustomAvatar;

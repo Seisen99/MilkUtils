@@ -10,26 +10,26 @@
 // @match        https://test.milkywayidle.com/*
 // @icon         https://www.milkywayidle.com/favicon.svg
 // @grant        none
-// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-avatar-plus/modules/utils/geometry.js
-// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-avatar-plus/modules/utils/colors.js
-// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-avatar-plus/modules/core/constants.js
-// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-avatar-plus/modules/core/settings.js
-// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-avatar-plus/modules/ui/styles.js
-// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-avatar-plus/modules/ui/toast.js
-// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-avatar-plus/modules/ui/color-picker.js
-// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-avatar-plus/modules/ui/settings-panel.js
-// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-avatar-plus/modules/avatar/avatar-manager.js
-// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-avatar-plus/modules/avatar/avatar-observer.js
-// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-avatar-plus/modules/animations/utils/svg-paths.js
-// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-avatar-plus/modules/animations/animation-manager.js
-// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-avatar-plus/modules/animations/effects/miss-effect.js
-// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-avatar-plus/modules/animations/effects/hit-effect.js
-// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-avatar-plus/modules/animations/effects/healing-particles.js
-// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-avatar-plus/modules/animations/projectiles/fireball.js
-// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-avatar-plus/modules/animations/projectiles/arrow.js
-// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-avatar-plus/modules/animations/projectiles/melee.js
-// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-avatar-plus/modules/animations/effect-coordinator.js
-// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-avatar-plus/modules/core/websocket.js
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/main/mwi-avatar-plus/modules/utils/geometry.js
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/main/mwi-avatar-plus/modules/utils/colors.js
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/main/mwi-avatar-plus/modules/core/constants.js
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/main/mwi-avatar-plus/modules/core/settings.js
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/main/mwi-avatar-plus/modules/ui/styles.js
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/main/mwi-avatar-plus/modules/ui/toast.js
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/main/mwi-avatar-plus/modules/ui/color-picker.js
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/main/mwi-avatar-plus/modules/ui/settings-panel.js
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/main/mwi-avatar-plus/modules/avatar/avatar-manager.js
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/main/mwi-avatar-plus/modules/avatar/avatar-observer.js
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/main/mwi-avatar-plus/modules/animations/utils/svg-paths.js
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/main/mwi-avatar-plus/modules/animations/animation-manager.js
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/main/mwi-avatar-plus/modules/animations/effects/miss-effect.js
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/main/mwi-avatar-plus/modules/animations/effects/hit-effect.js
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/main/mwi-avatar-plus/modules/animations/effects/healing-particles.js
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/main/mwi-avatar-plus/modules/animations/projectiles/fireball.js
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/main/mwi-avatar-plus/modules/animations/projectiles/arrow.js
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/main/mwi-avatar-plus/modules/animations/projectiles/melee.js
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/main/mwi-avatar-plus/modules/animations/effect-coordinator.js
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/main/mwi-avatar-plus/modules/core/websocket.js
 // ==/UserScript==
 
 (function() {

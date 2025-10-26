@@ -155,3 +155,6 @@ function createMaceSmashEffect(targetElem, svg, trackerSetting) {
 
     return maceGroup;
 }
+
+// Export to global scope for Tampermonkey
+window.createMaceSmashEffect = createMaceSmashEffect;

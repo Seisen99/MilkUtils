@@ -36,3 +36,6 @@ function showToast(message, duration = 5000) {
         }, 300);
     }, duration);
 }
+
+// Export to global scope for Tampermonkey
+window.showToast = showToast;

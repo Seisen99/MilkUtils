@@ -172,3 +172,6 @@ function createHitEffect(point, container, path, hitTarget = undefined, explosio
         }
     }
 }
+
+// Export to global scope for Tampermonkey
+window.createHitEffect = createHitEffect;

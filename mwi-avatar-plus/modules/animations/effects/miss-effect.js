@@ -92,3 +92,6 @@ function createMissEffect(hitDamage, endPoint, svg, isPlayerMiss = false) {
         }
     }, 2000);
 }
+
+// Export to global scope for Tampermonkey
+window.createMissEffect = createMissEffect;

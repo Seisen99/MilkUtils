@@ -123,3 +123,7 @@ let settingsMap = {
         isTrue: true,
     }
 };
+
+// Export to global scope for Tampermonkey
+window.isZH = isZH;
+window.settingsMap = settingsMap;

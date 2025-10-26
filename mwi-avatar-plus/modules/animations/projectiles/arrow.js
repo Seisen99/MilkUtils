@@ -133,3 +133,6 @@ function createArrowAnimation(startElem, endElem, pathD, svg, trackerSetting, re
 
     return arrowGroup;
 }
+
+// Export to global scope for Tampermonkey
+window.createArrowAnimation = createArrowAnimation;

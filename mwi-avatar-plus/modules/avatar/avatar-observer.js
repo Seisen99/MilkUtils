@@ -30,3 +30,6 @@ function observeForAvatars() {
         setTimeout(observeForAvatars, 500);
     }
 }
+
+// Export to global scope for Tampermonkey
+window.observeForAvatars = observeForAvatars;
