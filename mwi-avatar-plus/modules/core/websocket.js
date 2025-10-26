@@ -124,8 +124,9 @@ function handleMessage(message) {
                             if (isDot || userIndex === castPlayer) {
                                 if (isDot) {
                                     // DoT damage - show burn effect
-                                    if (userIndex === '1') {
-                                        console.log('💀 PLAYER 1 DOT:', {
+                                    // Log only if animations are enabled for this player
+                                    if (settingsMap["tracker"+userIndex].isTrue) {
+                                        console.log(`💀 PLAYER ${userIndex} DOT:`, {
                                             castPlayer, 
                                             dotAbility: playersActiveDoTs[userIndex].ability,
                                             ticksRemaining: playersActiveDoTs[userIndex].ticksRemaining,
@@ -134,13 +135,14 @@ function handleMessage(message) {
                                             dmgCounter: monster.dmgCounter
                                         });
                                     }
-                                    createDotLine(mIndex, hpDiff);
+                                    createDotLine(userIndex, mIndex, hpDiff);
                                     // Consume one DoT tick
                                     playersActiveDoTs[userIndex].ticksRemaining--;
                                 } else {
                                     // Normal cast or auto-attack - show projectile
-                                    if (userIndex === '1') {
-                                        console.log('🔥 PLAYER 1 ATTACK:', {
+                                    // Log only if animations are enabled for this player
+                                    if (settingsMap["tracker"+userIndex].isTrue) {
+                                        console.log(`🔥 PLAYER ${userIndex} ATTACK:`, {
                                             castPlayer, 
                                             lastAbility: playersLastAbility[userIndex],
                                             mIndex, 
@@ -162,8 +164,9 @@ function handleMessage(message) {
                         
                         if (isDot) {
                             // DoT damage in solo
-                            if (userIndex === '1') {
-                                console.log('💀 PLAYER 1 DOT (solo):', {
+                            // Log only if animations are enabled for this player
+                            if (settingsMap["tracker"+userIndex].isTrue) {
+                                console.log(`💀 PLAYER ${userIndex} DOT (solo):`, {
                                     castPlayer, 
                                     dotAbility: playersActiveDoTs[userIndex].ability,
                                     ticksRemaining: playersActiveDoTs[userIndex].ticksRemaining,
@@ -172,13 +175,14 @@ function handleMessage(message) {
                                     dmgCounter: monster.dmgCounter
                                 });
                             }
-                            createDotLine(mIndex, hpDiff);
+                            createDotLine(userIndex, mIndex, hpDiff);
                             // Consume one DoT tick
                             playersActiveDoTs[userIndex].ticksRemaining--;
                         } else {
                             // Normal cast or auto-attack
-                            if (userIndex === '1') {
-                                console.log('🔥 PLAYER 1 ATTACK (solo):', {
+                            // Log only if animations are enabled for this player
+                            if (settingsMap["tracker"+userIndex].isTrue) {
+                                console.log(`🔥 PLAYER ${userIndex} ATTACK (solo):`, {
                                     castPlayer, 
                                     lastAbility: playersLastAbility[userIndex],
                                     mIndex, 
@@ -325,10 +329,16 @@ function createLine(from, to, hpDiff, reversed = false) {
 /**
  * Create DoT (Damage over Time) effect animation
  * Shows burn/poison effect on monster without projectile
+ * @param {number} playerIndex - Player index who applied the DoT
  * @param {number} monsterIndex - Monster index receiving DoT
  * @param {number} hpDiff - HP difference (damage amount)
  */
-function createDotLine(monsterIndex, hpDiff) {
+function createDotLine(playerIndex, monsterIndex, hpDiff) {
+    // Check if animations are enabled for this player
+    if (!settingsMap["tracker"+playerIndex].isTrue) {
+        return null;
+    }
+
     if (!AnimationManager.canCreate()) {
         return null;
     }
@@ -368,8 +378,8 @@ function createDotLine(monsterIndex, hpDiff) {
         }
     }
 
-    // Get tracker settings (use default fire color for DoT)
-    const trackerSetting = settingsMap["tracker0"] || { r: 255, g: 100, b: 0 };
+    // Get tracker settings for this player
+    const trackerSetting = settingsMap["tracker"+playerIndex] || { r: 255, g: 100, b: 0 };
 
     // Create DoT effect (fire type by default)
     const dotEffect = createDotEffect(targetMonster, svg, trackerSetting, "fire");

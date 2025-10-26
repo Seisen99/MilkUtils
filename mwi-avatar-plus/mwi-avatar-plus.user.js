@@ -30,7 +30,7 @@
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-avatar-plus/modules/animations/projectiles/arrow.js
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-avatar-plus/modules/animations/projectiles/melee.js
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-avatar-plus/modules/animations/effect-coordinator.js
-// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-avatar-plus/modules/core/websocket.js?v=13
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-avatar-plus/modules/core/websocket.js?v=14
 // ==/UserScript==
 
 (function() {
