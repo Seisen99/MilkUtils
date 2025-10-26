@@ -67,15 +67,6 @@ function handleMessage(message) {
             playersMP[userIndex] = pMap[userIndex].cMP;
         });
 
-        // Debug logging - only for player index 1
-        const debugPlayerIndex = '1';
-        if (monsterIndices.length > 0 && playerIndices.includes(debugPlayerIndex)) {
-            console.log('🔥 PLAYER 1 DAMAGE:', {playerIndices, castPlayer, monsterIndices});
-        }
-        if (castPlayer === -1 && monsterIndices.length > 0 && playerIndices.includes(debugPlayerIndex)) {
-            console.log('💀 PLAYER 1 DOT DETECTED:', {playerIndices, monsterIndices});
-        }
-
         let hurtMonster = false;
         let hurtPlayer = false;
         let monsterLifeSteal = {from:null, to:null, hpDiff:null};
@@ -93,10 +84,18 @@ function handleMessage(message) {
                     if (playerIndices.length > 1) {
                         playerIndices.forEach((userIndex) => {
                             if(userIndex === castPlayer) {
+                                // Debug: log player 1 attacks only
+                                if (userIndex === '1') {
+                                    console.log('🔥 PLAYER 1 ATTACK:', {castPlayer, mIndex, hpDiff, dmgCounter: monster.dmgCounter});
+                                }
                                 createLine(userIndex, mIndex, hpDiff);
                             }
                         });
                     } else {
+                        // Debug: log if solo player is player 1
+                        if (playerIndices[0] === '1') {
+                            console.log('🔥 PLAYER 1 ATTACK (solo):', {castPlayer, mIndex, hpDiff, dmgCounter: monster.dmgCounter});
+                        }
                         createLine(playerIndices[0], mIndex, hpDiff);
                     }
                 }

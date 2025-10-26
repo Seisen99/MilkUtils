@@ -2,7 +2,7 @@
 // @name         MWI-Avatar-Plus
 // @name:en      MWI-Avatar-Plus
 // @namespace    http://tampermonkey.net/
-// @version      2.0.3
+// @version      2.0.4
 // @description:en Visualizing Attack/Heal Effects with SVG Animations + Custom Avatar Support (Modular Edition)
 // @author       Seisen
 // @license MIT
@@ -29,7 +29,7 @@
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-avatar-plus/modules/animations/projectiles/arrow.js
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-avatar-plus/modules/animations/projectiles/melee.js
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-avatar-plus/modules/animations/effect-coordinator.js
-// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-avatar-plus/modules/core/websocket.js?v=4
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-avatar-plus/modules/core/websocket.js?v=5
 // ==/UserScript==
 
 (function() {
