@@ -1152,47 +1152,32 @@
     }
 
 
-    function createSwordSlashEffect(targetElem, svg, trackerSetting) {
+    function createMaceSmashEffect(targetElem, svg, trackerSetting) {
         const targetRect = targetElem.getBoundingClientRect();
         const centerX = targetRect.left + targetRect.width / 2;
         const centerY = targetRect.top + targetRect.height / 2;
 
-        // Distance du centre de rotation à la cible
-        const swingRadius = 80; // Rayon de l'arc de cercle
+        const swingRadius = 80;
+        const startAngle = -240;
+        const impactAngle = -90;
+        const endAngle = -140;
 
-        // Angles en degrés (0° = 3h sur une horloge)
-        const startAngle = -240; // 10h sur l'horloge
-        const impactAngle = -90;  // 12h (tête en haut) pour que la tête frappe le centre
-        const endAngle = -140;    // Retour partiel, pas jusqu'à la position initiale
-
-        // Centre de rotation (à gauche et au-dessus de la cible)
         const rotationCenterX = centerX - swingRadius;
         const rotationCenterY = centerY;
 
         const uniqueId = Date.now() + Math.random().toString(36).substr(2, 9);
 
-        const hammerGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
-        hammerGroup.style.opacity = '0';
-        hammerGroup.style.transformOrigin = '0 0'; // Origine au bout du manche
+        const maceGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        maceGroup.style.opacity = '0';
+        maceGroup.style.transformOrigin = '0 0';
 
-        // Créer un groupe pour contenir le SVG du Granite Bludgeon
+        // Granite Bludgeon SVG
         const bludgeonGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
-        
-        // Facteur d'échelle pour ajuster la taille
         const imageScale = 1.6;
-        
-        // Le SVG a son coin inférieur gauche (bout du manche) à (0,51)
-        // Le manche est incliné à ~45° dans le SVG original
-        // On applique une rotation de 135° (-45 + 180) pour que le manche soit vertical et dans le bon sens
         const svgRotationCompensation = 135;
-        
-        // Transformation appliquée de droite à gauche :
-        // 1. translate(0, -51) : met le bout du manche à l'origine
-        // 2. scale : applique l'échelle
-        // 3. rotate : compense l'inclinaison du SVG
         bludgeonGroup.setAttribute("transform", `rotate(${svgRotationCompensation}) scale(${imageScale}) translate(0, -51)`);
         
-        // Intégrer directement le contenu du SVG
+        // Granite Bludgeon SVG paths
         bludgeonGroup.innerHTML = `
             <path d="M12.8103 41.4993L29.1548 25.1548L25.6925 21.6925L9.34796 38.037L12.8103 41.4993Z" fill="#898989"/>
             <path d="M12.8103 41.4993L29.1548 25.1548L25.6925 21.6925L9.34796 38.037L12.8103 41.4993Z" fill="white" fill-opacity="0.6"/>
@@ -1214,7 +1199,7 @@
         
         bludgeonGroup.style.filter = "drop-shadow(0 0 6px rgba(200,200,200,0.6))";
 
-        // Créer un groupe séparé pour les particules de splash qui n'est pas affecté par la rotation du marteau
+        // Particules de splash
         const splashGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
         splashGroup.style.opacity = '1';
         svg.appendChild(splashGroup);
@@ -1233,11 +1218,10 @@
             splashParticles.push({element: particle, angle: angle});
         }
 
-        hammerGroup.appendChild(bludgeonGroup);
-        svg.appendChild(hammerGroup);
+        maceGroup.appendChild(bludgeonGroup);
+        svg.appendChild(maceGroup);
 
-        // Animation avec rotation autour du centre
-        hammerGroup.animate([
+        maceGroup.animate([
             {
                 opacity: '0',
                 transform: `translate(${rotationCenterX}px, ${rotationCenterY}px) rotate(${startAngle}deg) scale(0.7)`,
@@ -1268,7 +1252,6 @@
             easing: 'cubic-bezier(0.45, 0.05, 0.55, 0.95)'
         });
 
-        // Déclencher les particules au moment de l'impact (à 315ms pour correspondre à l'impact)
         setTimeout(() => {
             splashParticles.forEach((particleData, i) => {
                 const {element, angle} = particleData;
@@ -1276,8 +1259,6 @@
                 const endX = Math.cos(angle) * distance;
                 const endY = Math.sin(angle) * distance;
 
-                // Les particules partent directement du centre de la cible (centerX, centerY)
-                // Pas besoin de transformation relative car le splashGroup n'est pas dans le hammerGroup
                 element.animate([
                     {
                         opacity: '0',
@@ -1302,20 +1283,20 @@
 
         const cleanUp = () => {
             try {
-                if (hammerGroup.parentNode) {
-                    svg.removeChild(hammerGroup);
+                if (maceGroup.parentNode) {
+                    svg.removeChild(maceGroup);
                 }
                 if (splashGroup.parentNode) {
                     svg.removeChild(splashGroup);
                 }
-                AnimationManager.removePath(hammerGroup);
+                AnimationManager.removePath(maceGroup);
             } catch(e) {
             }
         };
 
         setTimeout(cleanUp, 900);
 
-        return hammerGroup;
+        return maceGroup;
     }
 
 
@@ -1576,11 +1557,11 @@
                 return;
             }
             else if (playerAttackType === "melee") {
-                const slash = createSwordSlashEffect(endElem, svg, trackerSetting);
-                AnimationManager.addPath(slash);
+                const mace = createMaceSmashEffect(endElem, svg, trackerSetting);
+                AnimationManager.addPath(mace);
                 setTimeout(() => {
                     const endXY = pathD.split(', ')[1].split(' ');
-                    createHitEffect({x:endXY[0], y:endXY[1]}, svg, slash, hitTarget, explosionSize, hitDamage, frameColor, frameBorderColor, trackerSetting);
+                    createHitEffect({x:endXY[0], y:endXY[1]}, svg, mace, hitTarget, explosionSize, hitDamage, frameColor, frameBorderColor, trackerSetting);
                 }, 300);
                 return;
             }
@@ -1632,11 +1613,11 @@
                 }, 500);
             }
             else if (attackType === "melee") {
-                const slash = createSwordSlashEffect(endElem, svg, trackerSetting);
-                AnimationManager.addPath(slash);
+                const mace = createMaceSmashEffect(endElem, svg, trackerSetting);
+                AnimationManager.addPath(mace);
                 setTimeout(() => {
                     const endXY = pathD.split(', ')[1].split(' ');
-                    createHitEffect({x:endXY[0], y:endXY[1]}, svg, slash, hitTarget, explosionSize, hitDamage, frameColor, frameBorderColor, trackerSetting);
+                    createHitEffect({x:endXY[0], y:endXY[1]}, svg, mace, hitTarget, explosionSize, hitDamage, frameColor, frameBorderColor, trackerSetting);
                 }, 300);
             }
 
