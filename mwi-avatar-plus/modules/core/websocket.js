@@ -9,6 +9,7 @@ let monstersDmgCounter = [];
 let playersHP = [];
 let playersMP = [];
 let playersDmgCounter = [];
+let playersIsAutoAtk = []; // Track auto-attack state per player
 
 /**
  * Hook into WebSocket to intercept battle messages
@@ -50,6 +51,7 @@ function handleMessage(message) {
         playersHP = obj.players.map((player) => player.currentHitpoints);
         playersMP = obj.players.map((player) => player.currentManapoints);
         playersDmgCounter = obj.players.map((player) => player.damageSplatCounter);
+        playersIsAutoAtk = obj.players.map(() => false); // Initialize auto-attack state
     } else if (obj && obj.type === "battle_updated" && monstersHP.length) {
         const mMap = obj.mMap;
         const pMap = obj.pMap;
@@ -63,8 +65,20 @@ function handleMessage(message) {
         });
         let castPlayer = -1;
         playerIndices.forEach((userIndex) => {
-            if(pMap[userIndex].cMP < playersMP[userIndex]){castPlayer = userIndex;}
-            playersMP[userIndex] = pMap[userIndex].cMP;
+            const playerData = pMap[userIndex];
+            
+            // Update cast detection
+            if(playerData.cMP < playersMP[userIndex]){castPlayer = userIndex;}
+            playersMP[userIndex] = playerData.cMP;
+            
+            // Update auto-attack state if present in message
+            if (playerData.hasOwnProperty('isAutoAtk')) {
+                playersIsAutoAtk[userIndex] = playerData.isAutoAtk;
+            }
+            // If abilityHrid is present, it's NOT an auto-attack
+            if (playerData.hasOwnProperty('abilityHrid')) {
+                playersIsAutoAtk[userIndex] = false;
+            }
         });
 
         let hurtMonster = false;
@@ -84,9 +98,8 @@ function handleMessage(message) {
                     if (playerIndices.length > 1) {
                         playerIndices.forEach((userIndex) => {
                             if(userIndex === castPlayer) {
-                                // Check if it's a DoT (no cast) vs auto-attack
-                                const playerData = pMap[userIndex];
-                                const isAutoAttack = playerData?.isAutoAtk === true;
+                                // Use tracked auto-attack state (persistent across messages)
+                                const isAutoAttack = playersIsAutoAtk[userIndex] === true;
                                 const isDot = (castPlayer === -1 || castPlayer === '-1') && !isAutoAttack;
                                 
                                 if (isDot) {
@@ -107,8 +120,8 @@ function handleMessage(message) {
                     } else {
                         // Solo player
                         const userIndex = playerIndices[0];
-                        const playerData = pMap[userIndex];
-                        const isAutoAttack = playerData?.isAutoAtk === true;
+                        // Use tracked auto-attack state (persistent across messages)
+                        const isAutoAttack = playersIsAutoAtk[userIndex] === true;
                         const isDot = (castPlayer === -1 || castPlayer === '-1') && !isAutoAttack;
                         
                         if (isDot) {
