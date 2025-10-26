@@ -67,7 +67,13 @@ function handleMessage(message) {
             playersMP[userIndex] = pMap[userIndex].cMP;
         });
 
-        console.log('battle_updated:', {playerIndices, castPlayer, monsterIndices});
+        // Debug logging - only interesting cases
+        if (monsterIndices.length > 0) {
+            console.log('🔥 DAMAGE:', {playerIndices, castPlayer, monsterIndices});
+        }
+        if (castPlayer === -1 && monsterIndices.length > 0) {
+            console.log('💀 DOT DETECTED:', {playerIndices, monsterIndices});
+        }
 
         let hurtMonster = false;
         let hurtPlayer = false;
