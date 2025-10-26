@@ -1,0 +1,52 @@
+// ==UserScript==
+// @name         MWI-Avatar-Plus
+// @name:en      MWI-Avatar-Plus
+// @namespace    http://tampermonkey.net/
+// @version      2.0
+// @description:en Visualizing Attack/Heal Effects with Animated Lines + Custom Avatar Support (Modular Edition)
+// @author       Artintel
+// @license MIT
+// @match        https://www.milkywayidle.com/*
+// @match        https://test.milkywayidle.com/*
+// @icon         https://www.milkywayidle.com/favicon.svg
+// @grant        none
+// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-avatar-plus/modules/utils/geometry.js
+// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-avatar-plus/modules/utils/colors.js
+// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-avatar-plus/modules/core/constants.js
+// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-avatar-plus/modules/core/settings.js
+// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-avatar-plus/modules/ui/styles.js
+// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-avatar-plus/modules/ui/toast.js
+// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-avatar-plus/modules/ui/color-picker.js
+// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-avatar-plus/modules/ui/settings-panel.js
+// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-avatar-plus/modules/avatar/avatar-manager.js
+// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-avatar-plus/modules/avatar/avatar-observer.js
+// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-avatar-plus/modules/animations/utils/svg-paths.js
+// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-avatar-plus/modules/animations/animation-manager.js
+// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-avatar-plus/modules/animations/effects/miss-effect.js
+// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-avatar-plus/modules/animations/effects/hit-effect.js
+// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-avatar-plus/modules/animations/effects/healing-particles.js
+// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-avatar-plus/modules/animations/projectiles/fireball.js
+// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-avatar-plus/modules/animations/projectiles/arrow.js
+// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-avatar-plus/modules/animations/projectiles/melee.js
+// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-avatar-plus/modules/animations/effect-coordinator.js
+// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-avatar-plus/modules/core/websocket.js
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    // Initialize styles
+    initializeStyles();
+
+    // Load settings from localStorage
+    readSettings();
+
+    // Initialize settings panel
+    waitForSetttins();
+
+    // Initialize avatar system
+    observeForAvatars();
+
+    // Initialize WebSocket hook for battle tracking
+    hookWS();
+})();
