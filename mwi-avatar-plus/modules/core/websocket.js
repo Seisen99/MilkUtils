@@ -81,22 +81,39 @@ function handleMessage(message) {
                 monstersHP[mIndex] = monster.cHP;
                 monstersDmgCounter[mIndex] = monster.dmgCounter;
                 if (dmgSplat && hpDiff >= 0 && playerIndices.length > 0) {
+                    // Detect DoT: damage splat but no one cast this turn
+                    const isDot = (castPlayer === -1 || castPlayer === '-1');
+                    
                     if (playerIndices.length > 1) {
-                        playerIndices.forEach((userIndex) => {
-                            if(userIndex === castPlayer) {
-                                // Debug: log player 1 attacks only
-                                if (userIndex === '1') {
-                                    console.log('🔥 PLAYER 1 ATTACK:', {castPlayer, mIndex, hpDiff, dmgCounter: monster.dmgCounter});
+                        if (isDot) {
+                            // DoT damage - show burn effect on all affected monsters
+                            createDotLine(mIndex, hpDiff);
+                        } else {
+                            // Normal cast damage
+                            playerIndices.forEach((userIndex) => {
+                                if(userIndex === castPlayer) {
+                                    // Debug: log player 1 attacks only
+                                    if (userIndex === '1') {
+                                        console.log('🔥 PLAYER 1 ATTACK:', {castPlayer, mIndex, hpDiff, dmgCounter: monster.dmgCounter});
+                                    }
+                                    createLine(userIndex, mIndex, hpDiff);
                                 }
-                                createLine(userIndex, mIndex, hpDiff);
-                            }
-                        });
-                    } else {
-                        // Debug: log if solo player is player 1
-                        if (playerIndices[0] === '1') {
-                            console.log('🔥 PLAYER 1 ATTACK (solo):', {castPlayer, mIndex, hpDiff, dmgCounter: monster.dmgCounter});
+                            });
                         }
-                        createLine(playerIndices[0], mIndex, hpDiff);
+                    } else {
+                        if (isDot) {
+                            // DoT damage in solo
+                            if (playerIndices[0] === '1') {
+                                console.log('💀 PLAYER 1 DOT:', {castPlayer, mIndex, hpDiff, dmgCounter: monster.dmgCounter});
+                            }
+                            createDotLine(mIndex, hpDiff);
+                        } else {
+                            // Normal cast damage
+                            if (playerIndices[0] === '1') {
+                                console.log('🔥 PLAYER 1 ATTACK (solo):', {castPlayer, mIndex, hpDiff, dmgCounter: monster.dmgCounter});
+                            }
+                            createLine(playerIndices[0], mIndex, hpDiff);
+                        }
                     }
                 }
                 if (hpDiff < 0 ) {
@@ -228,6 +245,64 @@ function createLine(from, to, hpDiff, reversed = false) {
             createEffect(effectFrom, effectTo, hpDiff, from, reversed);
         }
     }
+}
+
+/**
+ * Create DoT (Damage over Time) effect animation
+ * Shows burn/poison effect on monster without projectile
+ * @param {number} monsterIndex - Monster index receiving DoT
+ * @param {number} hpDiff - HP difference (damage amount)
+ */
+function createDotLine(monsterIndex, hpDiff) {
+    if (!AnimationManager.canCreate()) {
+        return null;
+    }
+
+    const monsterContainer = document.querySelector(".BattlePanel_monstersArea__2dzrY")?.children[0];
+    if (!monsterContainer || !monsterContainer.children[monsterIndex]) {
+        return null;
+    }
+
+    const targetMonster = monsterContainer.children[monsterIndex];
+    let svg = document.getElementById('svg-container');
+    
+    // Create SVG container if it doesn't exist
+    if (!svg) {
+        const svgContainer = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svgContainer.id = 'svg-container';
+        Object.assign(svgContainer.style, {
+            position: 'fixed',
+            top: '0',
+            left: '0',
+            width: '100%',
+            height: '100%',
+            pointerEvents: 'none',
+            overflow: 'visible',
+            zIndex: '190'
+        });
+
+        svgContainer.setAttribute('viewBox', `0 0 ${window.innerWidth} ${window.innerHeight}`);
+        svgContainer.setAttribute('preserveAspectRatio', 'none');
+        
+        const gamePanel = document.querySelector(".GamePage_mainPanel__2njyb");
+        if (gamePanel) {
+            gamePanel.appendChild(svgContainer);
+            svg = svgContainer;
+        } else {
+            return null;
+        }
+    }
+
+    // Get tracker settings (use default fire color for DoT)
+    const trackerSetting = settingsMap["tracker0"] || { r: 255, g: 100, b: 0 };
+
+    // Create DoT effect (fire type by default)
+    const dotEffect = createDotEffect(targetMonster, svg, trackerSetting, "fire");
+    if (dotEffect) {
+        AnimationManager.addPath(dotEffect);
+    }
+
+    return dotEffect;
 }
 
 // Export to global scope for Tampermonkey
