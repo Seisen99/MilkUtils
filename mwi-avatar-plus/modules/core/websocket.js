@@ -67,6 +67,8 @@ function handleMessage(message) {
             playersMP[userIndex] = pMap[userIndex].cMP;
         });
 
+        console.log('battle_updated:', {playerIndices, castPlayer, monsterIndices});
+
         let hurtMonster = false;
         let hurtPlayer = false;
         let monsterLifeSteal = {from:null, to:null, hpDiff:null};
