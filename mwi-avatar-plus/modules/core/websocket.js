@@ -67,6 +67,9 @@ function handleMessage(message) {
             playersMP[userIndex] = pMap[userIndex].cMP;
         });
 
+        // DEBUG: Log full battle_updated to see all available data
+        console.log('FULL battle_updated:', JSON.stringify(obj, null, 2));
+
         let hurtMonster = false;
         let hurtPlayer = false;
         let monsterLifeSteal = {from:null, to:null, hpDiff:null};
