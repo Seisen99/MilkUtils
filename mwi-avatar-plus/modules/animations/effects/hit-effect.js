@@ -154,21 +154,34 @@ function createHitEffect(point, container, path, hitTarget = undefined, explosio
                 });
                 console.log('✨ Fade animation created:', fadeAnim);
             } else {
-                // Use hue-rotate filter with long duration (no permanent styles)
-                console.log('🟢 Mode: Permanent color (10s)');
-                const permAnim = hitDamage.animate([
+                // Use hue-rotate filter with forwards fill and manual cleanup
+                console.log('🟢 Mode: Permanent color');
+                const animDuration = explosionSize < 3 ? 1500 : (explosionSize < 5 ? 1800 : 2100);
+                
+                hitDamage.animate([
                     { filter: `${hueFilter} brightness(1.2) saturate(1.5)` }
                 ], {
-                    duration: 10000, // 10 seconds - way longer than damage display
-                    fill: 'none', // No fill:forwards to avoid permanent inline styles
+                    duration: animDuration,
+                    fill: 'forwards',
                     easing: 'linear'
                 });
-                console.log('✨ Permanent animation created:', permAnim);
                 
-                // Check animations after creation
+                console.log(`✨ Animation created with duration: ${animDuration}ms`);
+                
+                // Cleanup shortly before damage text disappears
                 setTimeout(() => {
-                    console.log('🔍 Animations after 100ms:', hitDamage.getAnimations().length);
-                }, 100);
+                    if (hitDamage && hitDamage.style) {
+                        console.log('🧹 Cleaning up filter styles');
+                        // Cancel all filter animations
+                        hitDamage.getAnimations().forEach(anim => {
+                            const keyframes = anim.effect?.getKeyframes?.() || [];
+                            if (keyframes.some(kf => kf.filter)) {
+                                anim.cancel();
+                            }
+                        });
+                        hitDamage.style.filter = '';
+                    }
+                }, animDuration - 100); // Cleanup 100ms before end
             }
         } else {
             console.log('❌ NOT entering color animation block - missing params');
