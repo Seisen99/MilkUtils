@@ -117,9 +117,9 @@ function createHitEffect(point, container, path, hitTarget = undefined, explosio
         const originalZIndex = hitDamage.style.zIndex || 'auto';
 
         if (frameColor && frameBorderColor && trackerSetting) {
-            const hueFilter = calculateHueRotation(trackerSetting.frameR, trackerSetting.frameG, trackerSetting.frameB);
-
             if (settingsMap.keepOriginalDamageColor.isTrue) {
+                // Use hue-rotate filter for temporary color change (returns to red)
+                const hueFilter = calculateHueRotation(trackerSetting.frameR, trackerSetting.frameG, trackerSetting.frameB);
                 hitDamage.animate([
                     { filter: `${hueFilter} brightness(1.2) saturate(1.5)`, offset: 0 },
                     { filter: `${hueFilter} brightness(1.2) saturate(1.5)`, offset: 0.85 },
@@ -130,11 +130,17 @@ function createHitEffect(point, container, path, hitTarget = undefined, explosio
                     fill: 'none'
                 });
             } else {
+                // Directly change background and border color permanently
+                hitDamage.style.background = frameColor;
+                hitDamage.style.borderColor = frameBorderColor;
+                
+                // Add brightness flash effect for visual impact
                 hitDamage.animate([
-                    { filter: `${hueFilter} brightness(1.2) saturate(1.5)` }
+                    { filter: 'brightness(1.5)' },
+                    { filter: 'brightness(1)' }
                 ], {
-                    duration: 3000,
-                    fill: 'forwards'
+                    duration: 300,
+                    easing: 'ease-out'
                 });
             }
         }
