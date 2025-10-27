@@ -535,3 +535,4 @@ function createDotLine(playerIndex, monsterIndex, hpDiff) {
 // Export to global scope for Tampermonkey
 window.hookWS = hookWS;
 window.playersAbilityInfo = playersAbilityInfo;
+window.getColorForPlayer = getColorForPlayer;

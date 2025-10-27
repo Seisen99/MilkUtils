@@ -63,7 +63,10 @@ function createEffect(startElem, endElem, hpDiff, index, reversed = false) {
         console.log(`   window.playersAbilityInfo[${index}]:`, window.playersAbilityInfo ? window.playersAbilityInfo[index] : 'undefined');
 
         if (index >= 0 && index <= 4) {
-            const playerTrackerSetting = settingsMap["tracker" + index];
+            // Use getColorForPlayer to support My Character Color override
+            const playerTrackerSetting = window.getColorForPlayer 
+                ? window.getColorForPlayer(index) 
+                : settingsMap["tracker" + index];
             
             console.log(`   tracker${index} settings:`, playerTrackerSetting);
             console.log(`   detectionMode:`, playerTrackerSetting?.detectionMode);
@@ -143,8 +146,15 @@ function createEffect(startElem, endElem, hpDiff, index, reversed = false) {
 
     const svg = document.getElementById('svg-container');
 
-    if (reversed) {index = 6;}
-    const trackerSetting = settingsMap["tracker"+index];
+    // Get color settings - use My Character Color for players if enabled
+    let trackerSetting;
+    if (reversed) {
+        trackerSetting = settingsMap.tracker6;
+    } else {
+        trackerSetting = window.getColorForPlayer 
+            ? window.getColorForPlayer(index) 
+            : settingsMap["tracker" + index];
+    }
     const lineColor = "rgba("+trackerSetting.r+", "+trackerSetting.g+", "+trackerSetting.b+", 1)";
     const filterColor = "rgba("+trackerSetting.r+", "+trackerSetting.g+", "+trackerSetting.b+", 0.8)";
     let frameColor = undefined;
