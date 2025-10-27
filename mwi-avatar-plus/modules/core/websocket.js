@@ -21,6 +21,53 @@ const DOT_ABILITIES = [
     '/abilities/firestorm'  // Burn DoT (fire magic) - 2 ticks after cast
 ];
 
+/**
+ * Get player name by their index in battle
+ * @param {number} playerIndex - Player index (0-4)
+ * @returns {string|null} Player name or null
+ */
+function getPlayerNameByIndex(playerIndex) {
+    const battlePanel = document.querySelector('.BattlePanel_playersArea__vvwlB');
+    if (!battlePanel) return null;
+    
+    const playerUnits = battlePanel.querySelectorAll('.CombatUnit_combatUnit__1G_Qp');
+    if (playerUnits[playerIndex]) {
+        const nameElem = playerUnits[playerIndex].querySelector('.CombatUnit_name__1SlO1');
+        return nameElem ? nameElem.textContent.trim() : null;
+    }
+    return null;
+}
+
+/**
+ * Get color settings for a player, considering My Character Color override
+ * @param {number} playerIndex - Player index (0-4)
+ * @returns {Object} Color settings {r, g, b, frameR, frameG, frameB, isTrue, isTrueH}
+ */
+function getColorForPlayer(playerIndex) {
+    // Check if My Character Color feature is enabled
+    if (settingsMap.myCharacterColor?.isTrue) {
+        const playerNameAtIndex = getPlayerNameByIndex(playerIndex);
+        const myPlayerName = getPlayerName();
+        
+        // If this player is the current user's character, use My Character Color
+        if (playerNameAtIndex && myPlayerName && playerNameAtIndex === myPlayerName) {
+            return {
+                r: settingsMap.myCharacterColor.r,
+                g: settingsMap.myCharacterColor.g,
+                b: settingsMap.myCharacterColor.b,
+                frameR: settingsMap.myCharacterColor.frameR,
+                frameG: settingsMap.myCharacterColor.frameG,
+                frameB: settingsMap.myCharacterColor.frameB,
+                isTrue: settingsMap["tracker" + playerIndex]?.isTrue ?? true,
+                isTrueH: settingsMap["tracker" + playerIndex]?.isTrueH ?? true,
+            };
+        }
+    }
+    
+    // Fallback to position-based color
+    return settingsMap["tracker" + playerIndex] || { r: 255, g: 100, b: 0, frameR: 255, frameG: 100, frameB: 0, isTrue: true, isTrueH: true };
+}
+
 // WebSocket timing logger (disabled - use for performance debugging only)
 let wsTimingLogger = {
     enabled: false, // Set to false to disable timing logs
@@ -355,25 +402,17 @@ function handleMessage(message) {
 let isResizeListenerAdded = false;
 function createLine(from, to, hpDiff, reversed = false) {
     if (hpDiff === 0 && !settingsMap.missedLine.isTrue) {return null;}
+    
+    // Get appropriate color settings (with My Character Color override if enabled)
+    const colorSettings = reversed ? settingsMap.tracker6 : getColorForPlayer(from);
+    
     if (hpDiff >= 0) {
-        if (reversed){
-            if (!settingsMap.tracker6.isTrue) {
-                return null;
-            }
-        } else {
-            if (!settingsMap["tracker"+from].isTrue) {
-                return null;
-            }
+        if (!colorSettings.isTrue) {
+            return null;
         }
     } else {
-        if (reversed){
-            if (!settingsMap.tracker6.isTrueH) {
-                return null;
-            }
-        } else {
-            if (!settingsMap["tracker"+from].isTrueH) {
-                return null;
-            }
+        if (!colorSettings.isTrueH) {
+            return null;
         }
     }
 
@@ -434,8 +473,11 @@ function createLine(from, to, hpDiff, reversed = false) {
  * @param {number} hpDiff - HP difference (damage amount)
  */
 function createDotLine(playerIndex, monsterIndex, hpDiff) {
+    // Get color settings with My Character Color override if enabled
+    const colorSettings = getColorForPlayer(playerIndex);
+    
     // Check if animations are enabled for this player
-    if (!settingsMap["tracker"+playerIndex].isTrue) {
+    if (!colorSettings.isTrue) {
         return null;
     }
 
@@ -478,8 +520,8 @@ function createDotLine(playerIndex, monsterIndex, hpDiff) {
         }
     }
 
-    // Get tracker settings for this player
-    const trackerSetting = settingsMap["tracker"+playerIndex] || { r: 255, g: 100, b: 0 };
+    // Use the color settings we already fetched (with My Character Color override)
+    const trackerSetting = colorSettings;
 
     // Create DoT effect (fire type by default)
     const dotEffect = createDotEffect(targetMonster, svg, trackerSetting, "fire");

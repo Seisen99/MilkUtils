@@ -23,6 +23,9 @@ function waitForSetttins() {
             // Custom Avatar Section
             createCustomAvatarSectionNew(insertElem, settingsMap.customAvatar);
 
+            // My Character Color Section
+            createMyCharacterColorSection(insertElem, settingsMap.myCharacterColor);
+
             // Player Animation Settings Category
             insertElem.insertAdjacentHTML(
                 "beforeend",
@@ -156,6 +159,69 @@ function updatePlayerCardManualSettings(playerIndex, mode) {
             manualDiv.classList.remove('disabled');
         }
     }
+}
+
+/**
+ * Create My Character Color section
+ */
+function createMyCharacterColorSection(insertElem, setting) {
+    insertElem.insertAdjacentHTML(
+        "beforeend",
+        `<div class="my-character-color-section">
+            <div class="section-title" style="color: #9333EA; font-size: 15px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                🎨 ${isZH ? "我的角色颜色" : "My Character Color"}
+            </div>
+            <p style="color: #999; font-size: 12px; margin: 8px 0 12px 0; line-height: 1.5;">
+                ${isZH ? "为你的角色设置固定颜色，不受队伍位置影响。无论你在队伍的哪个位置，都会使用这个颜色。" 
+                       : "Set a persistent color for your character, regardless of party position. Your character will always use this color no matter where they are in the party."}
+            </p>
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap;">
+                <input type="checkbox" data-number="${setting.id}" data-param="isTrue" ${setting.isTrue ? "checked" : ""}></input>
+                <span style="color: #fff; font-weight: 500; font-size: 14px;">${setting.desc}</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div class="color-preview" id="colorPreview_${setting.id}"></div>
+                <span class="color-label">${isZH ? "选择你的颜色" : "Choose Your Color"}</span>
+            </div>
+        </div>`
+    );
+
+    setTimeout(() => {
+        setupMyCharacterColorPicker(setting);
+    }, 100);
+}
+
+/**
+ * Setup color picker for My Character Color
+ */
+function setupMyCharacterColorPicker(setting) {
+    const colorPreview = document.getElementById('colorPreview_' + setting.id);
+    let currentColor = { r: setting.r, g: setting.g, b: setting.b };
+
+    if (colorPreview) {
+        colorPreview.addEventListener('click', () => {
+            const settingColor = { r: settingsMap[setting.id].r, g: settingsMap[setting.id].g, b: settingsMap[setting.id].b }
+            const modal = createColorPicker(settingColor, (newColor) => {
+                currentColor = newColor;
+                // Update both line color and frame color with the same value
+                settingsMap[setting.id].r = newColor.r;
+                settingsMap[setting.id].g = newColor.g;
+                settingsMap[setting.id].b = newColor.b;
+                settingsMap[setting.id].frameR = newColor.r;
+                settingsMap[setting.id].frameG = newColor.g;
+                settingsMap[setting.id].frameB = newColor.b;
+                localStorage.setItem("tracker_settingsMap", JSON.stringify(settingsMap));
+                updateColorPreview();
+            }, isZH ? "我的角色颜色" : "My Character Color", setting.id);
+            document.body.appendChild(modal);
+        });
+    }
+
+    function updateColorPreview() {
+        if (colorPreview) colorPreview.style.backgroundColor = `rgb(${currentColor.r},${currentColor.g},${currentColor.b})`;
+    }
+
+    updateColorPreview();
 }
 
 /**

@@ -179,5 +179,6 @@ function applyCustomAvatar() {
 }
 
 // Export to global scope for Tampermonkey
+window.getPlayerName = getPlayerName;
 window.appliedAvatars = appliedAvatars;
 window.applyCustomAvatar = applyCustomAvatar;

@@ -402,6 +402,15 @@ function injectSettingsPanelStyles() {
             margin-bottom: 20px;
         }
 
+        /* My Character Color Section */
+        .my-character-color-section {
+            background: rgba(147, 51, 234, 0.05);
+            border: 1px solid rgba(147, 51, 234, 0.2);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
         .avatar-controls {
             display: flex;
             align-items: center;

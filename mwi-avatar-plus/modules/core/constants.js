@@ -14,6 +14,17 @@ let settingsMap = {
         isTrue: false,
         avatarUrl: "",
     },
+    myCharacterColor: {
+        id: "myCharacterColor",
+        desc: isZH ? "使用固定角色颜色" : "Use Persistent Character Color",
+        isTrue: false,
+        r: 147,
+        g: 51,
+        b: 234,
+        frameR: 147,
+        frameG: 51,
+        frameB: 234,
+    },
     tracker0 : {
         id: "tracker0",
         desc: isZH ? "启用玩家 #1 伤害线":"Enable player #1 damage line",
