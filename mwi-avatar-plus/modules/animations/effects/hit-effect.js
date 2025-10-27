@@ -117,9 +117,18 @@ function createHitEffect(point, container, path, hitTarget = undefined, explosio
         const originalZIndex = hitDamage.style.zIndex || 'auto';
 
         if (frameColor && frameBorderColor && trackerSetting) {
+            // Cancel any previous filter animations on this element to prevent color stacking
+            hitDamage.getAnimations().forEach(anim => {
+                const keyframes = anim.effect?.getKeyframes?.() || [];
+                if (keyframes.some(kf => kf.filter)) {
+                    anim.cancel();
+                }
+            });
+            
+            const hueFilter = calculateHueRotation(trackerSetting.frameR, trackerSetting.frameG, trackerSetting.frameB);
+            
             if (settingsMap.keepOriginalDamageColor.isTrue) {
                 // Use hue-rotate filter for temporary color change (returns to red)
-                const hueFilter = calculateHueRotation(trackerSetting.frameR, trackerSetting.frameG, trackerSetting.frameB);
                 hitDamage.animate([
                     { filter: `${hueFilter} brightness(1.2) saturate(1.5)`, offset: 0 },
                     { filter: `${hueFilter} brightness(1.2) saturate(1.5)`, offset: 0.85 },
@@ -131,7 +140,6 @@ function createHitEffect(point, container, path, hitTarget = undefined, explosio
                 });
             } else {
                 // Use hue-rotate filter with long duration (no permanent styles)
-                const hueFilter = calculateHueRotation(trackerSetting.frameR, trackerSetting.frameG, trackerSetting.frameB);
                 hitDamage.animate([
                     { filter: `${hueFilter} brightness(1.2) saturate(1.5)` }
                 ], {
