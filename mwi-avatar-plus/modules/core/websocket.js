@@ -20,9 +20,9 @@ const DOT_ABILITIES = [
     '/abilities/firestorm'  // Burn DoT (fire magic) - 2 ticks after cast
 ];
 
-// WebSocket timing logger
+// WebSocket timing logger (disabled - use for performance debugging only)
 let wsTimingLogger = {
-    enabled: true, // Set to false to disable timing logs
+    enabled: false, // Set to false to disable timing logs
     lastMessageTime: 0,
     intervals: [],
     messageCount: 0,
@@ -126,6 +126,10 @@ function handleMessage(message) {
     wsTimingLogger.logMessage();
     
     let obj = JSON.parse(message);
+    
+    // 🔍 DEBUG: Log all WebSocket messages
+    console.log('📨 WebSocket Message:', obj);
+    
     if (obj && obj.type === "new_battle") {
         // Reset timing stats on new battle
         wsTimingLogger.reset();
@@ -139,11 +143,20 @@ function handleMessage(message) {
         playersLastAbility = obj.players.map(() => null); // Initialize last ability tracker
         playersActiveDoTs = obj.players.map(() => ({ ticksRemaining: 0 })); // Initialize DoT tracker
         playersAbilityInfo = obj.players.map(() => null); // Initialize auto-detection tracker
+        
+        console.log('✅ new_battle: Initialized arrays for', obj.players.length, 'players');
+        console.log('   playersAbilityInfo:', playersAbilityInfo);
+        console.log('   playersLastAbility:', playersLastAbility);
     } else if (obj && obj.type === "battle_updated" && monstersHP.length) {
         const mMap = obj.mMap;
         const pMap = obj.pMap;
         const monsterIndices = Object.keys(obj.mMap);
         const playerIndices = Object.keys(obj.pMap);
+
+        // 🔍 DEBUG: Log player map when present
+        if (Object.keys(pMap).length > 0) {
+            console.log('👥 pMap:', pMap);
+        }
 
         let castMonster = -1;
         monsterIndices.forEach((monsterIndex) => {
@@ -161,16 +174,23 @@ function handleMessage(message) {
             // Update auto-attack state if present in message
             if (playerData.hasOwnProperty('isAutoAtk')) {
                 playersIsAutoAtk[userIndex] = playerData.isAutoAtk;
+                console.log(`🤖 Player ${userIndex} isAutoAtk:`, playerData.isAutoAtk);
             }
             // If abilityHrid is present, track it and set auto-attack to false
             if (playerData.hasOwnProperty('abilityHrid')) {
                 playersLastAbility[userIndex] = playerData.abilityHrid;
                 playersIsAutoAtk[userIndex] = false;
                 
+                console.log(`✨ Player ${userIndex} cast ability:`, playerData.abilityHrid);
+                console.log(`   Detection mode for tracker${userIndex}:`, settingsMap["tracker"+userIndex]?.detectionMode);
+                
                 // AUTO-DETECTION: If mode is auto, detect animation type from ability database
                 if (settingsMap["tracker"+userIndex] && settingsMap["tracker"+userIndex].detectionMode === "auto") {
                     const abilityName = formatAbilityName(playerData.abilityHrid);
                     const abilityData = getAbilityData(abilityName);
+                    
+                    console.log(`   🔍 Auto-detection: "${playerData.abilityHrid}" → "${abilityName}"`);
+                    console.log(`   📖 Ability data:`, abilityData);
                     
                     if (abilityData && abilityData.animation !== "none") {
                         playersAbilityInfo[userIndex] = {
@@ -178,18 +198,22 @@ function handleMessage(message) {
                             damageType: abilityData.damageType,         // "fire"/"water"/"nature"
                             fireballColor: abilityData.fireballColor || "green"
                         };
+                        console.log(`   ✅ Auto-detected animation for player ${userIndex}:`, playersAbilityInfo[userIndex]);
                     } else {
                         // Ability unknown or non-offensive → reset auto-detection
                         playersAbilityInfo[userIndex] = null;
+                        console.log(`   ⚠️ No animation data found for "${abilityName}"`);
                     }
                 } else {
                     // Mode manual → reset auto-detection
                     playersAbilityInfo[userIndex] = null;
+                    console.log(`   ⚙️ Manual mode - auto-detection disabled`);
                 }
                 
                 // If a DoT ability is cast, activate DoT tracking (2 ticks for Firestorm)
                 if (DOT_ABILITIES.includes(playerData.abilityHrid)) {
                     playersActiveDoTs[userIndex] = { ticksRemaining: 2, ability: playerData.abilityHrid };
+                    console.log(`   🔥 DoT ability activated for player ${userIndex}`);
                 }
             }
         });
