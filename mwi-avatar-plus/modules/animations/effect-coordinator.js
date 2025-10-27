@@ -58,8 +58,15 @@ function createEffect(startElem, endElem, hpDiff, index, reversed = false) {
             isAllyHeal = true;
         }
 
+        console.log(`🎬 createEffect called for player ${index}, hpDiff: ${hpDiff}, reversed: ${reversed}`);
+        console.log(`   window.playersAbilityInfo:`, window.playersAbilityInfo);
+        console.log(`   window.playersAbilityInfo[${index}]:`, window.playersAbilityInfo ? window.playersAbilityInfo[index] : 'undefined');
+
         if (index >= 0 && index <= 4) {
             const playerTrackerSetting = settingsMap["tracker" + index];
+            
+            console.log(`   tracker${index} settings:`, playerTrackerSetting);
+            console.log(`   detectionMode:`, playerTrackerSetting?.detectionMode);
             
             // PRIORITY 1: Auto-detection (if mode is auto AND info is available)
             if (playerTrackerSetting && 
@@ -70,6 +77,8 @@ function createEffect(startElem, endElem, hpDiff, index, reversed = false) {
                 playerAttackType = window.playersAbilityInfo[index].animation;
                 playerFireballColor = window.playersAbilityInfo[index].fireballColor;
                 
+                console.log(`   ✅ AUTO mode - detected animation: ${playerAttackType}, color: ${playerFireballColor}`);
+                
             // PRIORITY 2: Manual settings (mode is manual)
             } else if (playerTrackerSetting && 
                        playerTrackerSetting.detectionMode === "manual" &&
@@ -78,8 +87,18 @@ function createEffect(startElem, endElem, hpDiff, index, reversed = false) {
                 
                 playerAttackType = playerTrackerSetting.attackAnimation;
                 playerFireballColor = playerTrackerSetting.fireballColor || "green";
+                
+                console.log(`   ⚙️ MANUAL mode - animation: ${playerAttackType}, color: ${playerFireballColor}`);
+            } else {
+                console.log(`   ⚠️ No animation detected - conditions not met:`);
+                console.log(`      - Has tracker settings: ${!!playerTrackerSetting}`);
+                console.log(`      - Detection mode: ${playerTrackerSetting?.detectionMode}`);
+                console.log(`      - playersAbilityInfo exists: ${!!window.playersAbilityInfo}`);
+                console.log(`      - playersAbilityInfo[${index}] exists: ${!!(window.playersAbilityInfo && window.playersAbilityInfo[index])}`);
             }
         }
+        
+        console.log(`   🎯 Final playerAttackType: "${playerAttackType}"`);
 
         if (settingsMap.customAvatar.isTrue && playerName) {
             const container = document.querySelector(".BattlePanel_playersArea__vvwlB");
@@ -137,7 +156,11 @@ function createEffect(startElem, endElem, hpDiff, index, reversed = false) {
 
     const pathD = createParabolaPath(startElem, endElem, reversed);
 
+    console.log(`🔍 Animation check: playerAttackType="${playerAttackType}", reversed=${reversed}, hpDiff=${hpDiff}`);
+    console.log(`   Will use SVG animation: ${playerAttackType !== "none" && !reversed && hpDiff >= 0}`);
+
     if (playerAttackType !== "none" && !reversed && hpDiff >= 0) {
+        console.log(`   🎨 USING SVG ANIMATION: ${playerAttackType}`);
         if (hpDiff === 0) {
             const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
             path.style.stroke = lineColor;
@@ -165,6 +188,7 @@ function createEffect(startElem, endElem, hpDiff, index, reversed = false) {
         }
 
         if (playerAttackType === "mage") {
+            console.log(`   🔥 Creating FIREBALL animation (color: ${playerFireballColor})`);
             const fireball = createFireballAnimation(startElem, endElem, pathD, svg, trackerSetting, reversed, playerFireballColor);
             AnimationManager.addPath(fireball);
             setTimeout(() => {
@@ -174,6 +198,7 @@ function createEffect(startElem, endElem, hpDiff, index, reversed = false) {
             return;
         }
         else if (playerAttackType === "ranged") {
+            console.log(`   🏹 Creating ARROW animation`);
             const arrow = createArrowAnimation(startElem, endElem, pathD, svg, trackerSetting, reversed);
             AnimationManager.addPath(arrow);
             setTimeout(() => {
@@ -183,6 +208,7 @@ function createEffect(startElem, endElem, hpDiff, index, reversed = false) {
             return;
         }
         else if (playerAttackType === "melee") {
+            console.log(`   ⚔️ Creating MACE animation`);
             const mace = createMaceSmashEffect(endElem, svg, trackerSetting);
             AnimationManager.addPath(mace);
             setTimeout(() => {
@@ -194,7 +220,10 @@ function createEffect(startElem, endElem, hpDiff, index, reversed = false) {
     }
 
 
+    console.log(`   ⬇️ FALLING THROUGH to default line animation (not SVG)`);
+
     if (isAllyHeal) {
+        console.log(`   💚 Using HEALING animation`);
         const healParticles = createHealingParticles(startElem, endElem, pathD, svg, trackerSetting);
         AnimationManager.addPath(healParticles);
         setTimeout(() => {
