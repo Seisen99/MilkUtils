@@ -125,8 +125,16 @@ function createHitEffect(point, container, path, hitTarget = undefined, explosio
         if (frameColor && frameBorderColor && trackerSetting) {
             console.log('✅ Entering color animation block');
             
-            // CRITICAL FIX: Force reset filter to prevent animation stacking when React reuses divs
-            hitDamage.style.filter = '';
+            // Cancel any previous filter animations on this element to prevent color stacking
+            const existingAnims = hitDamage.getAnimations();
+            console.log('🔄 Existing animations before cancel:', existingAnims.length);
+            existingAnims.forEach(anim => {
+                const keyframes = anim.effect?.getKeyframes?.() || [];
+                if (keyframes.some(kf => kf.filter)) {
+                    console.log('❌ Cancelling filter animation');
+                    anim.cancel();
+                }
+            });
             
             const hueFilter = calculateHueRotation(trackerSetting.frameR, trackerSetting.frameG, trackerSetting.frameB);
             console.log('🌈 Calculated hueFilter:', hueFilter);
@@ -146,18 +154,34 @@ function createHitEffect(point, container, path, hitTarget = undefined, explosio
                 });
                 console.log('✨ Fade animation created:', fadeAnim);
             } else {
-                // Use hue-rotate filter with very long duration to keep color stable
+                // Use hue-rotate filter with forwards fill and manual cleanup
                 console.log('🟢 Mode: Permanent color');
+                const animDuration = explosionSize < 3 ? 1500 : (explosionSize < 5 ? 1800 : 2100);
                 
                 hitDamage.animate([
                     { filter: `${hueFilter} brightness(1.2) saturate(1.5)` }
                 ], {
-                    duration: 10000, // 10s - much longer than damage display time (~2-3s)
+                    duration: animDuration,
                     fill: 'forwards',
                     easing: 'linear'
                 });
                 
-                console.log('✨ Animation created with 10s duration for stable color');
+                console.log(`✨ Animation created with duration: ${animDuration}ms`);
+                
+                // Cleanup shortly before damage text disappears
+                setTimeout(() => {
+                    if (hitDamage && hitDamage.style) {
+                        console.log('🧹 Cleaning up filter styles');
+                        // Cancel all filter animations
+                        hitDamage.getAnimations().forEach(anim => {
+                            const keyframes = anim.effect?.getKeyframes?.() || [];
+                            if (keyframes.some(kf => kf.filter)) {
+                                anim.cancel();
+                            }
+                        });
+                        hitDamage.style.filter = '';
+                    }
+                }, animDuration - 100); // Cleanup 100ms before end
             }
         } else {
             console.log('❌ NOT entering color animation block - missing params');
