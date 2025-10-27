@@ -130,50 +130,14 @@ function createHitEffect(point, container, path, hitTarget = undefined, explosio
                     fill: 'none'
                 });
             } else {
-                // Animate background and border color change
-                const animationDuration = explosionSize < 3 ? 1500 : (explosionSize < 5 ? 1800 : 2100);
+                // Use hue-rotate filter with long duration (no permanent styles)
+                const hueFilter = calculateHueRotation(trackerSetting.frameR, trackerSetting.frameG, trackerSetting.frameB);
                 hitDamage.animate([
-                    { 
-                        background: frameColor, 
-                        borderColor: frameBorderColor 
-                    }
+                    { filter: `${hueFilter} brightness(1.2) saturate(1.5)` }
                 ], {
-                    duration: animationDuration,
-                    fill: 'forwards',
+                    duration: 10000, // 10 seconds - way longer than damage display
+                    fill: 'none', // No fill:forwards to avoid permanent inline styles
                     easing: 'linear'
-                });
-                
-                // Watch for when React empties the div and clean up immediately
-                const observer = new MutationObserver(() => {
-                    if (hitDamage.innerText.trim() === '') {
-                        hitDamage.style.background = '';
-                        hitDamage.style.borderColor = '';
-                        observer.disconnect();
-                    }
-                });
-                
-                observer.observe(hitDamage, {
-                    childList: true,
-                    characterData: true,
-                    subtree: true
-                });
-                
-                // Fallback cleanup after animation duration + safety margin
-                setTimeout(() => {
-                    if (hitDamage && hitDamage.style) {
-                        hitDamage.style.background = '';
-                        hitDamage.style.borderColor = '';
-                    }
-                    observer.disconnect();
-                }, animationDuration + 500);
-                
-                // Add brightness flash effect for visual impact
-                hitDamage.animate([
-                    { filter: 'brightness(1.5)' },
-                    { filter: 'brightness(1)' }
-                ], {
-                    duration: 300,
-                    easing: 'ease-out'
                 });
             }
         }
