@@ -13,9 +13,9 @@ function waitForSetttins() {
             const insertElem = targetNode.querySelector("div#tracker_settings");
             insertElem.insertAdjacentHTML(
                 "beforeend",
-                `<div style="float: left; color: orange">${
-                    isZH ? "MWI-Avatar-Plus 设置 ：" : "MWI-Avatar-Plus Settings: "
-                }</div></br>`
+                `<div class="settings-title">${
+                    isZH ? "MWI-Avatar-Plus 设置" : "MWI-Avatar-Plus Settings"
+                }</div>`
             );
 
             for (const setting of Object.values(settingsMap)) {
@@ -40,12 +40,14 @@ function waitForSetttins() {
 function createCustomAvatarSetting(insertElem, setting) {
     insertElem.insertAdjacentHTML(
         "beforeend",
-        `<div class="tracker-option" style="margin-bottom: 10px;">
-            <input type="checkbox" data-number="${setting.id}" data-param="isTrue" ${setting.isTrue ? "checked" : ""}></input>
-            <span style="margin-right:10px">${setting.desc}</span>
-            <input type="file" id="avatar-file-input" accept="image/*" style="display:none">
-            <button id="select-avatar-btn" style="padding: 4px 12px; background: rgba(76, 175, 80, 0.8); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; margin-right: 8px;">${isZH ? "选择图片" : "Select Image"}</button>
-            <span id="avatar-file-name" style="color: #888; font-size: 11px; font-style: italic;">${setting.avatarUrl ? (isZH ? "已设置" : "Set") : (isZH ? "未选择" : "No file")}</span>
+        `<div class="tracker-option">
+            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                <input type="checkbox" data-number="${setting.id}" data-param="isTrue" ${setting.isTrue ? "checked" : ""}></input>
+                <span style="color: #fff; font-weight: 500; font-size: 14px;">${setting.desc}</span>
+                <input type="file" id="avatar-file-input" accept="image/*" style="display:none">
+                <button id="select-avatar-btn" class="settings-button">${isZH ? "📷 选择图片" : "📷 Select Image"}</button>
+                <span id="avatar-file-name" class="file-status ${setting.avatarUrl ? 'active' : ''}">${setting.avatarUrl ? (isZH ? "✓ 已设置" : "✓ Set") : (isZH ? "未选择" : "No file")}</span>
+            </div>
         </div>`
     );
 
@@ -66,8 +68,8 @@ function createCustomAvatarSetting(insertElem, setting) {
                     reader.onload = (event) => {
                         settingsMap.customAvatar.avatarUrl = event.target.result;
                         localStorage.setItem("tracker_settingsMap", JSON.stringify(settingsMap));
-                        fileName.textContent = file.name;
-                        fileName.style.color = '#4ECDC4';
+                        fileName.textContent = isZH ? `✓ ${file.name}` : `✓ ${file.name}`;
+                        fileName.classList.add('active');
                         appliedAvatars.clear();
                         setTimeout(applyCustomAvatar, 200);
                         showToast(isZH ? '头像已更新！' : 'Avatar updated!', 3000);
@@ -80,8 +82,8 @@ function createCustomAvatarSetting(insertElem, setting) {
             });
 
             if (settingsMap.customAvatar.avatarUrl) {
-                fileName.textContent = isZH ? '已设置（点击重新选择）' : 'Set (click to change)';
-                fileName.style.color = '#4ECDC4';
+                fileName.textContent = isZH ? '✓ 已设置（点击重新选择）' : '✓ Set (click to change)';
+                fileName.classList.add('active');
             }
         }
     }, 100);
@@ -93,61 +95,76 @@ function createCustomAvatarSetting(insertElem, setting) {
 function createTrackerSetting(insertElem, setting) {
     const isPlayerTracker = setting.id !== "tracker6";
 
-    let htmlContent = `<div class="tracker-option" style="margin-bottom: 15px;">
-        <div style="margin-bottom: 5px;">
+    let htmlContent = `<div class="tracker-option">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap;">
             <input type="checkbox" data-number="${setting.id}" data-param="isTrue" ${setting.isTrue ? "checked" : ""}></input>
-            <span style="margin-right:5px">${setting.desc}</span>
+            <span style="color: #fff; font-weight: 500; font-size: 14px;">${setting.desc}</span>
             <input type="checkbox" data-number="${setting.id}" data-param="isTrueH" ${setting.isTrueH ? "checked" : ""}></input>
-            <span style="margin-right:5px">${setting.descH}</span>
-            <div class="color-preview" id="colorPreview_${setting.id}"></div>${isZH ? "←线条颜色" : "←line color"}
-            <div class="color-preview" id="colorPreviewFrame_${setting.id}" style="margin-left:10px"></div>${isZH ? "←伤害框颜色" : "←damage frame color"}
+            <span style="color: #fff; font-weight: 500; font-size: 14px;">${setting.descH}</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;">
+            <div class="color-preview" id="colorPreview_${setting.id}"></div>
+            <span class="color-label">${isZH ? "线条颜色" : "Line Color"}</span>
+            <div class="color-preview" id="colorPreviewFrame_${setting.id}"></div>
+            <span class="color-label">${isZH ? "伤害框颜色" : "Damage Frame Color"}</span>
         </div>`;
 
     if (isPlayerTracker) {
         htmlContent += `
-        <div style="margin-left: 20px; margin-top: 8px; margin-bottom: 8px;">
-            <span style="color: #FFD700; font-weight: 600; margin-right: 10px;">${isZH ? "检测模式:" : "Detection Mode:"}</span>
-            <label style="margin-right: 15px; cursor: pointer;">
-                <input type="radio" name="detectionMode_${setting.id}" value="manual" ${setting.detectionMode === "manual" ? "checked" : ""}>
-                <span style="color: white;">🎮 ${isZH ? "手动" : "Manual"}</span>
-            </label>
-            <label style="cursor: pointer;">
-                <input type="radio" name="detectionMode_${setting.id}" value="auto" ${setting.detectionMode === "auto" ? "checked" : ""}>
-                <span style="color: white;">🤖 ${isZH ? "自动" : "Auto"}</span>
-            </label>
+        <div class="settings-section">
+            <div class="section-title">
+                ${isZH ? "🎯 检测模式" : "🎯 Detection Mode"}
+            </div>
+            <div class="section-content">
+                <label>
+                    <input type="radio" name="detectionMode_${setting.id}" value="manual" ${setting.detectionMode === "manual" ? "checked" : ""}>
+                    <span>🎮 ${isZH ? "手动" : "Manual"}</span>
+                </label>
+                <label>
+                    <input type="radio" name="detectionMode_${setting.id}" value="auto" ${setting.detectionMode === "auto" ? "checked" : ""}>
+                    <span>🤖 ${isZH ? "自动" : "Auto"}</span>
+                </label>
+            </div>
         </div>
-        <div id="manualSettings_${setting.id}" style="margin-left: 20px; margin-top: 5px; ${setting.detectionMode === "auto" ? "opacity: 0.4; pointer-events: none;" : ""}">
-            <span style="color: #4ECDC4; font-weight: 500; margin-right: 10px;">${isZH ? "动画类型:" : "Animation:"}</span>
-            <label style="margin-right: 10px; cursor: pointer;">
-                <input type="radio" name="attackType_${setting.id}" value="none" ${setting.attackAnimation === "none" ? "checked" : ""}>
-                <span style="color: white;">❌ ${isZH ? "无" : "None"}</span>
-            </label>
-            <label style="margin-right: 10px; cursor: pointer;">
-                <input type="radio" name="attackType_${setting.id}" value="melee" ${setting.attackAnimation === "melee" ? "checked" : ""}>
-                <span style="color: white;">⚔️ ${isZH ? "近战" : "Melee"}</span>
-            </label>
-            <label style="margin-right: 10px; cursor: pointer;">
-                <input type="radio" name="attackType_${setting.id}" value="ranged" ${setting.attackAnimation === "ranged" ? "checked" : ""}>
-                <span style="color: white;">🏹 ${isZH ? "远程" : "Ranged"}</span>
-            </label>
-            <label style="margin-right: 15px; cursor: pointer;">
-                <input type="radio" name="attackType_${setting.id}" value="mage" ${setting.attackAnimation === "mage" ? "checked" : ""}>
-                <span style="color: white;">🔮 ${isZH ? "法师" : "Mage"}</span>
-            </label>
-
-            <span style="color: #4ECDC4; font-weight: 500; margin-right: 10px;">${isZH ? "火球颜色:" : "Fireball Color:"}</span>
-            <label style="margin-right: 10px; cursor: pointer;">
-                <input type="radio" name="fireballColor_${setting.id}" value="green" ${setting.fireballColor === "green" ? "checked" : ""}>
-                <span style="color: #70e000;">🟢 ${isZH ? "绿色" : "Green"}</span>
-            </label>
-            <label style="margin-right: 10px; cursor: pointer;">
-                <input type="radio" name="fireballColor_${setting.id}" value="red" ${setting.fireballColor === "red" ? "checked" : ""}>
-                <span style="color: #ff4d4d;">🔴 ${isZH ? "红色" : "Red"}</span>
-            </label>
-            <label style="cursor: pointer;">
-                <input type="radio" name="fireballColor_${setting.id}" value="blue" ${setting.fireballColor === "blue" ? "checked" : ""}>
-                <span style="color: #4d9eff;">🔵 ${isZH ? "蓝色" : "Blue"}</span>
-            </label>
+        <div id="manualSettings_${setting.id}" class="settings-section ${setting.detectionMode === "auto" ? "disabled" : ""}">
+            <div class="section-title">
+                ${isZH ? "⚔️ 动画类型" : "⚔️ Animation Type"}
+            </div>
+            <div class="section-content" style="margin-bottom: 12px;">
+                <label>
+                    <input type="radio" name="attackType_${setting.id}" value="none" ${setting.attackAnimation === "none" ? "checked" : ""}>
+                    <span>❌ ${isZH ? "无" : "None"}</span>
+                </label>
+                <label>
+                    <input type="radio" name="attackType_${setting.id}" value="melee" ${setting.attackAnimation === "melee" ? "checked" : ""}>
+                    <span>⚔️ ${isZH ? "近战" : "Melee"}</span>
+                </label>
+                <label>
+                    <input type="radio" name="attackType_${setting.id}" value="ranged" ${setting.attackAnimation === "ranged" ? "checked" : ""}>
+                    <span>🏹 ${isZH ? "远程" : "Ranged"}</span>
+                </label>
+                <label>
+                    <input type="radio" name="attackType_${setting.id}" value="mage" ${setting.attackAnimation === "mage" ? "checked" : ""}>
+                    <span>🔮 ${isZH ? "法师" : "Mage"}</span>
+                </label>
+            </div>
+            <div class="section-title" style="margin-top: 12px;">
+                ${isZH ? "🎨 火球颜色" : "🎨 Fireball Color"}
+            </div>
+            <div class="section-content">
+                <label>
+                    <input type="radio" name="fireballColor_${setting.id}" value="green" ${setting.fireballColor === "green" ? "checked" : ""}>
+                    <span style="color: #70e000;">🟢 ${isZH ? "绿色" : "Green"}</span>
+                </label>
+                <label>
+                    <input type="radio" name="fireballColor_${setting.id}" value="red" ${setting.fireballColor === "red" ? "checked" : ""}>
+                    <span style="color: #ff4d4d;">🔴 ${isZH ? "红色" : "Red"}</span>
+                </label>
+                <label>
+                    <input type="radio" name="fireballColor_${setting.id}" value="blue" ${setting.fireballColor === "blue" ? "checked" : ""}>
+                    <span style="color: #4d9eff;">🔵 ${isZH ? "蓝色" : "Blue"}</span>
+                </label>
+            </div>
         </div>`;
     }
 
@@ -203,14 +220,12 @@ function createTrackerSetting(insertElem, setting) {
                 radio.addEventListener('change', (e) => {
                     settingsMap[setting.id].detectionMode = e.target.value;
                     
-                    // Gray out manual settings if auto is selected
+                    // Toggle disabled state for manual settings
                     const manualDiv = document.getElementById(`manualSettings_${setting.id}`);
                     if (e.target.value === "auto") {
-                        manualDiv.style.opacity = "0.4";
-                        manualDiv.style.pointerEvents = "none";
+                        manualDiv.classList.add("disabled");
                     } else {
-                        manualDiv.style.opacity = "1";
-                        manualDiv.style.pointerEvents = "auto";
+                        manualDiv.classList.remove("disabled");
                     }
                     
                     localStorage.setItem("tracker_settingsMap", JSON.stringify(settingsMap));
@@ -242,8 +257,10 @@ function createTrackerSetting(insertElem, setting) {
 function createSimpleSetting(insertElem, setting) {
     insertElem.insertAdjacentHTML(
         "beforeend",
-        `<div class="tracker-option"><input type="checkbox" data-number="${setting.id}" data-param="isTrue" ${setting.isTrue ? "checked" : ""}></input>
-    <span style="margin-right:5px">${setting.desc}</span></div>`
+        `<div class="tracker-option">
+            <input type="checkbox" data-number="${setting.id}" data-param="isTrue" ${setting.isTrue ? "checked" : ""}></input>
+            <span style="color: #fff; font-weight: 500; font-size: 14px;">${setting.desc}</span>
+        </div>`
     );
 }
 
