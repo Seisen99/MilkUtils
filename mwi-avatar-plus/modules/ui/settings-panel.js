@@ -141,7 +141,18 @@ function createTrackerSetting(insertElem, setting) {
 
     if (isPlayerTracker) {
         htmlContent += `
-        <div style="margin-left: 20px; margin-top: 5px;">
+        <div style="margin-left: 20px; margin-top: 8px; margin-bottom: 8px;">
+            <span style="color: #FFD700; font-weight: 600; margin-right: 10px;">${isZH ? "检测模式:" : "Detection Mode:"}</span>
+            <label style="margin-right: 15px; cursor: pointer;">
+                <input type="radio" name="detectionMode_${setting.id}" value="manual" ${setting.detectionMode === "manual" ? "checked" : ""}>
+                <span style="color: white;">🎮 ${isZH ? "手动" : "Manual"}</span>
+            </label>
+            <label style="cursor: pointer;">
+                <input type="radio" name="detectionMode_${setting.id}" value="auto" ${setting.detectionMode === "auto" ? "checked" : ""}>
+                <span style="color: white;">🤖 ${isZH ? "自动" : "Auto"}</span>
+            </label>
+        </div>
+        <div id="manualSettings_${setting.id}" style="margin-left: 20px; margin-top: 5px; ${setting.detectionMode === "auto" ? "opacity: 0.4; pointer-events: none;" : ""}">
             <span style="color: #4ECDC4; font-weight: 500; margin-right: 10px;">${isZH ? "动画类型:" : "Animation:"}</span>
             <label style="margin-right: 10px; cursor: pointer;">
                 <input type="radio" name="attackType_${setting.id}" value="none" ${setting.attackAnimation === "none" ? "checked" : ""}>
@@ -222,6 +233,26 @@ function createTrackerSetting(insertElem, setting) {
 
     if (isPlayerTracker) {
         setTimeout(() => {
+            // Detection mode toggle
+            const detectionRadios = document.querySelectorAll(`input[name="detectionMode_${setting.id}"]`);
+            detectionRadios.forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    settingsMap[setting.id].detectionMode = e.target.value;
+                    
+                    // Gray out manual settings if auto is selected
+                    const manualDiv = document.getElementById(`manualSettings_${setting.id}`);
+                    if (e.target.value === "auto") {
+                        manualDiv.style.opacity = "0.4";
+                        manualDiv.style.pointerEvents = "none";
+                    } else {
+                        manualDiv.style.opacity = "1";
+                        manualDiv.style.pointerEvents = "auto";
+                    }
+                    
+                    localStorage.setItem("tracker_settingsMap", JSON.stringify(settingsMap));
+                });
+            });
+
             const attackRadios = document.querySelectorAll(`input[name="attackType_${setting.id}"]`);
             attackRadios.forEach(radio => {
                 radio.addEventListener('change', (e) => {

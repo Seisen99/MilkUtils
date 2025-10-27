@@ -355,6 +355,24 @@ const ABILITIES_DATABASE = {
 // ==========================================
 
 /**
+ * Convertit un HRID WebSocket en nom d'ability de la database
+ * @param {string} hrid - Ex: "/abilities/fireball" ou "/abilities/ice_spear"
+ * @returns {string|null} - Ex: "Fireball" ou "Ice Spear"
+ */
+function formatAbilityName(hrid) {
+    if (!hrid || !hrid.startsWith('/abilities/')) return null;
+    
+    const rawName = hrid.split('/').pop(); // "fireball" ou "ice_spear"
+    
+    // Gérer snake_case: "ice_spear" → "Ice Spear"
+    // Gérer tirets: "some-ability" → "Some Ability"
+    return rawName
+        .split(/[_-]/)
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+}
+
+/**
  * Récupère les données d'une ability par son nom
  * @param {string} abilityName - Nom de l'ability
  * @returns {Object|null} - Données de l'ability ou null si non trouvée
@@ -420,6 +438,7 @@ function getAbilitiesByDamageType(damageType) {
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         ABILITIES_DATABASE,
+        formatAbilityName,
         getAbilityData,
         isOffensiveAbility,
         getFireballColor,

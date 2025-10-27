@@ -60,7 +60,22 @@ function createEffect(startElem, endElem, hpDiff, index, reversed = false) {
 
         if (index >= 0 && index <= 4) {
             const playerTrackerSetting = settingsMap["tracker" + index];
-            if (playerTrackerSetting && playerTrackerSetting.attackAnimation && playerTrackerSetting.attackAnimation !== "none") {
+            
+            // PRIORITY 1: Auto-detection (if mode is auto AND info is available)
+            if (playerTrackerSetting && 
+                playerTrackerSetting.detectionMode === "auto" && 
+                window.playersAbilityInfo && 
+                window.playersAbilityInfo[index]) {
+                
+                playerAttackType = window.playersAbilityInfo[index].animation;
+                playerFireballColor = window.playersAbilityInfo[index].fireballColor;
+                
+            // PRIORITY 2: Manual settings (mode is manual)
+            } else if (playerTrackerSetting && 
+                       playerTrackerSetting.detectionMode === "manual" &&
+                       playerTrackerSetting.attackAnimation && 
+                       playerTrackerSetting.attackAnimation !== "none") {
+                
                 playerAttackType = playerTrackerSetting.attackAnimation;
                 playerFireballColor = playerTrackerSetting.fireballColor || "green";
             }

@@ -12,6 +12,7 @@ let playersDmgCounter = [];
 let playersIsAutoAtk = []; // Track auto-attack state per player
 let playersLastAbility = []; // Track last ability cast per player
 let playersActiveDoTs = []; // Track active DoTs with remaining ticks per player
+let playersAbilityInfo = []; // Track auto-detected ability info {animation, damageType, fireballColor}
 
 // Abilities that apply Damage over Time effects
 const DOT_ABILITIES = [
@@ -137,6 +138,7 @@ function handleMessage(message) {
         playersIsAutoAtk = obj.players.map(() => false); // Initialize auto-attack state
         playersLastAbility = obj.players.map(() => null); // Initialize last ability tracker
         playersActiveDoTs = obj.players.map(() => ({ ticksRemaining: 0 })); // Initialize DoT tracker
+        playersAbilityInfo = obj.players.map(() => null); // Initialize auto-detection tracker
     } else if (obj && obj.type === "battle_updated" && monstersHP.length) {
         const mMap = obj.mMap;
         const pMap = obj.pMap;
@@ -164,6 +166,26 @@ function handleMessage(message) {
             if (playerData.hasOwnProperty('abilityHrid')) {
                 playersLastAbility[userIndex] = playerData.abilityHrid;
                 playersIsAutoAtk[userIndex] = false;
+                
+                // AUTO-DETECTION: If mode is auto, detect animation type from ability database
+                if (settingsMap["tracker"+userIndex] && settingsMap["tracker"+userIndex].detectionMode === "auto") {
+                    const abilityName = formatAbilityName(playerData.abilityHrid);
+                    const abilityData = getAbilityData(abilityName);
+                    
+                    if (abilityData && abilityData.animation !== "none") {
+                        playersAbilityInfo[userIndex] = {
+                            animation: abilityData.animation,           // "melee"/"ranged"/"mage"
+                            damageType: abilityData.damageType,         // "fire"/"water"/"nature"
+                            fireballColor: abilityData.fireballColor || "green"
+                        };
+                    } else {
+                        // Ability unknown or non-offensive → reset auto-detection
+                        playersAbilityInfo[userIndex] = null;
+                    }
+                } else {
+                    // Mode manual → reset auto-detection
+                    playersAbilityInfo[userIndex] = null;
+                }
                 
                 // If a DoT ability is cast, activate DoT tracking (2 ticks for Firestorm)
                 if (DOT_ABILITIES.includes(playerData.abilityHrid)) {
@@ -467,3 +489,4 @@ function createDotLine(playerIndex, monsterIndex, hpDiff) {
 
 // Export to global scope for Tampermonkey
 window.hookWS = hookWS;
+window.playersAbilityInfo = playersAbilityInfo;

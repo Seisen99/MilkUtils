@@ -25,6 +25,7 @@ function readSettings() {
                     if (option.frameR !== undefined) settingsMap[option.id].frameR = option.frameR;
                     if (option.frameG !== undefined) settingsMap[option.id].frameG = option.frameG;
                     if (option.frameB !== undefined) settingsMap[option.id].frameB = option.frameB;
+                    if (option.detectionMode !== undefined) settingsMap[option.id].detectionMode = option.detectionMode;
                     if (option.attackAnimation !== undefined) settingsMap[option.id].attackAnimation = option.attackAnimation;
                     if (option.fireballColor !== undefined) settingsMap[option.id].fireballColor = option.fireballColor;
                 }
