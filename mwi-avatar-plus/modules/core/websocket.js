@@ -155,7 +155,7 @@ function handleMessage(message) {
             const playerData = pMap[userIndex];
             
             // Update cast detection
-            if(playerData.cMP < playersMP[userIndex]){castPlayer = userIndex;}
+            if(playerData.cMP < playersMP[userIndex]){castPlayer = parseInt(userIndex);}
             playersMP[userIndex] = playerData.cMP;
             
             // Update auto-attack state if present in message
