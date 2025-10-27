@@ -44,11 +44,11 @@ function injectSettingsPanelStyles() {
         /* Main settings container */
         #tracker_settings {
             background: linear-gradient(135deg, rgba(30, 30, 40, 0.95), rgba(20, 20, 30, 0.95));
-            border: 1px solid rgba(255, 165, 0, 0.3);
+            border: 1px solid rgba(67, 87, 175, 0.3);
             border-radius: 12px;
             padding: 24px;
             margin-top: 20px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 165, 0, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(67, 87, 175, 0.1);
             backdrop-filter: blur(10px);
         }
 
@@ -56,10 +56,10 @@ function injectSettingsPanelStyles() {
         .settings-title {
             font-size: 18px;
             font-weight: 700;
-            color: #ff9500;
+            color: #4357af;
             margin-bottom: 20px;
             padding-bottom: 12px;
-            border-bottom: 2px solid rgba(255, 165, 0, 0.3);
+            border-bottom: 2px solid rgba(67, 87, 175, 0.3);
             display: flex;
             align-items: center;
             gap: 10px;
@@ -84,8 +84,8 @@ function injectSettingsPanelStyles() {
 
         .tracker-option:hover {
             background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 165, 0, 0.3);
-            box-shadow: 0 4px 12px rgba(255, 165, 0, 0.1);
+            border-color: rgba(67, 87, 175, 0.3);
+            box-shadow: 0 4px 12px rgba(67, 87, 175, 0.1);
         }
 
         /* Checkbox styling */
@@ -103,13 +103,13 @@ function injectSettingsPanelStyles() {
         }
 
         .tracker-option input[type="checkbox"]:hover {
-            border-color: #ff9500;
-            box-shadow: 0 0 8px rgba(255, 149, 0, 0.3);
+            border-color: #4357af;
+            box-shadow: 0 0 8px rgba(67, 87, 175, 0.3);
         }
 
         .tracker-option input[type="checkbox"]:checked {
-            background: linear-gradient(135deg, #ff9500, #ff6b00);
-            border-color: #ff9500;
+            background: linear-gradient(135deg, #4357af, #2d3e7f);
+            border-color: #4357af;
         }
 
         .tracker-option input[type="checkbox"]:checked::after {
@@ -276,9 +276,9 @@ function injectSettingsPanelStyles() {
             transform: translate(-50%, -50%);
             background: linear-gradient(135deg, rgba(30, 30, 40, 0.98), rgba(20, 20, 30, 0.98));
             padding: 28px;
-            border: 1px solid rgba(255, 165, 0, 0.3);
+            border: 1px solid rgba(67, 87, 175, 0.3);
             border-radius: 16px;
-            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5), 0 0 30px rgba(255, 165, 0, 0.2);
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5), 0 0 30px rgba(67, 87, 175, 0.2);
             z-index: 1000;
             backdrop-filter: blur(10px);
             min-width: 320px;
@@ -368,6 +368,188 @@ function injectSettingsPanelStyles() {
             pointer-events: none;
         }
 
+        /* Global Detection Mode Section */
+        .global-detection-section {
+            background: rgba(67, 87, 175, 0.1);
+            border: 1px solid rgba(67, 87, 175, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .global-detection-title {
+            color: #4357af;
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .global-detection-options {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        /* Avatar Section */
+        .avatar-section {
+            background: rgba(78, 205, 196, 0.05);
+            border: 1px solid rgba(78, 205, 196, 0.2);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .avatar-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .avatar-preview-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 150px;
+            height: 150px;
+            margin: 0 auto;
+            border: 2px solid rgba(78, 205, 196, 0.3);
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .avatar-preview-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .avatar-placeholder {
+            color: #666;
+            font-size: 13px;
+            text-align: center;
+            font-style: italic;
+        }
+
+        /* Collapsible Card Styles */
+        .settings-category-title {
+            color: #4357af;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 24px 0 12px 0;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(67, 87, 175, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .collapsible-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            margin-bottom: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .collapsible-card:hover {
+            border-color: rgba(67, 87, 175, 0.3);
+            box-shadow: 0 2px 8px rgba(67, 87, 175, 0.1);
+        }
+
+        .collapsible-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 16px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.03);
+            transition: background 0.2s ease;
+            user-select: none;
+        }
+
+        .collapsible-header:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .collapsible-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .collapsible-title {
+            color: #fff;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .collapsible-badge {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-auto {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+
+        .badge-manual {
+            background: rgba(255, 193, 7, 0.2);
+            color: #FFC107;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        .collapsible-icon {
+            color: #4357af;
+            font-size: 18px;
+            transition: transform 0.3s ease;
+        }
+
+        .collapsible-card.expanded .collapsible-icon {
+            transform: rotate(180deg);
+        }
+
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .collapsible-card.expanded .collapsible-content {
+            max-height: 600px;
+        }
+
+        .collapsible-inner {
+            padding: 16px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        /* Player card specific styles */
+        .player-card {
+            border-left: 3px solid;
+        }
+
+        .player-card.player-0 { border-left-color: rgb(255, 99, 132); }
+        .player-card.player-1 { border-left-color: rgb(54, 162, 235); }
+        .player-card.player-2 { border-left-color: rgb(255, 206, 86); }
+        .player-card.player-3 { border-left-color: rgb(75, 192, 192); }
+        .player-card.player-4 { border-left-color: rgb(153, 102, 255); }
+        .player-card.enemy-card { border-left-color: rgb(255, 0, 0); }
+
         /* Responsive adjustments */
         @media (max-width: 768px) {
             #tracker_settings {
@@ -381,6 +563,11 @@ function injectSettingsPanelStyles() {
             .section-content {
                 flex-direction: column;
                 align-items: flex-start;
+            }
+
+            .avatar-preview-container {
+                width: 120px;
+                height: 120px;
             }
         }
     `;
