@@ -23,6 +23,7 @@ const DOT_ABILITIES = [
 
 /**
  * Get player name by their index in battle
+ * Uses the same detection method as avatar-manager.js
  * @param {number} playerIndex - Player index (0-4)
  * @returns {string|null} Player name or null
  */
@@ -30,10 +31,10 @@ function getPlayerNameByIndex(playerIndex) {
     const battlePanel = document.querySelector('.BattlePanel_playersArea__vvwlB');
     if (!battlePanel) return null;
     
-    const playerUnits = battlePanel.querySelectorAll('.CombatUnit_combatUnit__1G_Qp');
-    if (playerUnits[playerIndex]) {
-        const nameElem = playerUnits[playerIndex].querySelector('.CombatUnit_name__1SlO1');
-        return nameElem ? nameElem.textContent.trim() : null;
+    // Use the SAME method as avatar-manager.js (which works!)
+    const allCombatNames = battlePanel.querySelectorAll('.CombatUnit_name__1SlO1');
+    if (allCombatNames[playerIndex]) {
+        return allCombatNames[playerIndex].textContent.trim();
     }
     return null;
 }
