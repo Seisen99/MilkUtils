@@ -432,9 +432,16 @@ function getAbilitiesByDamageType(damageType) {
 // ==========================================
 // EXPORTS (pour utilisation dans d'autres modules si nécessaire)
 // ==========================================
-// Note: Dans le contexte Tampermonkey, ces fonctions seront disponibles
-// globalement car le script s'exécute dans le scope global de la page
+// Export to global scope for Tampermonkey
+window.ABILITIES_DATABASE = ABILITIES_DATABASE;
+window.formatAbilityName = formatAbilityName;
+window.getAbilityData = getAbilityData;
+window.isOffensiveAbility = isOffensiveAbility;
+window.getFireballColor = getFireballColor;
+window.getAbilitiesByCategory = getAbilitiesByCategory;
+window.getAbilitiesByDamageType = getAbilitiesByDamageType;
 
+// Export for Node.js modules if needed
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         ABILITIES_DATABASE,

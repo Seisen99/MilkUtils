@@ -20,7 +20,7 @@
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/feature/auto-detection-animations/mwi-avatar-plus/modules/ui/settings-panel.js?v=2
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/feature/auto-detection-animations/mwi-avatar-plus/modules/avatar/avatar-manager.js?v=1
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/feature/auto-detection-animations/mwi-avatar-plus/modules/avatar/avatar-observer.js?v=1
-// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/feature/auto-detection-animations/mwi-avatar-plus/abilities_database.js?v=1
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/feature/auto-detection-animations/mwi-avatar-plus/abilities_database.js?v=2
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/feature/auto-detection-animations/mwi-avatar-plus/modules/animations/utils/svg-paths.js?v=1
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/feature/auto-detection-animations/mwi-avatar-plus/modules/animations/animation-manager.js?v=1
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/feature/auto-detection-animations/mwi-avatar-plus/modules/animations/effects/miss-effect.js?v=1
