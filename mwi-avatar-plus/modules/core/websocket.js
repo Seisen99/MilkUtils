@@ -218,7 +218,7 @@ function handleMessage(message) {
                             const isDot = (castPlayer === -1) && hasDotActive && !isAutoAttack;
                             
                             // Animate if: it's a DoT OR it's the player who cast
-                            if (isDot || userIndex === castPlayer) {
+                            if (isDot || parseInt(userIndex) === castPlayer) {
                                 if (isDot) {
                                     // DoT damage - show burn effect
                                     // Log only if animations are enabled for this player
