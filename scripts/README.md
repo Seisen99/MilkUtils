@@ -4,17 +4,6 @@ Collection of independent userscripts for Milky Way Idle.
 
 ## 📜 Available Scripts
 
-### abilities_database.js
-Database and utility functions for managing abilities in the game.
-
-**Features:**
-- Ability data management
-- Quick lookup functions
-
-**Installation:**
-Copy the script content into a new Tampermonkey userscript.
-
----
 
 ### bulk_inventory_seller.js
 Bulk selling functionality for inventory management.
