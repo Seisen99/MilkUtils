@@ -31,7 +31,7 @@
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/feature/auto-detection-animations/mwi-avatar-plus/modules/animations/projectiles/arrow.js?v=1
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/feature/auto-detection-animations/mwi-avatar-plus/modules/animations/projectiles/melee.js?v=1
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/feature/auto-detection-animations/mwi-avatar-plus/modules/animations/effect-coordinator.js?v=3
-// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/feature/auto-detection-animations/mwi-avatar-plus/modules/core/websocket.js?v=20
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/feature/auto-detection-animations/mwi-avatar-plus/modules/core/websocket.js?v=21
 // ==/UserScript==
 
 (function() {

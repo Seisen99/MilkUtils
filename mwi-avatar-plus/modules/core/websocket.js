@@ -144,9 +144,14 @@ function handleMessage(message) {
         playersActiveDoTs = obj.players.map(() => ({ ticksRemaining: 0 })); // Initialize DoT tracker
         playersAbilityInfo = obj.players.map(() => null); // Initialize auto-detection tracker
         
+        // Re-export to window after creating new arrays (critical for external access)
+        window.playersAbilityInfo = playersAbilityInfo;
+        window.playersLastAbility = playersLastAbility;
+        
         console.log('✅ new_battle: Initialized arrays for', obj.players.length, 'players');
         console.log('   playersAbilityInfo:', playersAbilityInfo);
         console.log('   playersLastAbility:', playersLastAbility);
+        console.log('   window.playersAbilityInfo:', window.playersAbilityInfo);
     } else if (obj && obj.type === "battle_updated" && monstersHP.length) {
         const mMap = obj.mMap;
         const pMap = obj.pMap;
