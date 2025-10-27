@@ -50,20 +50,14 @@ function getColorForPlayer(playerIndex) {
         const playerNameAtIndex = getPlayerNameByIndex(playerIndex);
         const myPlayerName = getPlayerName();
         
-        console.log(`🎨 getColorForPlayer(${playerIndex}):`, {
-            myCharacterColorEnabled: settingsMap.myCharacterColor.isTrue,
-            playerNameAtIndex,
-            myPlayerName,
-            match: playerNameAtIndex === myPlayerName
-        });
-        
         // If this player is the current user's character, use My Character Color
         if (playerNameAtIndex && myPlayerName && playerNameAtIndex === myPlayerName) {
-            console.log(`   ✅ Using My Character Color for player ${playerIndex}`, {
-                r: settingsMap.myCharacterColor.r,
-                g: settingsMap.myCharacterColor.g,
-                b: settingsMap.myCharacterColor.b
-            });
+            // Cache player position for UI display (persists when battle panel is hidden)
+            window.cachedPlayerPosition = {
+                name: myPlayerName,
+                index: playerIndex,
+                lastUpdate: Date.now()
+            };
             
             // Get base tracker settings to preserve animation settings
             const baseTracker = settingsMap["tracker" + playerIndex] || {};
@@ -201,8 +195,8 @@ function handleMessage(message) {
     
     let obj = JSON.parse(message);
     
-    // 🔍 DEBUG: Log all WebSocket messages
-    console.log('📨 WebSocket Message:', obj);
+    // 🔍 DEBUG: Log all WebSocket messages (COMMENTED - too verbose)
+    // console.log('📨 WebSocket Message:', obj);
     
     if (obj && obj.type === "new_battle") {
         // Only initialize if this is ACTUALLY a new battle (different battleId)
@@ -253,10 +247,10 @@ function handleMessage(message) {
         const monsterIndices = Object.keys(obj.mMap);
         const playerIndices = Object.keys(obj.pMap);
 
-        // 🔍 DEBUG: Log player map when present
-        if (Object.keys(pMap).length > 0) {
-            console.log('👥 pMap:', pMap);
-        }
+        // 🔍 DEBUG: Log player map when present (COMMENTED - too verbose)
+        // if (Object.keys(pMap).length > 0) {
+        //     console.log('👥 pMap:', pMap);
+        // }
 
         let castMonster = -1;
         monsterIndices.forEach((monsterIndex) => {
@@ -274,23 +268,23 @@ function handleMessage(message) {
             // Update auto-attack state if present in message
             if (playerData.hasOwnProperty('isAutoAtk')) {
                 playersIsAutoAtk[userIndex] = playerData.isAutoAtk;
-                console.log(`🤖 Player ${userIndex} isAutoAtk:`, playerData.isAutoAtk);
+                // console.log(`🤖 Player ${userIndex} isAutoAtk:`, playerData.isAutoAtk);
             }
             // If abilityHrid is present, track it and set auto-attack to false
             if (playerData.hasOwnProperty('abilityHrid')) {
                 playersLastAbility[userIndex] = playerData.abilityHrid;
                 playersIsAutoAtk[userIndex] = false;
                 
-                console.log(`✨ Player ${userIndex} cast ability:`, playerData.abilityHrid);
-                console.log(`   Detection mode for tracker${userIndex}:`, settingsMap["tracker"+userIndex]?.detectionMode);
+                // console.log(`✨ Player ${userIndex} cast ability:`, playerData.abilityHrid);
+                // console.log(`   Detection mode for tracker${userIndex}:`, settingsMap["tracker"+userIndex]?.detectionMode);
                 
                 // AUTO-DETECTION: If mode is auto, detect animation type from ability database
                 if (settingsMap["tracker"+userIndex] && settingsMap["tracker"+userIndex].detectionMode === "auto") {
                     const abilityName = formatAbilityName(playerData.abilityHrid);
                     const abilityData = getAbilityData(abilityName);
                     
-                    console.log(`   🔍 Auto-detection: "${playerData.abilityHrid}" → "${abilityName}"`);
-                    console.log(`   📖 Ability data:`, abilityData);
+                    // console.log(`   🔍 Auto-detection: "${playerData.abilityHrid}" → "${abilityName}"`);
+                    // console.log(`   📖 Ability data:`, abilityData);
                     
                     if (abilityData && abilityData.animation !== "none") {
                         playersAbilityInfo[userIndex] = {
@@ -298,10 +292,10 @@ function handleMessage(message) {
                             damageType: abilityData.damageType,         // "fire"/"water"/"nature"
                             fireballColor: abilityData.fireballColor || "green"
                         };
-                        console.log(`   ✅ Auto-detected animation for player ${userIndex}:`, playersAbilityInfo[userIndex]);
+                        // console.log(`   ✅ Auto-detected animation for player ${userIndex}:`, playersAbilityInfo[userIndex]);
                     } else {
                         // Ability is buff/support/unknown → KEEP previous animation (don't reset)
-                        console.log(`   ⚠️ Non-offensive ability "${abilityName}" - keeping previous animation:`, playersAbilityInfo[userIndex]);
+                        // console.log(`   ⚠️ Non-offensive ability "${abilityName}" - keeping previous animation:`, playersAbilityInfo[userIndex]);
                     }
                 }
                 // Note: Manual mode doesn't touch playersAbilityInfo (handled in effect-coordinator)

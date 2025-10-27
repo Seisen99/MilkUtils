@@ -52,9 +52,6 @@ function waitForSetttins() {
             createOtherSettingsSection(insertElem);
 
             insertElem.addEventListener("change", saveSettings);
-            
-            // Start updating YOU badges periodically
-            setInterval(updateAllYouBadges, 500);
         }
     }
     setTimeout(waitForSetttins, 500);
@@ -182,6 +179,9 @@ function createMyCharacterColorSection(insertElem, setting) {
                 <input type="checkbox" data-number="${setting.id}" data-param="isTrue" ${setting.isTrue ? "checked" : ""}></input>
                 <span style="color: #fff; font-weight: 500; font-size: 14px;">${setting.desc}</span>
             </div>
+            <div id="my-character-status" style="color: #C084FC; font-size: 12px; margin: 12px 0; padding: 10px 14px; background: linear-gradient(135deg, rgba(147, 51, 234, 0.15), rgba(168, 85, 247, 0.1)); border-radius: 8px; border: 1px solid rgba(147, 51, 234, 0.3); display: none;">
+                <span style="font-weight: 600;">📍 Currently applied to:</span> <span id="my-character-info">—</span>
+            </div>
             <div style="display: flex; align-items: center; gap: 12px;">
                 <div class="color-preview" id="colorPreview_${setting.id}"></div>
                 <span class="color-label">${isZH ? "选择你的颜色" : "Choose Your Color"}</span>
@@ -191,6 +191,8 @@ function createMyCharacterColorSection(insertElem, setting) {
 
     setTimeout(() => {
         setupMyCharacterColorPicker(setting);
+        // Start updating character position info periodically
+        setInterval(updateMyCharacterInfo, 500);
     }, 100);
 }
 
@@ -361,7 +363,6 @@ function createCollapsiblePlayerCard(insertElem, setting, playerIndex) {
                 <div class="collapsible-header-left">
                     <span class="collapsible-title">🎮 ${isZH ? `玩家 #${playerIndex + 1}` : `Player #${playerIndex + 1}`}</span>
                     <span class="collapsible-badge ${badgeClass}" id="badge_tracker${playerIndex}">${badgeText}</span>
-                    <span class="you-badge" id="you_badge_tracker${playerIndex}" style="display: none;">👤 YOU</span>
                 </div>
                 <span class="collapsible-icon">${isExpanded ? '▲' : '▼'}</span>
             </div>
@@ -389,46 +390,32 @@ function createCollapsiblePlayerCard(insertElem, setting, playerIndex) {
                 icon.textContent = card.classList.contains('expanded') ? '▲' : '▼';
             });
         }
-        
-        // Update YOU badge periodically (check every 500ms if in battle)
-        updateYouBadge(playerIndex);
     }, 100);
 }
 
 /**
- * Update the "YOU" badge on player cards
+ * Update My Character position info display
  */
-function updateYouBadge(playerIndex) {
-    const badge = document.getElementById(`you_badge_tracker${playerIndex}`);
-    if (!badge) {
-        console.log(`❌ Badge not found for player ${playerIndex}`);
+function updateMyCharacterInfo() {
+    const statusDiv = document.getElementById('my-character-status');
+    const infoSpan = document.getElementById('my-character-info');
+    
+    if (!statusDiv || !infoSpan) return;
+    
+    // Check if My Character Color is enabled
+    if (!settingsMap.myCharacterColor?.isTrue) {
+        statusDiv.style.display = 'none';
         return;
     }
     
-    // Get player name from battle panel (only works during combat)
-    const playerNameAtIndex = window.getPlayerNameByIndex ? window.getPlayerNameByIndex(playerIndex) : null;
-    const myPlayerName = window.getPlayerName ? window.getPlayerName() : null;
+    // Get cached position from window.cachedPlayerPosition (set by getColorForPlayer during combat)
+    const cached = window.cachedPlayerPosition;
     
-    console.log(`👤 Checking YOU badge for player ${playerIndex}:`, {
-        playerNameAtIndex,
-        myPlayerName,
-        match: playerNameAtIndex === myPlayerName
-    });
-    
-    if (playerNameAtIndex && myPlayerName && playerNameAtIndex === myPlayerName) {
-        console.log(`   ✅ Showing YOU badge for player ${playerIndex}`);
-        badge.style.display = 'inline-block';
+    if (cached && cached.name && cached.index !== null) {
+        statusDiv.style.display = 'block';
+        infoSpan.textContent = `${cached.name} (Player #${cached.index + 1})`;
     } else {
-        badge.style.display = 'none';
-    }
-}
-
-/**
- * Update all YOU badges periodically (called every 500ms)
- */
-function updateAllYouBadges() {
-    for (let i = 0; i <= 4; i++) {
-        updateYouBadge(i);
+        statusDiv.style.display = 'none';
     }
 }
 
