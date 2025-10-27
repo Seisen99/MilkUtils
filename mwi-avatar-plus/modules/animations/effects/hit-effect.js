@@ -130,9 +130,9 @@ function createHitEffect(point, container, path, hitTarget = undefined, explosio
                     fill: 'none'
                 });
             } else {
-                // Animate background and border color change (prevents ghost frames)
+                // Animate background and border color change
                 const animationDuration = explosionSize < 3 ? 1500 : (explosionSize < 5 ? 1800 : 2100);
-                const colorAnimation = hitDamage.animate([
+                hitDamage.animate([
                     { 
                         background: frameColor, 
                         borderColor: frameBorderColor 
@@ -143,13 +143,29 @@ function createHitEffect(point, container, path, hitTarget = undefined, explosio
                     easing: 'linear'
                 });
                 
-                // Clean up when animation ends to prevent ghost frames from accumulating
-                colorAnimation.onfinish = () => {
+                // Watch for when React empties the div and clean up immediately
+                const observer = new MutationObserver(() => {
+                    if (hitDamage.innerText.trim() === '') {
+                        hitDamage.style.background = '';
+                        hitDamage.style.borderColor = '';
+                        observer.disconnect();
+                    }
+                });
+                
+                observer.observe(hitDamage, {
+                    childList: true,
+                    characterData: true,
+                    subtree: true
+                });
+                
+                // Fallback cleanup after animation duration + safety margin
+                setTimeout(() => {
                     if (hitDamage && hitDamage.style) {
                         hitDamage.style.background = '';
                         hitDamage.style.borderColor = '';
                     }
-                };
+                    observer.disconnect();
+                }, animationDuration + 500);
                 
                 // Add brightness flash effect for visual impact
                 hitDamage.animate([
