@@ -130,9 +130,26 @@ function createHitEffect(point, container, path, hitTarget = undefined, explosio
                     fill: 'none'
                 });
             } else {
-                // Directly change background and border color permanently
-                hitDamage.style.background = frameColor;
-                hitDamage.style.borderColor = frameBorderColor;
+                // Animate background and border color change (prevents ghost frames)
+                const animationDuration = explosionSize < 3 ? 1500 : (explosionSize < 5 ? 1800 : 2100);
+                const colorAnimation = hitDamage.animate([
+                    { 
+                        background: frameColor, 
+                        borderColor: frameBorderColor 
+                    }
+                ], {
+                    duration: animationDuration,
+                    fill: 'forwards',
+                    easing: 'linear'
+                });
+                
+                // Clean up when animation ends to prevent ghost frames from accumulating
+                colorAnimation.onfinish = () => {
+                    if (hitDamage && hitDamage.style) {
+                        hitDamage.style.background = '';
+                        hitDamage.style.borderColor = '';
+                    }
+                };
                 
                 // Add brightness flash effect for visual impact
                 hitDamage.animate([
