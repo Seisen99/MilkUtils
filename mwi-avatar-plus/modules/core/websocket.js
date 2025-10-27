@@ -221,33 +221,11 @@ function handleMessage(message) {
                             if (isDot || parseInt(userIndex) === castPlayer) {
                                 if (isDot) {
                                     // DoT damage - show burn effect
-                                    // Log only if animations are enabled for this player
-                                    if (settingsMap["tracker"+userIndex].isTrue) {
-                                        console.log(`💀 PLAYER ${userIndex} DOT:`, {
-                                            castPlayer, 
-                                            dotAbility: playersActiveDoTs[userIndex].ability,
-                                            ticksRemaining: playersActiveDoTs[userIndex].ticksRemaining,
-                                            mIndex, 
-                                            hpDiff, 
-                                            dmgCounter: monster.dmgCounter
-                                        });
-                                    }
                                     createDotLine(userIndex, mIndex, hpDiff);
                                     // Consume one DoT tick
                                     playersActiveDoTs[userIndex].ticksRemaining--;
                                 } else {
                                     // Normal cast or auto-attack - show projectile
-                                    // Log only if animations are enabled for this player
-                                    if (settingsMap["tracker"+userIndex].isTrue) {
-                                        console.log(`🔥 PLAYER ${userIndex} ATTACK:`, {
-                                            castPlayer, 
-                                            lastAbility: playersLastAbility[userIndex],
-                                            mIndex, 
-                                            hpDiff, 
-                                            isAutoAttack, 
-                                            dmgCounter: monster.dmgCounter
-                                        });
-                                    }
                                     createLine(userIndex, mIndex, hpDiff);
                                 }
                             }
@@ -261,33 +239,11 @@ function handleMessage(message) {
                         
                         if (isDot) {
                             // DoT damage in solo
-                            // Log only if animations are enabled for this player
-                            if (settingsMap["tracker"+userIndex].isTrue) {
-                                console.log(`💀 PLAYER ${userIndex} DOT (solo):`, {
-                                    castPlayer, 
-                                    dotAbility: playersActiveDoTs[userIndex].ability,
-                                    ticksRemaining: playersActiveDoTs[userIndex].ticksRemaining,
-                                    mIndex, 
-                                    hpDiff, 
-                                    dmgCounter: monster.dmgCounter
-                                });
-                            }
                             createDotLine(userIndex, mIndex, hpDiff);
                             // Consume one DoT tick
                             playersActiveDoTs[userIndex].ticksRemaining--;
                         } else {
                             // Normal cast or auto-attack
-                            // Log only if animations are enabled for this player
-                            if (settingsMap["tracker"+userIndex].isTrue) {
-                                console.log(`🔥 PLAYER ${userIndex} ATTACK (solo):`, {
-                                    castPlayer, 
-                                    lastAbility: playersLastAbility[userIndex],
-                                    mIndex, 
-                                    hpDiff, 
-                                    isAutoAttack, 
-                                    dmgCounter: monster.dmgCounter
-                                });
-                            }
                             createLine(userIndex, mIndex, hpDiff);
                         }
                     }
