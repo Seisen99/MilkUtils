@@ -19,6 +19,76 @@ const DOT_ABILITIES = [
     '/abilities/firestorm'  // Burn DoT (fire magic) - 2 ticks after cast
 ];
 
+// WebSocket timing logger
+let wsTimingLogger = {
+    enabled: true, // Set to false to disable timing logs
+    lastMessageTime: 0,
+    intervals: [],
+    messageCount: 0,
+    startTime: 0,
+    
+    reset() {
+        this.lastMessageTime = 0;
+        this.intervals = [];
+        this.messageCount = 0;
+        this.startTime = Date.now();
+    },
+    
+    logMessage() {
+        if (!this.enabled) return;
+        
+        const now = Date.now();
+        this.messageCount++;
+        
+        if (this.startTime === 0) {
+            this.startTime = now;
+        }
+        
+        if (this.lastMessageTime > 0) {
+            const interval = now - this.lastMessageTime;
+            this.intervals.push(interval);
+            
+            // Log every 10th message to avoid spam
+            if (this.messageCount % 10 === 0) {
+                const avgInterval = this.intervals.reduce((a, b) => a + b, 0) / this.intervals.length;
+                const minInterval = Math.min(...this.intervals);
+                const maxInterval = Math.max(...this.intervals);
+                const elapsed = ((now - this.startTime) / 1000).toFixed(1);
+                const frequency = (this.messageCount / ((now - this.startTime) / 1000)).toFixed(2);
+                
+                console.log(`⏱️ WebSocket Stats (${this.messageCount} messages, ${elapsed}s):`, {
+                    avgInterval: `${avgInterval.toFixed(0)}ms`,
+                    minInterval: `${minInterval}ms`,
+                    maxInterval: `${maxInterval}ms`,
+                    frequency: `${frequency} msg/s`
+                });
+            }
+        }
+        
+        this.lastMessageTime = now;
+    },
+    
+    getStats() {
+        const now = Date.now();
+        const elapsed = (now - this.startTime) / 1000;
+        const avgInterval = this.intervals.length > 0 
+            ? this.intervals.reduce((a, b) => a + b, 0) / this.intervals.length 
+            : 0;
+        
+        return {
+            messageCount: this.messageCount,
+            elapsedTime: elapsed.toFixed(1) + 's',
+            avgInterval: avgInterval.toFixed(0) + 'ms',
+            frequency: (this.messageCount / elapsed).toFixed(2) + ' msg/s',
+            minInterval: this.intervals.length > 0 ? Math.min(...this.intervals) + 'ms' : 'N/A',
+            maxInterval: this.intervals.length > 0 ? Math.max(...this.intervals) + 'ms' : 'N/A'
+        };
+    }
+};
+
+// Expose to global scope for manual control
+window.wsTimingLogger = wsTimingLogger;
+
 /**
  * Hook into WebSocket to intercept battle messages
  */
@@ -51,8 +121,13 @@ function hookWS() {
  * @returns {string} The original message
  */
 function handleMessage(message) {
+    // Log WebSocket timing
+    wsTimingLogger.logMessage();
+    
     let obj = JSON.parse(message);
     if (obj && obj.type === "new_battle") {
+        // Reset timing stats on new battle
+        wsTimingLogger.reset();
         monstersHP = obj.monsters.map((monster) => monster.currentHitpoints);
         monstersMP = obj.monsters.map((monster) => monster.currentManapoints);
         monstersDmgCounter = obj.monsters.map((monster) => monster.damageSplatCounter);
