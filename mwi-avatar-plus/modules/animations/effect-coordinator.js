@@ -23,9 +23,6 @@ function createEffect(startElem, endElem, hpDiff, index, reversed = false) {
             const dmgDivs = dmgContainer.querySelectorAll('div');
             for (const div of dmgDivs) {
                 if (div.innerText.trim() === '') {
-                    // Block React's red frame from showing by hiding div immediately
-                    div.style.visibility = 'hidden';
-                    div.dataset.customDamage = hpDiff.toString(); // Store damage value
                     startElem = div;
                     hitDamage = div;
                     break;
@@ -41,9 +38,6 @@ function createEffect(startElem, endElem, hpDiff, index, reversed = false) {
             const dmgDivs = dmgContainer.querySelectorAll('div');
             for (const div of dmgDivs) {
                 if (div.innerText.trim() === '') {
-                    // Block React's red frame from showing by hiding div immediately
-                    div.style.visibility = 'hidden';
-                    div.dataset.customDamage = hpDiff.toString(); // Store damage value
                     endElem = div;
                     hitDamage = div;
                     break;
@@ -204,7 +198,7 @@ function createEffect(startElem, endElem, hpDiff, index, reversed = false) {
             AnimationManager.addPath(fireball);
             setTimeout(() => {
                 const endXY = pathD.split(', ')[1].split(' ');
-                createHitEffect({x:endXY[0], y:endXY[1]}, svg, fireball, hitTarget, explosionSize, hitDamage, frameColor, frameBorderColor, trackerSetting, hpDiff);
+                createHitEffect({x:endXY[0], y:endXY[1]}, svg, fireball, hitTarget, explosionSize, hitDamage, frameColor, frameBorderColor, trackerSetting);
             }, 500);
             return;
         }
@@ -214,7 +208,7 @@ function createEffect(startElem, endElem, hpDiff, index, reversed = false) {
             AnimationManager.addPath(arrow);
             setTimeout(() => {
                 const endXY = pathD.split(', ')[1].split(' ');
-                createHitEffect({x:endXY[0], y:endXY[1]}, svg, arrow, hitTarget, explosionSize, hitDamage, frameColor, frameBorderColor, trackerSetting, hpDiff);
+                createHitEffect({x:endXY[0], y:endXY[1]}, svg, arrow, hitTarget, explosionSize, hitDamage, frameColor, frameBorderColor, trackerSetting);
             }, 500);
             return;
         }
@@ -224,7 +218,7 @@ function createEffect(startElem, endElem, hpDiff, index, reversed = false) {
             AnimationManager.addPath(mace);
             setTimeout(() => {
                 const endXY = pathD.split(', ')[1].split(' ');
-                createHitEffect({x:endXY[0], y:endXY[1]}, svg, mace, hitTarget, explosionSize, hitDamage, frameColor, frameBorderColor, trackerSetting, hpDiff);
+                createHitEffect({x:endXY[0], y:endXY[1]}, svg, mace, hitTarget, explosionSize, hitDamage, frameColor, frameBorderColor, trackerSetting);
             }, 300);
             return;
         }
@@ -292,7 +286,7 @@ function createEffect(startElem, endElem, hpDiff, index, reversed = false) {
             path.style.transition = 'stroke-dashoffset 0.1s linear';
             path.style.strokeDashoffset = '0';
             path.addEventListener('transitionend', () => {
-                createHitEffect({x:endXY[0], y:endXY[1]}, svg, path, hitTarget, explosionSize, hitDamage, frameColor, frameBorderColor, trackerSetting, hpDiff);
+                createHitEffect({x:endXY[0], y:endXY[1]}, svg, path, hitTarget, explosionSize, hitDamage, frameColor, frameBorderColor, trackerSetting);
             }, {once: true});
         });
     }

@@ -13,9 +13,8 @@
  * @param {string} frameColor - Frame color for damage
  * @param {string} frameBorderColor - Border color for damage
  * @param {Object} trackerSetting - Tracker settings object
- * @param {number} hpDiff - HP difference (damage amount)
  */
-function createHitEffect(point, container, path, hitTarget = undefined, explosionSize = 1, hitDamage = undefined, frameColor = undefined, frameBorderColor = undefined, trackerSetting = undefined, hpDiff = undefined) {
+function createHitEffect(point, container, path, hitTarget = undefined, explosionSize = 1, hitDamage = undefined, frameColor = undefined, frameBorderColor = undefined, trackerSetting = undefined) {
     if (!settingsMap.moreEffect.isTrue) {
         return null;
     }
@@ -124,15 +123,18 @@ function createHitEffect(point, container, path, hitTarget = undefined, explosio
         console.log('🔍 DEBUG hitDamage innerText:', hitDamage.innerText);
 
         if (frameColor && frameBorderColor && trackerSetting) {
-            console.log('✅ Entering color customization block');
+            console.log('✅ Entering color animation block');
+            
+            // CRITICAL FIX: Force reset filter to prevent animation stacking when React reuses divs
+            hitDamage.style.filter = '';
+            
+            const hueFilter = calculateHueRotation(trackerSetting.frameR, trackerSetting.frameG, trackerSetting.frameB);
+            console.log('🌈 Calculated hueFilter:', hueFilter);
             console.log('🎚️ keepOriginalDamageColor:', settingsMap.keepOriginalDamageColor.isTrue);
-            console.log('💯 hpDiff value:', hpDiff);
             
             if (settingsMap.keepOriginalDamageColor.isTrue) {
-                // Mode: Keep original red frame with hue-rotate animation
-                console.log('🔴 Mode: Original damage color (red)');
-                hitDamage.style.filter = '';
-                const hueFilter = calculateHueRotation(trackerSetting.frameR, trackerSetting.frameG, trackerSetting.frameB);
+                // Use hue-rotate filter for temporary color change (returns to red)
+                console.log('🔴 Mode: Fade to red');
                 const fadeAnim = hitDamage.animate([
                     { filter: `${hueFilter} brightness(1.2) saturate(1.5)`, offset: 0 },
                     { filter: `${hueFilter} brightness(1.2) saturate(1.5)`, offset: 0.85 },
@@ -143,34 +145,19 @@ function createHitEffect(point, container, path, hitTarget = undefined, explosio
                     fill: 'none'
                 });
                 console.log('✨ Fade animation created:', fadeAnim);
-            } else if (hpDiff !== undefined) {
-                // Mode: Custom colored text only (no frame)
-                console.log('🎨 Mode: Custom damage text');
-                
-                // Clear the div and inject custom styled text
-                hitDamage.innerHTML = '';
-                hitDamage.textContent = hpDiff.toString();
-                hitDamage.style.cssText = `
-                    visibility: visible !important;
-                    color: rgb(${trackerSetting.frameR}, ${trackerSetting.frameG}, ${trackerSetting.frameB}) !important;
-                    font-weight: bold !important;
-                    font-size: 14px !important;
-                    text-align: center !important;
-                    text-shadow: 
-                        1px 1px 2px rgba(0,0,0,0.8),
-                        -1px -1px 2px rgba(0,0,0,0.8),
-                        1px -1px 2px rgba(0,0,0,0.8),
-                        -1px 1px 2px rgba(0,0,0,0.8) !important;
-                    background: none !important;
-                    border: none !important;
-                    padding: 0 !important;
-                    display: flex !important;
-                    align-items: center !important;
-                    justify-content: center !important;
-                `;
-                console.log(`✨ Custom damage text: ${hpDiff} in RGB(${trackerSetting.frameR}, ${trackerSetting.frameG}, ${trackerSetting.frameB})`);
             } else {
-                console.log('⚠️ hpDiff is undefined, cannot display custom text');
+                // Use hue-rotate filter with very long duration to keep color stable
+                console.log('🟢 Mode: Permanent color');
+                
+                hitDamage.animate([
+                    { filter: `${hueFilter} brightness(1.2) saturate(1.5)` }
+                ], {
+                    duration: 10000, // 10s - much longer than damage display time (~2-3s)
+                    fill: 'forwards',
+                    easing: 'linear'
+                });
+                
+                console.log('✨ Animation created with 10s duration for stable color');
             }
         } else {
             console.log('❌ NOT entering color animation block - missing params');
