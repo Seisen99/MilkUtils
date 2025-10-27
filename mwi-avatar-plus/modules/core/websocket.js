@@ -3,6 +3,7 @@
  */
 
 // Battle state tracking
+let currentBattleId = null; // Track current battle to avoid re-initialization
 let monstersHP = [];
 let monstersMP = [];
 let monstersDmgCounter = [];
@@ -131,27 +132,34 @@ function handleMessage(message) {
     console.log('📨 WebSocket Message:', obj);
     
     if (obj && obj.type === "new_battle") {
-        // Reset timing stats on new battle
-        wsTimingLogger.reset();
-        monstersHP = obj.monsters.map((monster) => monster.currentHitpoints);
-        monstersMP = obj.monsters.map((monster) => monster.currentManapoints);
-        monstersDmgCounter = obj.monsters.map((monster) => monster.damageSplatCounter);
-        playersHP = obj.players.map((player) => player.currentHitpoints);
-        playersMP = obj.players.map((player) => player.currentManapoints);
-        playersDmgCounter = obj.players.map((player) => player.damageSplatCounter);
-        playersIsAutoAtk = obj.players.map(() => false); // Initialize auto-attack state
-        playersLastAbility = obj.players.map(() => null); // Initialize last ability tracker
-        playersActiveDoTs = obj.players.map(() => ({ ticksRemaining: 0 })); // Initialize DoT tracker
-        playersAbilityInfo = obj.players.map(() => null); // Initialize auto-detection tracker
-        
-        // Re-export to window after creating new arrays (critical for external access)
-        window.playersAbilityInfo = playersAbilityInfo;
-        window.playersLastAbility = playersLastAbility;
-        
-        console.log('✅ new_battle: Initialized arrays for', obj.players.length, 'players');
-        console.log('   playersAbilityInfo:', playersAbilityInfo);
-        console.log('   playersLastAbility:', playersLastAbility);
-        console.log('   window.playersAbilityInfo:', window.playersAbilityInfo);
+        // Only initialize if this is ACTUALLY a new battle (different battleId)
+        if (currentBattleId !== obj.battleId) {
+            currentBattleId = obj.battleId;
+            
+            // Reset timing stats on new battle
+            wsTimingLogger.reset();
+            monstersHP = obj.monsters.map((monster) => monster.currentHitpoints);
+            monstersMP = obj.monsters.map((monster) => monster.currentManapoints);
+            monstersDmgCounter = obj.monsters.map((monster) => monster.damageSplatCounter);
+            playersHP = obj.players.map((player) => player.currentHitpoints);
+            playersMP = obj.players.map((player) => player.currentManapoints);
+            playersDmgCounter = obj.players.map((player) => player.damageSplatCounter);
+            playersIsAutoAtk = obj.players.map(() => false); // Initialize auto-attack state
+            playersLastAbility = obj.players.map(() => null); // Initialize last ability tracker
+            playersActiveDoTs = obj.players.map(() => ({ ticksRemaining: 0 })); // Initialize DoT tracker
+            playersAbilityInfo = obj.players.map(() => null); // Initialize auto-detection tracker
+            
+            // Re-export to window after creating new arrays (critical for external access)
+            window.playersAbilityInfo = playersAbilityInfo;
+            window.playersLastAbility = playersLastAbility;
+            
+            console.log(`✅ new_battle (ID: ${obj.battleId}): Initialized arrays for ${obj.players.length} players`);
+            console.log('   playersAbilityInfo:', playersAbilityInfo);
+            console.log('   playersLastAbility:', playersLastAbility);
+            console.log('   window.playersAbilityInfo:', window.playersAbilityInfo);
+        } else {
+            console.log(`♻️ new_battle (ID: ${obj.battleId}): SKIPPED re-initialization (same battle)`);
+        }
     } else if (obj && obj.type === "battle_updated" && monstersHP.length) {
         const mMap = obj.mMap;
         const pMap = obj.pMap;
@@ -205,15 +213,11 @@ function handleMessage(message) {
                         };
                         console.log(`   ✅ Auto-detected animation for player ${userIndex}:`, playersAbilityInfo[userIndex]);
                     } else {
-                        // Ability unknown or non-offensive → reset auto-detection
-                        playersAbilityInfo[userIndex] = null;
-                        console.log(`   ⚠️ No animation data found for "${abilityName}"`);
+                        // Ability is buff/support/unknown → KEEP previous animation (don't reset)
+                        console.log(`   ⚠️ Non-offensive ability "${abilityName}" - keeping previous animation:`, playersAbilityInfo[userIndex]);
                     }
-                } else {
-                    // Mode manual → reset auto-detection
-                    playersAbilityInfo[userIndex] = null;
-                    console.log(`   ⚙️ Manual mode - auto-detection disabled`);
                 }
+                // Note: Manual mode doesn't touch playersAbilityInfo (handled in effect-coordinator)
                 
                 // If a DoT ability is cast, activate DoT tracking (2 ticks for Firestorm)
                 if (DOT_ABILITIES.includes(playerData.abilityHrid)) {
