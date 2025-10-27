@@ -147,9 +147,23 @@ function handleMessage(message) {
             playersIsAutoAtk = obj.players.map(() => false); // Initialize auto-attack state
             playersLastAbility = obj.players.map(() => null); // Initialize last ability tracker
             playersActiveDoTs = obj.players.map(() => ({ ticksRemaining: 0 })); // Initialize DoT tracker
-            playersAbilityInfo = obj.players.map(() => null); // Initialize auto-detection tracker
             
-            // Re-export to window after creating new arrays (critical for external access)
+            // PERSIST ANIMATIONS: Keep previous animations between battles, resize if needed
+            const newPlayerCount = obj.players.length;
+            if (playersAbilityInfo.length !== newPlayerCount) {
+                // Resize array: keep existing data, fill new slots with null
+                playersAbilityInfo.length = newPlayerCount;
+                for (let i = 0; i < newPlayerCount; i++) {
+                    if (playersAbilityInfo[i] === undefined) {
+                        playersAbilityInfo[i] = null;
+                    }
+                }
+                console.log(`   📐 Resized playersAbilityInfo to ${newPlayerCount} players (kept previous animations)`);
+            } else {
+                console.log(`   💾 Kept previous playersAbilityInfo for ${newPlayerCount} players`);
+            }
+            
+            // Re-export to window after updating arrays (critical for external access)
             window.playersAbilityInfo = playersAbilityInfo;
             window.playersLastAbility = playersLastAbility;
             
