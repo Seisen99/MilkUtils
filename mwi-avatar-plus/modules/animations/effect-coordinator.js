@@ -198,7 +198,7 @@ function createEffect(startElem, endElem, hpDiff, index, reversed = false) {
             AnimationManager.addPath(fireball);
             setTimeout(() => {
                 const endXY = pathD.split(', ')[1].split(' ');
-                createHitEffect({x:endXY[0], y:endXY[1]}, svg, fireball, hitTarget, explosionSize, hitDamage, frameColor, frameBorderColor, trackerSetting);
+                createHitEffect({x:endXY[0], y:endXY[1]}, svg, fireball, hitTarget, explosionSize, hitDamage, frameColor, frameBorderColor, trackerSetting, hpDiff);
             }, 500);
             return;
         }
@@ -208,7 +208,7 @@ function createEffect(startElem, endElem, hpDiff, index, reversed = false) {
             AnimationManager.addPath(arrow);
             setTimeout(() => {
                 const endXY = pathD.split(', ')[1].split(' ');
-                createHitEffect({x:endXY[0], y:endXY[1]}, svg, arrow, hitTarget, explosionSize, hitDamage, frameColor, frameBorderColor, trackerSetting);
+                createHitEffect({x:endXY[0], y:endXY[1]}, svg, arrow, hitTarget, explosionSize, hitDamage, frameColor, frameBorderColor, trackerSetting, hpDiff);
             }, 500);
             return;
         }
@@ -218,7 +218,7 @@ function createEffect(startElem, endElem, hpDiff, index, reversed = false) {
             AnimationManager.addPath(mace);
             setTimeout(() => {
                 const endXY = pathD.split(', ')[1].split(' ');
-                createHitEffect({x:endXY[0], y:endXY[1]}, svg, mace, hitTarget, explosionSize, hitDamage, frameColor, frameBorderColor, trackerSetting);
+                createHitEffect({x:endXY[0], y:endXY[1]}, svg, mace, hitTarget, explosionSize, hitDamage, frameColor, frameBorderColor, trackerSetting, hpDiff);
             }, 300);
             return;
         }
@@ -286,7 +286,7 @@ function createEffect(startElem, endElem, hpDiff, index, reversed = false) {
             path.style.transition = 'stroke-dashoffset 0.1s linear';
             path.style.strokeDashoffset = '0';
             path.addEventListener('transitionend', () => {
-                createHitEffect({x:endXY[0], y:endXY[1]}, svg, path, hitTarget, explosionSize, hitDamage, frameColor, frameBorderColor, trackerSetting);
+                createHitEffect({x:endXY[0], y:endXY[1]}, svg, path, hitTarget, explosionSize, hitDamage, frameColor, frameBorderColor, trackerSetting, hpDiff);
             }, {once: true});
         });
     }

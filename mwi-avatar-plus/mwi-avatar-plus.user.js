@@ -24,13 +24,13 @@
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-avatar-plus/modules/animations/utils/svg-paths.js?v=1
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-avatar-plus/modules/animations/animation-manager.js?v=1
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-avatar-plus/modules/animations/effects/miss-effect.js?v=1
-// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/feature/modern-settings-ui/mwi-avatar-plus/modules/animations/effects/hit-effect.js?v=14
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/feature/modern-settings-ui/mwi-avatar-plus/modules/animations/effects/hit-effect.js?v=15
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-avatar-plus/modules/animations/effects/healing-particles.js?v=1
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-avatar-plus/modules/animations/effects/dot-effect.js?v=1
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-avatar-plus/modules/animations/projectiles/fireball.js?v=1
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-avatar-plus/modules/animations/projectiles/arrow.js?v=1
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-avatar-plus/modules/animations/projectiles/melee.js?v=1
-// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/feature/modern-settings-ui/mwi-avatar-plus/modules/animations/effect-coordinator.js?v=6
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/feature/modern-settings-ui/mwi-avatar-plus/modules/animations/effect-coordinator.js?v=7
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/feature/modern-settings-ui/mwi-avatar-plus/modules/core/websocket.js?v=30
 // ==/UserScript==
 
