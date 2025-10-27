@@ -49,8 +49,20 @@ function getColorForPlayer(playerIndex) {
         const playerNameAtIndex = getPlayerNameByIndex(playerIndex);
         const myPlayerName = getPlayerName();
         
+        console.log(`🎨 getColorForPlayer(${playerIndex}):`, {
+            myCharacterColorEnabled: settingsMap.myCharacterColor.isTrue,
+            playerNameAtIndex,
+            myPlayerName,
+            match: playerNameAtIndex === myPlayerName
+        });
+        
         // If this player is the current user's character, use My Character Color
         if (playerNameAtIndex && myPlayerName && playerNameAtIndex === myPlayerName) {
+            console.log(`   ✅ Using My Character Color for player ${playerIndex}`, {
+                r: settingsMap.myCharacterColor.r,
+                g: settingsMap.myCharacterColor.g,
+                b: settingsMap.myCharacterColor.b
+            });
             return {
                 r: settingsMap.myCharacterColor.r,
                 g: settingsMap.myCharacterColor.g,
@@ -536,3 +548,4 @@ function createDotLine(playerIndex, monsterIndex, hpDiff) {
 window.hookWS = hookWS;
 window.playersAbilityInfo = playersAbilityInfo;
 window.getColorForPlayer = getColorForPlayer;
+window.getPlayerNameByIndex = getPlayerNameByIndex;

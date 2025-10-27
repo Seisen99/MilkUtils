@@ -52,6 +52,9 @@ function waitForSetttins() {
             createOtherSettingsSection(insertElem);
 
             insertElem.addEventListener("change", saveSettings);
+            
+            // Start updating YOU badges periodically
+            setInterval(updateAllYouBadges, 500);
         }
     }
     setTimeout(waitForSetttins, 500);
@@ -358,6 +361,7 @@ function createCollapsiblePlayerCard(insertElem, setting, playerIndex) {
                 <div class="collapsible-header-left">
                     <span class="collapsible-title">🎮 ${isZH ? `玩家 #${playerIndex + 1}` : `Player #${playerIndex + 1}`}</span>
                     <span class="collapsible-badge ${badgeClass}" id="badge_tracker${playerIndex}">${badgeText}</span>
+                    <span class="you-badge" id="you_badge_tracker${playerIndex}" style="display: none;">👤 YOU</span>
                 </div>
                 <span class="collapsible-icon">${isExpanded ? '▲' : '▼'}</span>
             </div>
@@ -385,7 +389,37 @@ function createCollapsiblePlayerCard(insertElem, setting, playerIndex) {
                 icon.textContent = card.classList.contains('expanded') ? '▲' : '▼';
             });
         }
+        
+        // Update YOU badge periodically (check every 500ms if in battle)
+        updateYouBadge(playerIndex);
     }, 100);
+}
+
+/**
+ * Update the "YOU" badge on player cards
+ */
+function updateYouBadge(playerIndex) {
+    const badge = document.getElementById(`you_badge_tracker${playerIndex}`);
+    if (!badge) return;
+    
+    // Get player name from battle panel (only works during combat)
+    const playerNameAtIndex = window.getPlayerNameByIndex ? window.getPlayerNameByIndex(playerIndex) : null;
+    const myPlayerName = window.getPlayerName ? window.getPlayerName() : null;
+    
+    if (playerNameAtIndex && myPlayerName && playerNameAtIndex === myPlayerName) {
+        badge.style.display = 'inline-block';
+    } else {
+        badge.style.display = 'none';
+    }
+}
+
+/**
+ * Update all YOU badges periodically (called every 500ms)
+ */
+function updateAllYouBadges() {
+    for (let i = 0; i <= 4; i++) {
+        updateYouBadge(i);
+    }
 }
 
 /**

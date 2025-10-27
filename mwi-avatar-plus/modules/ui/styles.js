@@ -522,6 +522,29 @@ function injectSettingsPanelStyles() {
             border: 1px solid rgba(255, 193, 7, 0.3);
         }
 
+        .you-badge {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, rgba(147, 51, 234, 0.3), rgba(168, 85, 247, 0.3));
+            color: #C084FC;
+            border: 1px solid rgba(147, 51, 234, 0.5);
+            box-shadow: 0 2px 8px rgba(147, 51, 234, 0.2);
+            animation: pulse-you 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-you {
+            0%, 100% {
+                box-shadow: 0 2px 8px rgba(147, 51, 234, 0.2);
+            }
+            50% {
+                box-shadow: 0 2px 12px rgba(147, 51, 234, 0.4);
+            }
+        }
+
         .collapsible-icon {
             color: #4357af;
             font-size: 18px;
