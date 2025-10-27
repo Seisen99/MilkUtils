@@ -23,6 +23,9 @@ function createEffect(startElem, endElem, hpDiff, index, reversed = false) {
             const dmgDivs = dmgContainer.querySelectorAll('div');
             for (const div of dmgDivs) {
                 if (div.innerText.trim() === '') {
+                    // Block React's red frame from showing by hiding div immediately
+                    div.style.visibility = 'hidden';
+                    div.dataset.customDamage = hpDiff.toString(); // Store damage value
                     startElem = div;
                     hitDamage = div;
                     break;
@@ -38,6 +41,9 @@ function createEffect(startElem, endElem, hpDiff, index, reversed = false) {
             const dmgDivs = dmgContainer.querySelectorAll('div');
             for (const div of dmgDivs) {
                 if (div.innerText.trim() === '') {
+                    // Block React's red frame from showing by hiding div immediately
+                    div.style.visibility = 'hidden';
+                    div.dataset.customDamage = hpDiff.toString(); // Store damage value
                     endElem = div;
                     hitDamage = div;
                     break;

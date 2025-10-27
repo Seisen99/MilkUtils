@@ -151,9 +151,11 @@ function createHitEffect(point, container, path, hitTarget = undefined, explosio
                 hitDamage.innerHTML = '';
                 hitDamage.textContent = hpDiff.toString();
                 hitDamage.style.cssText = `
+                    visibility: visible !important;
                     color: rgb(${trackerSetting.frameR}, ${trackerSetting.frameG}, ${trackerSetting.frameB}) !important;
                     font-weight: bold !important;
-                    font-size: 18px !important;
+                    font-size: 14px !important;
+                    text-align: center !important;
                     text-shadow: 
                         1px 1px 2px rgba(0,0,0,0.8),
                         -1px -1px 2px rgba(0,0,0,0.8),
@@ -162,7 +164,9 @@ function createHitEffect(point, container, path, hitTarget = undefined, explosio
                     background: none !important;
                     border: none !important;
                     padding: 0 !important;
-                    display: inline-block !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
                 `;
                 console.log(`✨ Custom damage text: ${hpDiff} in RGB(${trackerSetting.frameR}, ${trackerSetting.frameG}, ${trackerSetting.frameB})`);
             } else {
