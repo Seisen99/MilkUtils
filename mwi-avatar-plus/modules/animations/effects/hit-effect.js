@@ -116,20 +116,34 @@ function createHitEffect(point, container, path, hitTarget = undefined, explosio
     if (hitDamage!==undefined) {
         const originalZIndex = hitDamage.style.zIndex || 'auto';
 
+        console.log('🎯 DEBUG hitDamage:', hitDamage);
+        console.log('🎨 DEBUG frameColor:', frameColor, 'frameBorderColor:', frameBorderColor);
+        console.log('⚙️ DEBUG trackerSetting:', trackerSetting);
+        console.log('📊 DEBUG hitDamage classes:', hitDamage.className);
+        console.log('🔍 DEBUG hitDamage innerText:', hitDamage.innerText);
+
         if (frameColor && frameBorderColor && trackerSetting) {
+            console.log('✅ Entering color animation block');
+            
             // Cancel any previous filter animations on this element to prevent color stacking
-            hitDamage.getAnimations().forEach(anim => {
+            const existingAnims = hitDamage.getAnimations();
+            console.log('🔄 Existing animations before cancel:', existingAnims.length);
+            existingAnims.forEach(anim => {
                 const keyframes = anim.effect?.getKeyframes?.() || [];
                 if (keyframes.some(kf => kf.filter)) {
+                    console.log('❌ Cancelling filter animation');
                     anim.cancel();
                 }
             });
             
             const hueFilter = calculateHueRotation(trackerSetting.frameR, trackerSetting.frameG, trackerSetting.frameB);
+            console.log('🌈 Calculated hueFilter:', hueFilter);
+            console.log('🎚️ keepOriginalDamageColor:', settingsMap.keepOriginalDamageColor.isTrue);
             
             if (settingsMap.keepOriginalDamageColor.isTrue) {
                 // Use hue-rotate filter for temporary color change (returns to red)
-                hitDamage.animate([
+                console.log('🔴 Mode: Fade to red');
+                const fadeAnim = hitDamage.animate([
                     { filter: `${hueFilter} brightness(1.2) saturate(1.5)`, offset: 0 },
                     { filter: `${hueFilter} brightness(1.2) saturate(1.5)`, offset: 0.85 },
                     { filter: 'none', offset: 1 }
@@ -138,16 +152,26 @@ function createHitEffect(point, container, path, hitTarget = undefined, explosio
                     easing: 'ease-out',
                     fill: 'none'
                 });
+                console.log('✨ Fade animation created:', fadeAnim);
             } else {
                 // Use hue-rotate filter with long duration (no permanent styles)
-                hitDamage.animate([
+                console.log('🟢 Mode: Permanent color (10s)');
+                const permAnim = hitDamage.animate([
                     { filter: `${hueFilter} brightness(1.2) saturate(1.5)` }
                 ], {
                     duration: 10000, // 10 seconds - way longer than damage display
                     fill: 'none', // No fill:forwards to avoid permanent inline styles
                     easing: 'linear'
                 });
+                console.log('✨ Permanent animation created:', permAnim);
+                
+                // Check animations after creation
+                setTimeout(() => {
+                    console.log('🔍 Animations after 100ms:', hitDamage.getAnimations().length);
+                }, 100);
             }
+        } else {
+            console.log('❌ NOT entering color animation block - missing params');
         }
 
         if (explosionSize < 3) {
