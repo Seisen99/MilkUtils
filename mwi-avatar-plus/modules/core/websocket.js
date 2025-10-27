@@ -64,15 +64,28 @@ function getColorForPlayer(playerIndex) {
                 g: settingsMap.myCharacterColor.g,
                 b: settingsMap.myCharacterColor.b
             });
+            
+            // Get base tracker settings to preserve animation settings
+            const baseTracker = settingsMap["tracker" + playerIndex] || {};
+            
             return {
+                // Override with My Character Color
                 r: settingsMap.myCharacterColor.r,
                 g: settingsMap.myCharacterColor.g,
                 b: settingsMap.myCharacterColor.b,
                 frameR: settingsMap.myCharacterColor.frameR,
                 frameG: settingsMap.myCharacterColor.frameG,
                 frameB: settingsMap.myCharacterColor.frameB,
-                isTrue: settingsMap["tracker" + playerIndex]?.isTrue ?? true,
-                isTrueH: settingsMap["tracker" + playerIndex]?.isTrueH ?? true,
+                
+                // Keep all other properties from tracker (animations, detection mode, etc.)
+                isTrue: baseTracker.isTrue ?? true,
+                isTrueH: baseTracker.isTrueH ?? true,
+                detectionMode: baseTracker.detectionMode ?? "manual",
+                attackAnimation: baseTracker.attackAnimation ?? "none",
+                fireballColor: baseTracker.fireballColor ?? "green",
+                id: baseTracker.id,
+                desc: baseTracker.desc,
+                descH: baseTracker.descH,
             };
         }
     }

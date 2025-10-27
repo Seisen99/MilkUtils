@@ -400,13 +400,23 @@ function createCollapsiblePlayerCard(insertElem, setting, playerIndex) {
  */
 function updateYouBadge(playerIndex) {
     const badge = document.getElementById(`you_badge_tracker${playerIndex}`);
-    if (!badge) return;
+    if (!badge) {
+        console.log(`❌ Badge not found for player ${playerIndex}`);
+        return;
+    }
     
     // Get player name from battle panel (only works during combat)
     const playerNameAtIndex = window.getPlayerNameByIndex ? window.getPlayerNameByIndex(playerIndex) : null;
     const myPlayerName = window.getPlayerName ? window.getPlayerName() : null;
     
+    console.log(`👤 Checking YOU badge for player ${playerIndex}:`, {
+        playerNameAtIndex,
+        myPlayerName,
+        match: playerNameAtIndex === myPlayerName
+    });
+    
     if (playerNameAtIndex && myPlayerName && playerNameAtIndex === myPlayerName) {
+        console.log(`   ✅ Showing YOU badge for player ${playerIndex}`);
         badge.style.display = 'inline-block';
     } else {
         badge.style.display = 'none';
