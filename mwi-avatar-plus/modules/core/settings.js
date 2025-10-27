@@ -20,9 +20,17 @@ function readSettings() {
                     if (option.r !== undefined) settingsMap[option.id].r = option.r;
                     if (option.g !== undefined) settingsMap[option.id].g = option.g;
                     if (option.b !== undefined) settingsMap[option.id].b = option.b;
+                    
+                    // Auto-sync frame colors with line colors (unified color system)
                     if (option.frameR !== undefined) settingsMap[option.id].frameR = option.frameR;
+                    else if (option.r !== undefined) settingsMap[option.id].frameR = option.r;
+                    
                     if (option.frameG !== undefined) settingsMap[option.id].frameG = option.frameG;
+                    else if (option.g !== undefined) settingsMap[option.id].frameG = option.g;
+                    
                     if (option.frameB !== undefined) settingsMap[option.id].frameB = option.frameB;
+                    else if (option.b !== undefined) settingsMap[option.id].frameB = option.b;
+                    
                     if (option.detectionMode !== undefined) settingsMap[option.id].detectionMode = option.detectionMode;
                     if (option.attackAnimation !== undefined) settingsMap[option.id].attackAnimation = option.attackAnimation;
                     if (option.fireballColor !== undefined) settingsMap[option.id].fireballColor = option.fireballColor;

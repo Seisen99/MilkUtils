@@ -20,17 +20,17 @@ function waitForSetttins() {
                 }</div>`
             );
 
-            // Global Detection Mode Section
-            createGlobalDetectionModeSection(insertElem);
-
             // Custom Avatar Section
             createCustomAvatarSectionNew(insertElem, settingsMap.customAvatar);
 
-            // Player Settings Category
+            // Player Animation Settings Category
             insertElem.insertAdjacentHTML(
                 "beforeend",
-                `<div class="settings-category-title">👥 ${isZH ? "玩家设置" : "Player Settings"}</div>`
+                `<div class="settings-category-title">🎬 ${isZH ? "玩家动画设置" : "Player Animation Settings"}</div>`
             );
+
+            // Animation Auto-Detection Section (inside Player section)
+            createGlobalDetectionModeSection(insertElem);
 
             // Player cards (tracker0-4)
             for (let i = 0; i <= 4; i++) {
@@ -55,23 +55,26 @@ function waitForSetttins() {
 }
 
 /**
- * Create Global Detection Mode section
+ * Create Animation Auto-Detection section
  */
 function createGlobalDetectionModeSection(insertElem) {
     const currentMode = getGlobalDetectionMode();
     
     insertElem.insertAdjacentHTML(
         "beforeend",
-        `<div class="global-detection-section">
-            <div class="global-detection-title">🎯 ${isZH ? "全局检测模式" : "Global Detection Mode"}</div>
+        `<div class="global-detection-section" style="margin-top: 0; margin-bottom: 16px;">
+            <div class="global-detection-title">⚡ ${isZH ? "动画自动检测" : "Animation Auto-Detection"}</div>
+            <p style="color: #999; font-size: 12px; margin: 8px 0 12px 0;">
+                ${isZH ? "应用于所有玩家：" : "Apply to all players:"}
+            </p>
             <div class="global-detection-options">
                 <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
                     <input type="radio" name="globalDetectionMode" value="manual" ${currentMode === 'manual' ? 'checked' : ''}>
-                    <span style="color: white; font-size: 14px;">🎮 ${isZH ? "手动模式" : "Manual Mode"}</span>
+                    <span style="color: white; font-size: 14px;">🎮 ${isZH ? "手动设置" : "Manual (Set Below)"}</span>
                 </label>
                 <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
                     <input type="radio" name="globalDetectionMode" value="auto" ${currentMode === 'auto' ? 'checked' : ''}>
-                    <span style="color: white; font-size: 14px;">⚡ ${isZH ? "自动模式" : "Auto Mode"}</span>
+                    <span style="color: white; font-size: 14px;">⚡ ${isZH ? "自动检测技能" : "Auto-Detect Abilities"}</span>
                 </label>
             </div>
         </div>`
@@ -374,25 +377,23 @@ function createTrackerContent(containerElem, setting, isPlayerTracker) {
         </div>
         <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;">
             <div class="color-preview" id="colorPreview_${setting.id}"></div>
-            <span class="color-label">${isZH ? "线条颜色" : "Line Color"}</span>
-            <div class="color-preview" id="colorPreviewFrame_${setting.id}"></div>
-            <span class="color-label">${isZH ? "伤害框颜色" : "Damage Frame Color"}</span>
+            <span class="color-label">${isZH ? "玩家颜色" : "Player Color"}</span>
         </div>`;
 
     if (isPlayerTracker) {
         htmlContent += `
         <div class="settings-section">
             <div class="section-title">
-                ${isZH ? "🎯 检测模式" : "🎯 Detection Mode"}
+                ${isZH ? "🎯 动画检测" : "🎯 Animation Detection"}
             </div>
             <div class="section-content">
                 <label>
                     <input type="radio" name="detectionMode_${setting.id}" value="manual" ${setting.detectionMode === "manual" ? "checked" : ""}>
-                    <span>🎮 ${isZH ? "手动" : "Manual"}</span>
+                    <span>🎮 ${isZH ? "手动设置" : "Manual"}</span>
                 </label>
                 <label>
                     <input type="radio" name="detectionMode_${setting.id}" value="auto" ${setting.detectionMode === "auto" ? "checked" : ""}>
-                    <span>⚡ ${isZH ? "自动" : "Auto"}</span>
+                    <span>⚡ ${isZH ? "自动检测" : "Auto"}</span>
                 </label>
             </div>
         </div>
@@ -451,7 +452,7 @@ function createTrackerContent(containerElem, setting, isPlayerTracker) {
 }
 
 /**
- * Setup color pickers for a setting
+ * Setup color picker for a setting (unified for both line and frame)
  */
 function setupColorPickers(setting) {
     const colorPreview = document.getElementById('colorPreview_'+setting.id);
@@ -462,37 +463,22 @@ function setupColorPickers(setting) {
             const settingColor = { r: settingsMap[setting.id].r, g: settingsMap[setting.id].g, b: settingsMap[setting.id].b }
             const modal = createColorPicker(settingColor, (newColor) => {
                 currentColor = newColor;
+                // Update both line color and frame color with the same value
                 settingsMap[setting.id].r = newColor.r;
                 settingsMap[setting.id].g = newColor.g;
                 settingsMap[setting.id].b = newColor.b;
-                localStorage.setItem("tracker_settingsMap", JSON.stringify(settingsMap));
-                updateColorPreview();
-            }, isZH ? "线条颜色" : "Line Color", setting.id);
-            document.body.appendChild(modal);
-        });
-    }
-
-    const colorPreviewFrame = document.getElementById('colorPreviewFrame_'+setting.id);
-    let currentFrameColor = { r: setting.frameR, g: setting.frameG, b: setting.frameB };
-
-    if (colorPreviewFrame) {
-        colorPreviewFrame.addEventListener('click', () => {
-            const settingFrameColor = { r: settingsMap[setting.id].frameR, g: settingsMap[setting.id].frameG, b: settingsMap[setting.id].frameB }
-            const modal = createColorPicker(settingFrameColor, (newColor) => {
-                currentFrameColor = newColor;
                 settingsMap[setting.id].frameR = newColor.r;
                 settingsMap[setting.id].frameG = newColor.g;
                 settingsMap[setting.id].frameB = newColor.b;
                 localStorage.setItem("tracker_settingsMap", JSON.stringify(settingsMap));
                 updateColorPreview();
-            }, isZH ? "伤害框颜色" : "Damage Frame Color", setting.id);
+            }, isZH ? "玩家颜色" : "Player Color", setting.id);
             document.body.appendChild(modal);
         });
     }
 
     function updateColorPreview() {
         if (colorPreview) colorPreview.style.backgroundColor = `rgb(${currentColor.r},${currentColor.g},${currentColor.b})`;
-        if (colorPreviewFrame) colorPreviewFrame.style.backgroundColor = `rgb(${currentFrameColor.r},${currentFrameColor.g},${currentFrameColor.b})`;
     }
 
     updateColorPreview();
