@@ -14,8 +14,6 @@ function readSettings() {
                 if (option.id === "customAvatar") {
                     settingsMap[option.id].isTrue = option.isTrue !== undefined ? option.isTrue : false;
                     settingsMap[option.id].avatarUrl = option.avatarUrl || "";
-                } else if (option.id === "attackAnimation") {
-                    settingsMap[option.id].value = option.value || "mage";
                 } else {
                     settingsMap[option.id].isTrue = option.isTrue;
                     if (option.isTrueH !== undefined) settingsMap[option.id].isTrueH = option.isTrueH;

@@ -21,8 +21,6 @@ function waitForSetttins() {
             for (const setting of Object.values(settingsMap)) {
                 if (setting.id === "customAvatar") {
                     createCustomAvatarSetting(insertElem, setting);
-                } else if (setting.id === "attackAnimation") {
-                    createAttackAnimationSetting(insertElem, setting);
                 } else if (/^tracker\d$/.test(setting.id)){
                     createTrackerSetting(insertElem, setting);
                 }else{
@@ -86,40 +84,6 @@ function createCustomAvatarSetting(insertElem, setting) {
                 fileName.style.color = '#4ECDC4';
             }
         }
-    }, 100);
-}
-
-/**
- * Create attack animation setting UI
- */
-function createAttackAnimationSetting(insertElem, setting) {
-    insertElem.insertAdjacentHTML(
-        "beforeend",
-        `<div class="tracker-option" style="margin-bottom: 10px;">
-            <span style="margin-right:10px; color: #4ECDC4; font-weight: 600;">${setting.desc}:</span>
-            <label style="margin-right: 15px; cursor: pointer;">
-                <input type="radio" name="attackType" value="melee" ${setting.value === "melee" ? "checked" : ""}>
-                <span style="color: white;">⚔️ ${isZH ? "近战" : "Melee"}</span>
-            </label>
-            <label style="margin-right: 15px; cursor: pointer;">
-                <input type="radio" name="attackType" value="ranged" ${setting.value === "ranged" ? "checked" : ""}>
-                <span style="color: white;">🏹 ${isZH ? "远程" : "Ranged"}</span>
-            </label>
-            <label style="cursor: pointer;">
-                <input type="radio" name="attackType" value="mage" ${setting.value === "mage" ? "checked" : ""}>
-                <span style="color: white;">🔮 ${isZH ? "法师" : "Mage"}</span>
-            </label>
-        </div>`
-    );
-
-    setTimeout(() => {
-        const radioButtons = document.querySelectorAll('input[name="attackType"]');
-        radioButtons.forEach(radio => {
-            radio.addEventListener('change', (e) => {
-                settingsMap.attackAnimation.value = e.target.value;
-                localStorage.setItem("tracker_settingsMap", JSON.stringify(settingsMap));
-            });
-        });
     }, 100);
 }
 

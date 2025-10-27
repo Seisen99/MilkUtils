@@ -14,11 +14,6 @@ let settingsMap = {
         isTrue: false,
         avatarUrl: "",
     },
-    attackAnimation: {
-        id: "attackAnimation",
-        desc: isZH ? "类型攻击" : "Attack type",
-        value: "mage",
-    },
     tracker0 : {
         id: "tracker0",
         desc: isZH ? "启用玩家 #1 伤害线":"Enable player #1 damage line",

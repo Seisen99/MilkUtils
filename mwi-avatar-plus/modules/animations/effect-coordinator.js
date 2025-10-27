@@ -193,62 +193,7 @@ function createEffect(startElem, endElem, hpDiff, index, reversed = false) {
         }
     }
 
-    if (isPlayerWithCustomAvatar && hpDiff === 0) {
-        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        path.style.stroke = lineColor;
-        path.style.strokeWidth = '1px';
-        path.style.fill = 'none';
-        path.style.opacity = '0.3';
-        path.style.strokeDasharray = '5, 5';
-        path.setAttribute('d', pathD);
-        svg.appendChild(path);
-        AnimationManager.addPath(path);
-        const endXY = pathD.split(', ')[1].split(' ');
-        const endPoint = { x: endXY[0], y: endXY[1] };
-        setTimeout(() => {
-            createMissEffect(hitDamage, endPoint, svg, true);
-        }, 100);
-        setTimeout(() => {
-            path.style.transition = 'opacity 0.3s';
-            path.style.opacity = '0';
-            setTimeout(() => {
-                if (path.parentNode) svg.removeChild(path);
-                AnimationManager.removePath(path);
-            }, 300);
-        }, 600);
 
-        return;
-    }
-    if (isPlayerWithCustomAvatar && hpDiff > 0) {
-        const attackType = settingsMap.attackAnimation.value;
-
-        if (attackType === "mage") {
-            const fireball = createFireballAnimation(startElem, endElem, pathD, svg, trackerSetting, reversed, "green");
-            AnimationManager.addPath(fireball);
-            setTimeout(() => {
-                const endXY = pathD.split(', ')[1].split(' ');
-                createHitEffect({x:endXY[0], y:endXY[1]}, svg, fireball, hitTarget, explosionSize, hitDamage, frameColor, frameBorderColor, trackerSetting);
-            }, 500);
-        }
-        else if (attackType === "ranged") {
-            const arrow = createArrowAnimation(startElem, endElem, pathD, svg, trackerSetting, reversed);
-            AnimationManager.addPath(arrow);
-            setTimeout(() => {
-                const endXY = pathD.split(', ')[1].split(' ');
-                createHitEffect({x:endXY[0], y:endXY[1]}, svg, arrow, hitTarget, explosionSize, hitDamage, frameColor, frameBorderColor, trackerSetting);
-            }, 500);
-        }
-        else if (attackType === "melee") {
-            const mace = createMaceSmashEffect(endElem, svg, trackerSetting);
-            AnimationManager.addPath(mace);
-            setTimeout(() => {
-                const endXY = pathD.split(', ')[1].split(' ');
-                createHitEffect({x:endXY[0], y:endXY[1]}, svg, mace, hitTarget, explosionSize, hitDamage, frameColor, frameBorderColor, trackerSetting);
-            }, 300);
-        }
-
-        return;
-    }
     if (isAllyHeal) {
         const healParticles = createHealingParticles(startElem, endElem, pathD, svg, trackerSetting);
         AnimationManager.addPath(healParticles);
