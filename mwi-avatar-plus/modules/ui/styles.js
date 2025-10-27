@@ -275,12 +275,73 @@ function injectSettingsPanelStyles() {
             left: 50%;
             transform: translate(-50%, -50%);
             background: linear-gradient(135deg, rgba(30, 30, 40, 0.98), rgba(20, 20, 30, 0.98));
-            padding: 24px;
+            padding: 28px;
             border: 1px solid rgba(255, 165, 0, 0.3);
-            border-radius: 12px;
+            border-radius: 16px;
             box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5), 0 0 30px rgba(255, 165, 0, 0.2);
             z-index: 1000;
             backdrop-filter: blur(10px);
+            min-width: 320px;
+        }
+
+        .color-picker-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .color-wheel-canvas {
+            cursor: crosshair;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .rgb-display {
+            color: #4ECDC4;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+            padding: 8px 16px;
+            background: rgba(78, 205, 196, 0.1);
+            border: 1px solid rgba(78, 205, 196, 0.3);
+            border-radius: 6px;
+            text-align: center;
+            margin-top: 8px;
+        }
+
+        .confirm-button, .cancel-button {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .confirm-button {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.9), rgba(56, 142, 60, 0.9));
+            color: white;
+            border: 1px solid rgba(76, 175, 80, 0.5);
+        }
+
+        .confirm-button:hover {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 1), rgba(56, 142, 60, 1));
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .cancel-button {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .cancel-button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
         }
 
         .modal-backdrop {
