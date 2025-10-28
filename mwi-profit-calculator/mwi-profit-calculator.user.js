@@ -13,15 +13,25 @@
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @require      https://cdn.jsdelivr.net/npm/lz-string@1.5.0/libs/lz-string.min.js
-// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-profit-calculator/modules/core/constants.js
-// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-profit-calculator/modules/core/data-manager.js
-// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-profit-calculator/modules/core/websocket.js
-// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-profit-calculator/modules/api/market-api.js
-// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-profit-calculator/modules/calculations/buffs.js
-// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-profit-calculator/modules/calculations/profit.js
-// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-profit-calculator/modules/ui/formatter.js
-// @require      file:///home/bob/Code/AgentsTesting/MilkyUtils/mwi-profit-calculator/modules/ui/tooltip.js
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/core/constants.js?v=1
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/core/data-manager.js?v=1
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/core/websocket.js?v=1
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/api/market-api.js?v=1
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/calculations/buffs.js?v=1
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/calculations/profit.js?v=1
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/ui/formatter.js?v=1
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/ui/tooltip.js?v=1
 // ==/UserScript==
+
+/**
+ * MWI Profit Calculator v2.0.0
+ * 
+ * This is the GitHub version with remote @require URLs.
+ * Repository: https://github.com/Seisen99/MilkUtils
+ * 
+ * The ?v=X query parameter is used for cache busting when you update modules.
+ * Increment the version number when you make changes to force browser to reload.
+ */
 
 (function() {
     'use strict';
