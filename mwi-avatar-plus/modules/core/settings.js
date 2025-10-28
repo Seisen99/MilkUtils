@@ -55,6 +55,9 @@ function readSettings() {
  */
 function saveSettings() {
     for (const checkbox of document.querySelectorAll("div#tracker_settings input[type='checkbox']")) {
+        // Skip checkboxes without data-number (like spritesheet-enabled which handles its own saving)
+        if (!checkbox.dataset.number) continue;
+        
         settingsMap[checkbox.dataset.number][checkbox.dataset.param] = checkbox.checked;
         localStorage.setItem("tracker_settingsMap", JSON.stringify(settingsMap));
     }
