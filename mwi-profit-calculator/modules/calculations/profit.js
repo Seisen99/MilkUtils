@@ -103,7 +103,7 @@ async function calculateProfit(itemHrid, actionHrid, marketJson) {
     let essenceDetails = [];
     if (actionDetailMap[actionHrid].essenceDropTable) {
         for (const essence of actionDetailMap[actionHrid].essenceDropTable) {
-            const essencePrice = getItemValue(essence.itemHrid, marketJson);
+            const essencePrice = unsafeWindow.getItemValue(essence.itemHrid, marketJson);
             const avgEssencePerAction = essence.dropRate * (essence.minCount + essence.maxCount) / 2;
             const essencePerHour = actionPerHour * avgEssencePerAction;
             const essenceValue = essencePerHour * essencePrice;
@@ -124,7 +124,7 @@ async function calculateProfit(itemHrid, actionHrid, marketJson) {
     let rareDropDetails = [];
     if (actionDetailMap[actionHrid].rareDropTable) {
         for (const rare of actionDetailMap[actionHrid].rareDropTable) {
-            const rarePrice = getItemValue(rare.itemHrid, marketJson);
+            const rarePrice = unsafeWindow.getItemValue(rare.itemHrid, marketJson);
             const avgRarePerAction = rare.dropRate * (rare.minCount + rare.maxCount) / 2;
             const rarePerHour = actionPerHour * avgRarePerAction;
             const rareValue = rarePerHour * rarePrice;
@@ -147,10 +147,10 @@ async function calculateProfit(itemHrid, actionHrid, marketJson) {
     const hasProcessingTea = teaBuffs.upgradedProduct > 0;
     
     if (!isProduction && hasProcessingTea) {
-        processedItemHrid = getProcessedItem(itemHrid);
+        processedItemHrid = unsafeWindow.getProcessedItem(itemHrid);
         if (processedItemHrid) {
             const rawPrice = bidAfterTax;
-            const processedPrice = getItemValue(processedItemHrid, marketJson);
+            const processedPrice = unsafeWindow.getItemValue(processedItemHrid, marketJson);
             const priceDifference = processedPrice - rawPrice;
             
             // 15% of items become processed directly

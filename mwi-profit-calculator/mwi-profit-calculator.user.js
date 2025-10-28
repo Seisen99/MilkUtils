@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MWI Profit Calculator
 // @namespace    http://tampermonkey.net/
-// @version      3.0.0
+// @version      3.0.1
 // @description  Calculate production profit with essences, rare drops, and processing tea bonus
 // @author       Seisen
 // @match        https://www.milkywayidle.com/*
@@ -18,15 +18,18 @@
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/core/websocket.js?v=2
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/api/market-api.js?v=2
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/calculations/buffs.js?v=2
-// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/calculations/processing-mapping.js?v=3
-// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/calculations/chest-values.js?v=3
-// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/calculations/profit.js?v=3
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/calculations/processing-mapping.js?v=4
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/calculations/chest-values.js?v=4
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/calculations/profit.js?v=4
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/ui/formatter.js?v=2
-// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/ui/tooltip.js?v=3
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/ui/tooltip.js?v=4
 // ==/UserScript==
 
 /**
- * MWI Profit Calculator v3.0.0
+ * MWI Profit Calculator v3.0.1
+ *
+ * FIX in v3.0.1:
+ * - Fixed unsafeWindow references for getItemValue and getProcessedItem
  *
  * NEW in v3.0.0:
  * - Essence drops calculation and display
@@ -52,7 +55,7 @@
     // Initialize tooltip observer
     initializeTooltipObserver();
 
-    console.log("MWI Profit Calculator v3.0.0 loaded successfully!");
+    console.log("MWI Profit Calculator v3.0.1 loaded successfully!");
     console.log("  ✓ Essences calculation enabled");
     console.log("  ✓ Rare drops calculation enabled");
     console.log("  ✓ Processing Tea bonus enabled");
