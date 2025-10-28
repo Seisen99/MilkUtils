@@ -1,0 +1,35 @@
+/**
+ * Number formatting utilities
+ */
+
+/**
+ * Format numbers with k/M/B suffixes
+ * @param {number} num - Number to format
+ * @param {number} digits - Decimal places (default 1)
+ * @returns {string} Formatted number string
+ */
+function numberFormatter(num, digits = 1) {
+    if (num === null || num === undefined) {
+        return "N/A";
+    }
+    if (num < 0) {
+        return "-" + numberFormatter(-num);
+    }
+    const lookup = [
+        { value: 1, symbol: "" },
+        { value: 1e3, symbol: "k" },
+        { value: 1e6, symbol: "M" },
+        { value: 1e9, symbol: "B" },
+    ];
+    const rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
+    var item = lookup
+        .slice()
+        .reverse()
+        .find(function (item) {
+            return num >= item.value;
+        });
+    return item ? (num / item.value).toFixed(digits).replace(rx, "$1") + item.symbol : "0";
+}
+
+// Export to global scope for Tampermonkey
+window.numberFormatter = numberFormatter;

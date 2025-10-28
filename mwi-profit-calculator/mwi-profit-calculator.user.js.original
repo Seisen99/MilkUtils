@@ -1,0 +1,645 @@
+// ==UserScript==
+// @name         MWI Profit Calculator
+// @namespace    http://tampermonkey.net/
+// @version      1.0.0
+// @description  Calculate production profit for MilkyWayIdle items with detailed tooltips
+// @author       Extracted from MWITools
+// @match        https://www.milkywayidle.com/*
+// @match        https://test.milkywayidle.com/*
+// @grant        GM_addStyle
+// @grant        GM.xmlHttpRequest
+// @grant        GM_xmlhttpRequest
+// @grant        GM_getValue
+// @grant        GM_setValue
+// @require      https://cdn.jsdelivr.net/npm/lz-string@1.5.0/libs/lz-string.min.js
+// ==/UserScript==
+
+(() => {
+    "use strict";
+
+    // ============================================================================
+    // CONSTANTS & CONFIGURATION
+    // ============================================================================
+
+    const MARKET_API_URL = "https://www.milkywayidle.com/game_data/marketplace.json";
+    const SCRIPT_COLOR_TOOLTIP = "darkgreen";
+    const THOUSAND_SEPERATOR = new Intl.NumberFormat().format(1111).replaceAll("1", "").at(0) || "";
+
+    // ============================================================================
+    // GLOBAL DATA STORAGE
+    // ============================================================================
+
+    let initData_characterSkills = null;
+    let initData_characterItems = null;
+    let initData_characterHouseRoomMap = null;
+    let initData_actionTypeDrinkSlotsMap = null;
+    let initData_actionDetailMap = null;
+    let initData_itemDetailMap = null;
+
+    let itemEnNameToHridMap = {};
+
+    // ============================================================================
+    // MAPPING TABLES
+    // ============================================================================
+
+    const actionHridToToolsSpeedBuffNamesMap = {
+        "/action_types/brewing": "brewingSpeed",
+        "/action_types/cheesesmithing": "cheesesmithingSpeed",
+        "/action_types/cooking": "cookingSpeed",
+        "/action_types/crafting": "craftingSpeed",
+        "/action_types/foraging": "foragingSpeed",
+        "/action_types/milking": "milkingSpeed",
+        "/action_types/tailoring": "tailoringSpeed",
+        "/action_types/woodcutting": "woodcuttingSpeed",
+        "/action_types/alchemy": "alchemySpeed",
+    };
+
+    const actionHridToHouseNamesMap = {
+        "/action_types/brewing": "/house_rooms/brewery",
+        "/action_types/cheesesmithing": "/house_rooms/forge",
+        "/action_types/cooking": "/house_rooms/kitchen",
+        "/action_types/crafting": "/house_rooms/workshop",
+        "/action_types/foraging": "/house_rooms/garden",
+        "/action_types/milking": "/house_rooms/dairy_barn",
+        "/action_types/tailoring": "/house_rooms/sewing_parlor",
+        "/action_types/woodcutting": "/house_rooms/log_shed",
+        "/action_types/alchemy": "/house_rooms/laboratory",
+    };
+
+    const itemEnhanceLevelToBuffBonusMap = {
+        0: 0,
+        1: 2,
+        2: 4.2,
+        3: 6.6,
+        4: 9.2,
+        5: 12.0,
+        6: 15.0,
+        7: 18.2,
+        8: 21.6,
+        9: 25.2,
+        10: 29.0,
+        11: 33.0,
+        12: 37.2,
+        13: 41.6,
+        14: 46.2,
+        15: 51.0,
+        16: 56.0,
+        17: 61.2,
+        18: 66.6,
+        19: 72.2,
+        20: 78.0,
+    };
+
+    // ============================================================================
+    // DATA INITIALIZATION
+    // ============================================================================
+
+    function decompressInitClientData(compressedData) {
+        try {
+            const decompressedJson = LZString.decompressFromUTF16(compressedData);
+            if (!decompressedJson) {
+                throw new Error("decompressFromUTF16 returned null");
+            }
+            return JSON.parse(decompressedJson);
+        } catch (error) {
+            console.error("decompressInitClientData error:", error);
+            return null;
+        }
+    }
+
+    // Load static game data from localStorage
+    if (localStorage.getItem("initClientData")) {
+        const obj = decompressInitClientData(localStorage.getItem("initClientData"));
+        console.log("Loaded initClientData:", obj);
+
+        initData_actionDetailMap = obj.actionDetailMap;
+        initData_itemDetailMap = obj.itemDetailMap;
+
+        // Build item name to hrid mapping
+        for (const [key, value] of Object.entries(initData_itemDetailMap)) {
+            itemEnNameToHridMap[value.name] = key;
+        }
+    }
+
+    // ============================================================================
+    // WEBSOCKET HOOK
+    // ============================================================================
+
+    function hookWS() {
+        const dataProperty = Object.getOwnPropertyDescriptor(MessageEvent.prototype, "data");
+        const oriGet = dataProperty.get;
+
+        dataProperty.get = hookedGet;
+        Object.defineProperty(MessageEvent.prototype, "data", dataProperty);
+
+        function hookedGet() {
+            const socket = this.currentTarget;
+            if (!(socket instanceof WebSocket)) {
+                return oriGet.call(this);
+            }
+            if (socket.url.indexOf("api.milkywayidle.com/ws") <= -1 && socket.url.indexOf("api-test.milkywayidle.com/ws") <= -1) {
+                return oriGet.call(this);
+            }
+
+            const message = oriGet.call(this);
+            Object.defineProperty(this, "data", { value: message }); // Anti-loop
+
+            return handleMessage(message);
+        }
+    }
+
+    function handleMessage(message) {
+        let obj = JSON.parse(message);
+
+        // Character data (skills, items, houses, drinks)
+        if (obj && obj.type === "init_character_data") {
+            console.log("Received init_character_data:", obj);
+
+            initData_characterSkills = obj.characterSkills;
+            initData_characterItems = obj.characterItems;
+            initData_characterHouseRoomMap = obj.characterHouseRoomMap;
+            initData_actionTypeDrinkSlotsMap = obj.actionTypeDrinkSlotsMap;
+        }
+        // Static game data (actions, items definitions)
+        else if (obj && obj.type === "init_client_data") {
+            console.log("Received init_client_data:", obj);
+
+            initData_actionDetailMap = obj.actionDetailMap;
+            initData_itemDetailMap = obj.itemDetailMap;
+
+            // Build item name to hrid mapping
+            for (const [key, value] of Object.entries(initData_itemDetailMap)) {
+                itemEnNameToHridMap[value.name] = key;
+            }
+        }
+
+        return message;
+    }
+
+    hookWS();
+
+    // ============================================================================
+    // MARKET API
+    // ============================================================================
+
+    async function fetchMarketJSON(forceFetch = false) {
+        // Check cache (1 hour validity)
+        if (
+            !forceFetch &&
+            localStorage.getItem("MWI_ProfitCalc_marketAPI_timestamp") &&
+            Date.now() - localStorage.getItem("MWI_ProfitCalc_marketAPI_timestamp") < 3600000
+        ) {
+            return JSON.parse(localStorage.getItem("MWI_ProfitCalc_marketAPI_json"));
+        }
+
+        // Get appropriate XHR function
+        const sendRequest =
+            typeof GM.xmlHttpRequest === "function" ? GM.xmlHttpRequest : typeof GM_xmlhttpRequest === "function" ? GM_xmlhttpRequest : null;
+
+        if (typeof sendRequest != "function") {
+            console.error("No GM xmlHttpRequest available");
+            return null;
+        }
+
+        // Fetch from API
+        console.log("Fetching market data from API...");
+        const response = await sendRequest({
+            url: MARKET_API_URL,
+            method: "GET",
+            synchronous: true,
+            timeout: 5000,
+        });
+
+        if (response?.status === 200) {
+            try {
+                const jsonObj = JSON.parse(response.responseText);
+
+                if (jsonObj && jsonObj.timestamp && jsonObj.marketData) {
+                    // Add fixed prices for non-tradeable items
+                    jsonObj.marketData["/items/coin"] = { 0: { a: 1, b: 1 } };
+                    jsonObj.marketData["/items/task_token"] = { 0: { a: 0, b: 0 } };
+
+                    // Save to cache
+                    localStorage.setItem("MWI_ProfitCalc_marketAPI_timestamp", Date.now());
+                    localStorage.setItem("MWI_ProfitCalc_marketAPI_json", JSON.stringify(jsonObj));
+
+                    console.log("Market data fetched successfully");
+                    return jsonObj;
+                }
+            } catch (error) {
+                console.error("Failed to parse market JSON:", error);
+            }
+        }
+
+        console.error("Failed to fetch market data");
+        return null;
+    }
+
+    // Fetch market data on load
+    fetchMarketJSON(true);
+
+    // ============================================================================
+    // BUFF CALCULATIONS
+    // ============================================================================
+
+    function getToolsSpeedBuffByActionHrid(actionHrid) {
+        let totalBuff = 0;
+        if (!initData_characterItems || !initData_actionDetailMap || !initData_itemDetailMap) {
+            return 0;
+        }
+
+        for (const item of initData_characterItems) {
+            if (item.itemLocationHrid.includes("_tool")) {
+                const buffName = actionHridToToolsSpeedBuffNamesMap[initData_actionDetailMap[actionHrid].type];
+                const enhanceBonus = 1 + itemEnhanceLevelToBuffBonusMap[item.enhancementLevel] / 100;
+                const buff = initData_itemDetailMap[item.itemHrid].equipmentDetail?.noncombatStats[buffName] || 0;
+                totalBuff += buff * enhanceBonus;
+            }
+        }
+        return Number(totalBuff * 100).toFixed(1);
+    }
+
+    function getItemEffiBuffByActionHrid(actionHrid) {
+        let buff = 0;
+        if (!initData_characterItems || !initData_actionDetailMap || !initData_itemDetailMap) {
+            return 0;
+        }
+
+        const propertyName = initData_actionDetailMap[actionHrid].type.replace("/action_types/", "") + "Efficiency";
+
+        for (const item of initData_characterItems) {
+            if (item.itemLocationHrid === "/item_locations/inventory") {
+                continue;
+            }
+            const itemDetail = initData_itemDetailMap[item.itemHrid];
+            const specificStat = itemDetail?.equipmentDetail?.noncombatStats[propertyName];
+            if (specificStat && specificStat > 0) {
+                const enhanceBonus = 1 + itemEnhanceLevelToBuffBonusMap[item.enhancementLevel] / 100;
+                buff += specificStat * enhanceBonus;
+            }
+        }
+        return Number(buff * 100).toFixed(1);
+    }
+
+    function getHousesEffBuffByActionHrid(actionHrid) {
+        if (!initData_characterHouseRoomMap || !initData_actionDetailMap) {
+            return 0;
+        }
+
+        const houseName = actionHridToHouseNamesMap[initData_actionDetailMap[actionHrid].type];
+        if (!houseName) {
+            return 0;
+        }
+        const house = initData_characterHouseRoomMap[houseName];
+        if (!house) {
+            return 0;
+        }
+        return house.level * 1.5;
+    }
+
+    function getTeaBuffsByActionHrid(actionHrid) {
+        const teaBuffs = {
+            efficiency: 0, // Efficiency tea, specific teas, -Artisan tea
+            quantity: 0, // Gathering tea, Gourmet tea
+            lessResource: 0, // Artisan tea
+            extraExp: 0, // Wisdom tea (not used)
+            upgradedProduct: 0, // Processing tea (not used)
+        };
+
+        if (!initData_actionTypeDrinkSlotsMap || !initData_actionDetailMap || !initData_itemDetailMap) {
+            return teaBuffs;
+        }
+
+        const actionTypeId = initData_actionDetailMap[actionHrid].type;
+        const teaList = initData_actionTypeDrinkSlotsMap[actionTypeId];
+
+        if (!teaList) {
+            return teaBuffs;
+        }
+
+        for (const tea of teaList) {
+            if (!tea || !tea.itemHrid) {
+                continue;
+            }
+
+            const itemDetail = initData_itemDetailMap[tea.itemHrid];
+            if (!itemDetail?.consumableDetail?.buffs) {
+                continue;
+            }
+
+            for (const buff of itemDetail.consumableDetail.buffs) {
+                if (buff.typeHrid === "/buff_types/artisan") {
+                    teaBuffs.lessResource += buff.flatBoost * 100;
+                } else if (buff.typeHrid === "/buff_types/action_level") {
+                    teaBuffs.efficiency -= buff.flatBoost;
+                } else if (buff.typeHrid === "/buff_types/gathering") {
+                    teaBuffs.quantity += buff.flatBoost * 100;
+                } else if (buff.typeHrid === "/buff_types/gourmet") {
+                    teaBuffs.quantity += buff.flatBoost * 100;
+                } else if (buff.typeHrid === "/buff_types/wisdom") {
+                    teaBuffs.extraExp += buff.flatBoost * 100;
+                } else if (buff.typeHrid === "/buff_types/processing") {
+                    teaBuffs.upgradedProduct += buff.flatBoost * 100;
+                } else if (buff.typeHrid === "/buff_types/efficiency") {
+                    teaBuffs.efficiency += buff.flatBoost * 100;
+                } else if (buff.typeHrid === `/buff_types/${actionTypeId.replace("/action_types/", "")}_level`) {
+                    teaBuffs.efficiency += buff.flatBoost;
+                }
+            }
+        }
+
+        return teaBuffs;
+    }
+
+    // ============================================================================
+    // PROFIT CALCULATION
+    // ============================================================================
+
+    async function calculateProfit(itemHrid, actionHrid, marketJson) {
+        if (!initData_actionDetailMap || !initData_itemDetailMap || !initData_characterSkills) {
+            return null;
+        }
+
+        // Check if this is a production action (has input materials)
+        const isProduction =
+            initData_actionDetailMap[actionHrid].inputItems && initData_actionDetailMap[actionHrid].inputItems.length > 0;
+
+        // Get tea buffs
+        const teaBuffs = getTeaBuffsByActionHrid(actionHrid);
+
+        // Calculate resource costs
+        let inputItems = [];
+        let totalResourcesAskPricePerAction = 0;
+
+        if (isProduction) {
+            inputItems = JSON.parse(JSON.stringify(initData_actionDetailMap[actionHrid].inputItems));
+            for (const item of inputItems) {
+                item.name = initData_itemDetailMap[item.itemHrid].name;
+                item.perAskPrice = marketJson?.marketData[item.itemHrid]?.[0].a || 0;
+                totalResourcesAskPricePerAction += item.perAskPrice * item.count;
+            }
+
+            // Apply artisan tea (less resource consumption)
+            totalResourcesAskPricePerAction *= 1 - teaBuffs.lessResource / 100;
+        }
+
+        // Calculate drink costs per hour
+        let drinksConsumedPerHourAskPrice = 0;
+        const drinksList = initData_actionTypeDrinkSlotsMap?.[initData_actionDetailMap[actionHrid].type] || [];
+        for (const drink of drinksList) {
+            if (drink && drink.itemHrid) {
+                drinksConsumedPerHourAskPrice += (marketJson?.marketData[drink.itemHrid]?.[0].a ?? 0) * 12;
+            }
+        }
+
+        // Calculate actions per hour (with tool speed buffs)
+        const baseTimePerActionSec = initData_actionDetailMap[actionHrid].baseTimeCost / 1000000000;
+        const toolPercent = getToolsSpeedBuffByActionHrid(actionHrid);
+        const actualTimePerActionSec = baseTimePerActionSec / (1 + toolPercent / 100);
+        let actionPerHour = 3600 / actualTimePerActionSec;
+
+        // Calculate items per hour
+        let droprate = null;
+        if (isProduction) {
+            droprate = initData_actionDetailMap[actionHrid].outputItems[0].count;
+        } else {
+            const dropTable = initData_actionDetailMap[actionHrid].dropTable[0];
+            droprate = (dropTable.minCount + dropTable.maxCount) / 2;
+        }
+        let itemPerHour = actionPerHour * droprate;
+
+        // Get level efficiency buff (overleveling)
+        const requiredLevel = initData_actionDetailMap[actionHrid].levelRequirement.level;
+        let currentLevel = requiredLevel;
+        for (const skill of initData_characterSkills) {
+            if (skill.skillHrid === initData_actionDetailMap[actionHrid].levelRequirement.skillHrid) {
+                currentLevel = skill.level;
+                break;
+            }
+        }
+        const levelEffBuff = currentLevel - requiredLevel > 0 ? currentLevel - requiredLevel : 0;
+
+        // Get house efficiency buff
+        const houseEffBuff = getHousesEffBuffByActionHrid(actionHrid);
+
+        // Get equipment efficiency buff
+        const itemEffiBuff = Number(getItemEffiBuffByActionHrid(actionHrid));
+
+        // Apply total efficiency to actions and items
+        const totalEfficiency = levelEffBuff + houseEffBuff + teaBuffs.efficiency + itemEffiBuff;
+        actionPerHour *= 1 + totalEfficiency / 100;
+        itemPerHour *= 1 + totalEfficiency / 100;
+
+        // Calculate extra free items from tea (quantity buffs)
+        const extraFreeItemPerHour = (itemPerHour * teaBuffs.quantity) / 100;
+
+        // Get market prices
+        const ask = marketJson?.marketData[itemHrid]?.[0].a || 0;
+        const bid = marketJson?.marketData[itemHrid]?.[0].b || 0;
+        const bidAfterTax = bid * 0.98; // 2% market tax
+
+        // Calculate profit per hour
+        let profitPerHour;
+        if (isProduction) {
+            profitPerHour =
+                itemPerHour * (bidAfterTax - totalResourcesAskPricePerAction / droprate) +
+                extraFreeItemPerHour * bidAfterTax -
+                drinksConsumedPerHourAskPrice;
+        } else {
+            profitPerHour = itemPerHour * bidAfterTax + extraFreeItemPerHour * bidAfterTax - drinksConsumedPerHourAskPrice;
+        }
+
+        return {
+            isProduction,
+            inputItems,
+            totalResourcesAskPricePerAction,
+            drinksConsumedPerHourAskPrice,
+            baseTimePerActionSec,
+            toolPercent,
+            actionPerHour,
+            itemPerHour,
+            extraFreeItemPerHour,
+            levelEffBuff,
+            houseEffBuff,
+            teaBuffs,
+            itemEffiBuff,
+            totalEfficiency,
+            droprate,
+            ask,
+            bid,
+            bidAfterTax,
+            profitPerHour,
+        };
+    }
+
+    // ============================================================================
+    // TOOLTIP HANDLER
+    // ============================================================================
+
+    function getOriTextFromElement(elem) {
+        if (!elem) return "";
+        return elem.getAttribute("data-original-text") || elem.textContent;
+    }
+
+    function numberFormatter(num, digits = 1) {
+        if (num === null || num === undefined) {
+            return "N/A";
+        }
+        if (num < 0) {
+            return "-" + numberFormatter(-num);
+        }
+        const lookup = [
+            { value: 1, symbol: "" },
+            { value: 1e3, symbol: "k" },
+            { value: 1e6, symbol: "M" },
+            { value: 1e9, symbol: "B" },
+        ];
+        const rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
+        var item = lookup
+            .slice()
+            .reverse()
+            .find(function (item) {
+                return num >= item.value;
+            });
+        return item ? (num / item.value).toFixed(digits).replace(rx, "$1") + item.symbol : "0";
+    }
+
+    function getActionHridFromItemName(name) {
+        let newName = name.replace("Milk", "Cow");
+        newName = newName.replace("Log", "Tree");
+        newName = newName.replace("Cowing", "Milking");
+        newName = newName.replace("Rainbow Cow", "Unicow");
+
+        if (!initData_actionDetailMap) {
+            return null;
+        }
+
+        for (const action of Object.values(initData_actionDetailMap)) {
+            if (action.name === newName) {
+                return action.hrid;
+            }
+        }
+        return null;
+    }
+
+    async function handleTooltipItem(tooltip) {
+        const itemNameElem = tooltip.querySelector("div.ItemTooltipText_name__2JAHA span");
+        if (!itemNameElem) return;
+
+        let itemName = getOriTextFromElement(itemNameElem);
+        const itemHrid = itemEnNameToHridMap[itemName];
+        if (!itemHrid) return;
+
+        // Find insertion point
+        let insertAfterElem = null;
+        const amountSpan = tooltip.querySelectorAll("span")[1];
+        if (amountSpan && getOriTextFromElement(amountSpan).includes("Amount:")) {
+            insertAfterElem = amountSpan.parentNode.nextSibling;
+        } else {
+            insertAfterElem = tooltip.querySelectorAll("span")[0].parentNode.nextSibling;
+        }
+
+        if (!insertAfterElem) return;
+
+        // Get market data
+        const marketJson = await fetchMarketJSON();
+        if (!marketJson) return;
+
+        const ask = marketJson?.marketData[itemHrid]?.[0].a;
+        const bid = marketJson?.marketData[itemHrid]?.[0].b;
+
+        let appendHTMLStr = "";
+
+        // Show market prices
+        appendHTMLStr += `<div style="color: ${SCRIPT_COLOR_TOOLTIP};">Price: ${numberFormatter(ask)} / ${numberFormatter(bid)}</div>`;
+
+        // Calculate profit if this item is producible
+        const actionHrid = getActionHridFromItemName(itemName);
+        if (!actionHrid) {
+            insertAfterElem.insertAdjacentHTML("afterend", appendHTMLStr);
+            return;
+        }
+
+        const profit = await calculateProfit(itemHrid, actionHrid, marketJson);
+        if (!profit) {
+            insertAfterElem.insertAdjacentHTML("afterend", appendHTMLStr);
+            return;
+        }
+
+        // Add profit information header
+        appendHTMLStr += `<div style="color: ${SCRIPT_COLOR_TOOLTIP}; font-size: 0.625rem;">Production profit (Ask price in, Bid price out after tax; Not including processing tea, community buffs, rare drops, pouch buffs):</div>`;
+
+        // Show input materials table for production actions
+        if (profit.isProduction && profit.inputItems.length > 0) {
+            appendHTMLStr += `
+                <div style="color: ${SCRIPT_COLOR_TOOLTIP}; font-size: 0.625rem;">
+                    <table style="width:100%; border-collapse: collapse;">
+                        <tr style="border-bottom: 1px solid ${SCRIPT_COLOR_TOOLTIP};">
+                            <th style="text-align: left;">Material</th>
+                            <th style="text-align: center;">Count</th>
+                            <th style="text-align: right;">Ask</th>
+                        </tr>
+                        <tr style="border-bottom: 1px solid ${SCRIPT_COLOR_TOOLTIP};">
+                            <td style="text-align: left;"><b>Total</b></td>
+                            <td style="text-align: center;"><b>${profit.inputItems.reduce((sum, item) => sum + item.count, 0)}</b></td>
+                            <td style="text-align: right;"><b>${numberFormatter(profit.totalResourcesAskPricePerAction)}</b></td>
+                        </tr>`;
+
+            for (const item of profit.inputItems) {
+                appendHTMLStr += `
+                    <tr>
+                        <td style="text-align: left;">${item.name}</td>
+                        <td style="text-align: center;">${item.count}</td>
+                        <td style="text-align: right;">${numberFormatter(item.perAskPrice)}</td>
+                    </tr>`;
+            }
+            appendHTMLStr += `</table></div>`;
+        }
+
+        // Show buff details
+        appendHTMLStr += `<div style="color: ${SCRIPT_COLOR_TOOLTIP}; font-size: 0.625rem;">${profit.baseTimePerActionSec.toFixed(
+            2
+        )}s base speed, x${profit.droprate} base drop rate, +${profit.toolPercent}% tool speed, +${profit.levelEffBuff}% level eff, +${
+            profit.houseEffBuff
+        }% house eff, +${profit.teaBuffs.efficiency}% tea eff, +${profit.itemEffiBuff}% equipment eff, +${
+            profit.teaBuffs.quantity
+        }% tea extra outcome, +${profit.teaBuffs.lessResource}% tea lower resource</div>`;
+
+        // Show drinks consumption
+        appendHTMLStr += `<div style="color: ${SCRIPT_COLOR_TOOLTIP}; font-size: 0.625rem;">Drinks consumed per hour: ${numberFormatter(
+            profit.drinksConsumedPerHourAskPrice
+        )}</div>`;
+
+        // Show production statistics
+        appendHTMLStr += `<div style="color: ${SCRIPT_COLOR_TOOLTIP}; font-size: 0.625rem;">Actions per hour: ${Number(
+            profit.actionPerHour
+        ).toFixed(1)} times, Production per hour: ${Number(profit.itemPerHour + profit.extraFreeItemPerHour).toFixed(1)} items</div>`;
+
+        // Show profit summary
+        appendHTMLStr += `<div style="color: ${SCRIPT_COLOR_TOOLTIP};">Profit: ${numberFormatter(
+            profit.profitPerHour / profit.actionPerHour
+        )}/action, ${numberFormatter(profit.profitPerHour)}/hour, ${numberFormatter(24 * profit.profitPerHour)}/day</div>`;
+
+        insertAfterElem.insertAdjacentHTML("afterend", appendHTMLStr);
+    }
+
+    // ============================================================================
+    // TOOLTIP OBSERVER
+    // ============================================================================
+
+    const tooltipObserver = new MutationObserver(async function (mutations) {
+        for (const mutation of mutations) {
+            for (const added of mutation.addedNodes) {
+                if (added.classList && added.classList.contains("MuiTooltip-popper")) {
+                    if (added.querySelector("div.ItemTooltipText_name__2JAHA")) {
+                        await handleTooltipItem(added);
+                    }
+                }
+            }
+        }
+    });
+
+    tooltipObserver.observe(document.body, { attributes: false, childList: true, characterData: false });
+
+    console.log("MWI Profit Calculator loaded successfully!");
+})();
