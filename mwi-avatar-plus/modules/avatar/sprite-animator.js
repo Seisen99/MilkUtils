@@ -97,6 +97,9 @@ const SpriteAnimator = {
                 });
 
                 // Apply spritesheet animation
+                // Calculate scaling: avatar height / frame height to maintain aspect ratio
+                const scale = `calc(100% * ${frameCount})`;
+                
                 this.element.style.cssText = `
                     width: 100%;
                     height: 100%;
@@ -110,7 +113,7 @@ const SpriteAnimator = {
                     image-rendering: -moz-crisp-edges;
                     image-rendering: crisp-edges;
                     background-image: url('${animConfig.url}');
-                    background-size: ${frameWidth * frameCount}px ${frameHeight}px;
+                    background-size: ${scale} 100%;
                     background-position: 0 center;
                     background-repeat: no-repeat;
                     animation: sprite-animation-${avatarId} ${duration}ms steps(${frameCount}) ${loop ? 'infinite' : 'forwards'};
@@ -128,8 +131,8 @@ const SpriteAnimator = {
 
                 styleElement.textContent = `
                     @keyframes sprite-animation-${avatarId} {
-                        from { background-position: 0 center; }
-                        to { background-position: -${frameWidth * frameCount}px center; }
+                        from { background-position: 0% center; }
+                        to { background-position: 100% center; }
                     }
                 `;
 
