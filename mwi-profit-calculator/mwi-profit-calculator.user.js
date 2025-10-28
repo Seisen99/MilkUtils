@@ -3,7 +3,7 @@
 // @namespace    http://tampermonkey.net/
 // @version      2.0.0
 // @description  Calculate production profit for MilkyWayIdle items with detailed tooltips (Refactored)
-// @author       Extracted from MWITools
+// @author       Seisen
 // @match        https://www.milkywayidle.com/*
 // @match        https://test.milkywayidle.com/*
 // @icon         https://www.milkywayidle.com/favicon.svg
@@ -25,10 +25,10 @@
 
 /**
  * MWI Profit Calculator v2.0.0
- * 
+ *
  * This is the GitHub version with remote @require URLs.
  * Repository: https://github.com/Seisen99/MilkUtils
- * 
+ *
  * The ?v=X query parameter is used for cache busting when you update modules.
  * Increment the version number when you make changes to force browser to reload.
  */
