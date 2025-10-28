@@ -116,33 +116,33 @@ function createHitEffect(point, container, path, hitTarget = undefined, explosio
     if (hitDamage!==undefined) {
         const originalZIndex = hitDamage.style.zIndex || 'auto';
 
-        console.log('🎯 DEBUG hitDamage:', hitDamage);
-        console.log('🎨 DEBUG frameColor:', frameColor, 'frameBorderColor:', frameBorderColor);
-        console.log('⚙️ DEBUG trackerSetting:', trackerSetting);
-        console.log('📊 DEBUG hitDamage classes:', hitDamage.className);
-        console.log('🔍 DEBUG hitDamage innerText:', hitDamage.innerText);
+        // console.log('🎯 DEBUG hitDamage:', hitDamage);
+        // console.log('🎨 DEBUG frameColor:', frameColor, 'frameBorderColor:', frameBorderColor);
+        // console.log('⚙️ DEBUG trackerSetting:', trackerSetting);
+        // console.log('📊 DEBUG hitDamage classes:', hitDamage.className);
+        // console.log('🔍 DEBUG hitDamage innerText:', hitDamage.innerText);
 
         if (frameColor && frameBorderColor && trackerSetting) {
-            console.log('✅ Entering color animation block');
+            // console.log('✅ Entering color animation block');
             
             // Cancel any previous filter animations on this element to prevent color stacking
             const existingAnims = hitDamage.getAnimations();
-            console.log('🔄 Existing animations before cancel:', existingAnims.length);
+            // console.log('🔄 Existing animations before cancel:', existingAnims.length);
             existingAnims.forEach(anim => {
                 const keyframes = anim.effect?.getKeyframes?.() || [];
                 if (keyframes.some(kf => kf.filter)) {
-                    console.log('❌ Cancelling filter animation');
+                    // console.log('❌ Cancelling filter animation');
                     anim.cancel();
                 }
             });
             
             const hueFilter = calculateHueRotation(trackerSetting.frameR, trackerSetting.frameG, trackerSetting.frameB);
-            console.log('🌈 Calculated hueFilter:', hueFilter);
-            console.log('🎚️ keepOriginalDamageColor:', settingsMap.keepOriginalDamageColor.isTrue);
+            // console.log('🌈 Calculated hueFilter:', hueFilter);
+            // console.log('🎚️ keepOriginalDamageColor:', settingsMap.keepOriginalDamageColor.isTrue);
             
             if (settingsMap.keepOriginalDamageColor.isTrue) {
                 // Use hue-rotate filter for temporary color change (returns to red)
-                console.log('🔴 Mode: Fade to red');
+                // console.log('🔴 Mode: Fade to red');
                 const fadeAnim = hitDamage.animate([
                     { filter: `${hueFilter} brightness(1.2) saturate(1.5)`, offset: 0 },
                     { filter: `${hueFilter} brightness(1.2) saturate(1.5)`, offset: 0.85 },
@@ -152,10 +152,10 @@ function createHitEffect(point, container, path, hitTarget = undefined, explosio
                     easing: 'ease-out',
                     fill: 'none'
                 });
-                console.log('✨ Fade animation created:', fadeAnim);
+                // console.log('✨ Fade animation created:', fadeAnim);
             } else {
                 // Use hue-rotate filter with forwards fill and manual cleanup
-                console.log('🟢 Mode: Permanent color');
+                // console.log('🟢 Mode: Permanent color');
                 const animDuration = explosionSize < 3 ? 1500 : (explosionSize < 5 ? 1800 : 2100);
                 
                 hitDamage.animate([
@@ -166,12 +166,12 @@ function createHitEffect(point, container, path, hitTarget = undefined, explosio
                     easing: 'linear'
                 });
                 
-                console.log(`✨ Animation created with duration: ${animDuration}ms`);
+                // console.log(`✨ Animation created with duration: ${animDuration}ms`);
                 
                 // Cleanup shortly before damage text disappears
                 setTimeout(() => {
                     if (hitDamage && hitDamage.style) {
-                        console.log('🧹 Cleaning up filter styles');
+                        // console.log('🧹 Cleaning up filter styles');
                         // Cancel all filter animations
                         hitDamage.getAnimations().forEach(anim => {
                             const keyframes = anim.effect?.getKeyframes?.() || [];
@@ -184,7 +184,7 @@ function createHitEffect(point, container, path, hitTarget = undefined, explosio
                 }, animDuration - 100); // Cleanup 100ms before end
             }
         } else {
-            console.log('❌ NOT entering color animation block - missing params');
+            // console.log('❌ NOT entering color animation block - missing params');
         }
 
         if (explosionSize < 3) {

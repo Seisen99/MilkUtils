@@ -125,12 +125,12 @@ let wsTimingLogger = {
                 const elapsed = ((now - this.startTime) / 1000).toFixed(1);
                 const frequency = (this.messageCount / ((now - this.startTime) / 1000)).toFixed(2);
                 
-                console.log(`⏱️ WebSocket Stats (${this.messageCount} messages, ${elapsed}s):`, {
-                    avgInterval: `${avgInterval.toFixed(0)}ms`,
-                    minInterval: `${minInterval}ms`,
-                    maxInterval: `${maxInterval}ms`,
-                    frequency: `${frequency} msg/s`
-                });
+                // console.log(`⏱️ WebSocket Stats (${this.messageCount} messages, ${elapsed}s):`, {
+                //     avgInterval: `${avgInterval.toFixed(0)}ms`,
+                //     minInterval: `${minInterval}ms`,
+                //     maxInterval: `${maxInterval}ms`,
+                //     frequency: `${frequency} msg/s`
+                // });
             }
         }
         
@@ -225,21 +225,21 @@ function handleMessage(message) {
                         playersAbilityInfo[i] = null;
                     }
                 }
-                console.log(`   📐 Resized playersAbilityInfo to ${newPlayerCount} players (kept previous animations)`);
+                // console.log(`   📐 Resized playersAbilityInfo to ${newPlayerCount} players (kept previous animations)`);
             } else {
-                console.log(`   💾 Kept previous playersAbilityInfo for ${newPlayerCount} players`);
+                // console.log(`   💾 Kept previous playersAbilityInfo for ${newPlayerCount} players`);
             }
             
             // Re-export to window after updating arrays (critical for external access)
             window.playersAbilityInfo = playersAbilityInfo;
             window.playersLastAbility = playersLastAbility;
             
-            console.log(`✅ new_battle (ID: ${obj.battleId}): Initialized arrays for ${obj.players.length} players`);
-            console.log('   playersAbilityInfo:', playersAbilityInfo);
-            console.log('   playersLastAbility:', playersLastAbility);
-            console.log('   window.playersAbilityInfo:', window.playersAbilityInfo);
+            // console.log(`✅ new_battle (ID: ${obj.battleId}): Initialized arrays for ${obj.players.length} players`);
+            // console.log('   playersAbilityInfo:', playersAbilityInfo);
+            // console.log('   playersLastAbility:', playersLastAbility);
+            // console.log('   window.playersAbilityInfo:', window.playersAbilityInfo);
         } else {
-            console.log(`♻️ new_battle (ID: ${obj.battleId}): SKIPPED re-initialization (same battle)`);
+            // console.log(`♻️ new_battle (ID: ${obj.battleId}): SKIPPED re-initialization (same battle)`);
         }
     } else if (obj && obj.type === "battle_updated" && monstersHP.length) {
         const mMap = obj.mMap;
@@ -303,7 +303,7 @@ function handleMessage(message) {
                 // If a DoT ability is cast, activate DoT tracking (2 ticks for Firestorm)
                 if (DOT_ABILITIES.includes(playerData.abilityHrid)) {
                     playersActiveDoTs[userIndex] = { ticksRemaining: 2, ability: playerData.abilityHrid };
-                    console.log(`   🔥 DoT ability activated for player ${userIndex}`);
+                    // console.log(`   🔥 DoT ability activated for player ${userIndex}`);
                 }
             }
         });
