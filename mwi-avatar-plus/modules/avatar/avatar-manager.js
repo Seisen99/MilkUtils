@@ -41,7 +41,7 @@ function applyCustomAvatar() {
             if (!avatar) return false;
 
             if (!avatar._avatarId) {
-                avatar._avatarId = 'avatar_' + Date.now() + '_' + Math.random();
+                avatar._avatarId = 'avatar_' + Date.now() + '_' + Math.floor(Math.random() * 1000000);
             }
 
             const avatarKey = location + '-' + avatar._avatarId;

@@ -16,7 +16,7 @@ const SpriteAnimator = {
     createSpritesheetAvatar(avatarElement, config) {
         if (!avatarElement || !config) return null;
 
-        const avatarId = avatarElement._avatarId || ('sprite_' + Date.now() + '_' + Math.random());
+        const avatarId = avatarElement._avatarId || ('sprite_' + Date.now() + '_' + Math.floor(Math.random() * 1000000));
         avatarElement._avatarId = avatarId;
 
         // Create or get spritesheet container
