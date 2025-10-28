@@ -75,6 +75,7 @@ const SpriteAnimator = {
             element: spriteContainer,
             currentAnimation: 'idle',
             animationTimeout: null,
+            animationInterval: null,
 
             /**
              * Play a spritesheet animation
@@ -94,7 +95,11 @@ const SpriteAnimator = {
                     url: animConfig.url?.substring(0, 50)
                 });
                 
-                // Clear any existing timeout
+                // Clear any existing animation
+                if (this.animationInterval) {
+                    clearInterval(this.animationInterval);
+                    this.animationInterval = null;
+                }
                 if (this.animationTimeout) {
                     clearTimeout(this.animationTimeout);
                     this.animationTimeout = null;
@@ -115,26 +120,7 @@ const SpriteAnimator = {
                     totalWidth: frameWidth * frameCount
                 });
 
-                // Apply spritesheet animation
-                // Calculate scaling: avatar height / frame height to maintain aspect ratio
-                const scale = `calc(100% * ${frameCount})`;
-                
-                // Debug: check element dimensions
-                const rect = this.element.getBoundingClientRect();
-                console.log('🔍 Element dimensions:', {
-                    width: rect.width,
-                    height: rect.height,
-                    scale,
-                    imageUrl: animConfig.url
-                });
-                
-                // First set background image to check if it loads
-                this.element.style.backgroundImage = `url('${animConfig.url}')`;
-                this.element.style.backgroundSize = `${scale} 100%`;
-                this.element.style.backgroundPosition = '0 center';
-                this.element.style.backgroundRepeat = 'no-repeat';
-                
-                // Then apply full styles
+                // Apply spritesheet styles
                 this.element.style.cssText = `
                     width: 100%;
                     height: 100%;
@@ -148,52 +134,52 @@ const SpriteAnimator = {
                     image-rendering: -moz-crisp-edges;
                     image-rendering: crisp-edges;
                     background-image: url('${animConfig.url}');
-                    background-size: ${scale} 100%;
-                    background-position: 0 center;
+                    background-size: ${frameCount * 100}% 100%;
+                    background-position: 0 0;
                     background-repeat: no-repeat;
-                    animation: sprite-animation-${avatarId} ${duration}ms steps(${frameCount}) ${loop ? 'infinite' : 'forwards'};
                 `;
-                
-                // Debug: Check computed styles
-                setTimeout(() => {
-                    const computedStyle = window.getComputedStyle(this.element);
-                    console.log('🎨 Computed styles:', {
-                        backgroundImage: computedStyle.backgroundImage,
-                        backgroundSize: computedStyle.backgroundSize,
-                        backgroundPosition: computedStyle.backgroundPosition,
-                        animation: computedStyle.animation,
-                        width: computedStyle.width,
-                        height: computedStyle.height,
-                        display: computedStyle.display,
-                        visibility: computedStyle.visibility,
-                        zIndex: computedStyle.zIndex
-                    });
-                }, 100);
 
-                // Create keyframes dynamically
-                const styleId = `sprite-style-${avatarId}`;
-                let styleElement = document.getElementById(styleId);
-                
-                if (!styleElement) {
-                    styleElement = document.createElement('style');
-                    styleElement.id = styleId;
-                    document.head.appendChild(styleElement);
-                }
+                // Debug: check element dimensions
+                const rect = this.element.getBoundingClientRect();
+                console.log('🔍 Element dimensions:', {
+                    width: rect.width,
+                    height: rect.height,
+                    imageUrl: animConfig.url?.substring(0, 50)
+                });
 
-                styleElement.textContent = `
-                    @keyframes sprite-animation-${avatarId} {
-                        from { background-position: 0% center; }
-                        to { background-position: 100% center; }
+                // Manual frame animation using JavaScript
+                let currentFrame = 0;
+                const frameDuration = duration / frameCount;
+                
+                const updateFrame = () => {
+                    const xPos = -(currentFrame * 100);
+                    this.element.style.backgroundPosition = `${xPos}% 0`;
+                    
+                    console.log(`Frame ${currentFrame + 1}/${frameCount} - Position: ${xPos}%`);
+                    
+                    currentFrame++;
+                    
+                    if (currentFrame >= frameCount) {
+                        if (loop) {
+                            currentFrame = 0;
+                        } else {
+                            clearInterval(this.animationInterval);
+                            this.animationInterval = null;
+                            if (onComplete) onComplete();
+                        }
                     }
-                `;
+                };
 
-                // Handle animation completion for non-looping animations
-                if (!loop && onComplete) {
-                    this.animationTimeout = setTimeout(() => {
-                        onComplete();
-                    }, duration);
+                // Start with first frame
+                updateFrame();
+                
+                // Continue animation
+                if (frameCount > 1) {
+                    this.animationInterval = setInterval(updateFrame, frameDuration);
                 }
-            },
+
+                // Store interval reference
+                this.animationInterval = this.animationInterval;
 
             /**
              * Switch to idle animation
@@ -224,6 +210,9 @@ const SpriteAnimator = {
             destroy() {
                 if (this.animationTimeout) {
                     clearTimeout(this.animationTimeout);
+                }
+                if (this.animationInterval) {
+                    clearInterval(this.animationInterval);
                 }
                 const styleId = `sprite-style-${avatarId}`;
                 const styleElement = document.getElementById(styleId);
