@@ -18,8 +18,8 @@
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/feature/spritesheet-animations/mwi-avatar-plus/modules/ui/toast.js?v=1
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/feature/spritesheet-animations/mwi-avatar-plus/modules/ui/color-picker.js?v=2
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/feature/spritesheet-animations/mwi-avatar-plus/modules/ui/settings-panel.js?v=12
-// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/feature/spritesheet-animations/mwi-avatar-plus/modules/avatar/sprite-animator.js?v=4
-// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/feature/spritesheet-animations/mwi-avatar-plus/modules/avatar/avatar-manager.js?v=5
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/feature/spritesheet-animations/mwi-avatar-plus/modules/avatar/sprite-animator.js?v=5
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/feature/spritesheet-animations/mwi-avatar-plus/modules/avatar/avatar-manager.js?v=6
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/feature/spritesheet-animations/mwi-avatar-plus/modules/avatar/avatar-observer.js?v=1
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/feature/spritesheet-animations/mwi-avatar-plus/abilities_database.js?v=2
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/feature/spritesheet-animations/mwi-avatar-plus/modules/animations/utils/svg-paths.js?v=1
