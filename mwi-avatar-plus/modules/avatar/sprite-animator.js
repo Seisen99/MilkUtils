@@ -68,6 +68,13 @@ const SpriteAnimator = {
 
                 this.currentAnimation = animationType;
                 
+                console.log('🎬 Playing animation:', animationType, {
+                    frames: animConfig.frames,
+                    duration: animConfig.duration,
+                    loop: animConfig.loop,
+                    url: animConfig.url?.substring(0, 50)
+                });
+                
                 // Clear any existing timeout
                 if (this.animationTimeout) {
                     clearTimeout(this.animationTimeout);
@@ -79,6 +86,15 @@ const SpriteAnimator = {
                 const frameCount = animConfig.frames || 1;
                 const duration = animConfig.duration || 1000;
                 const loop = animConfig.loop !== undefined ? animConfig.loop : (animationType === 'idle');
+                
+                console.log('📐 Animation params:', {
+                    frameWidth,
+                    frameHeight,
+                    frameCount,
+                    duration,
+                    loop,
+                    totalWidth: frameWidth * frameCount
+                });
 
                 // Apply spritesheet animation
                 this.element.style.cssText = `
