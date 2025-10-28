@@ -13,7 +13,7 @@
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/feature/spritesheet-animations/mwi-avatar-plus/modules/utils/geometry.js?v=1
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/feature/spritesheet-animations/mwi-avatar-plus/modules/utils/colors.js?v=1
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/feature/spritesheet-animations/mwi-avatar-plus/modules/core/constants.js?v=5
-// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/feature/spritesheet-animations/mwi-avatar-plus/modules/core/settings.js?v=5
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/feature/spritesheet-animations/mwi-avatar-plus/modules/core/settings.js?v=6
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/feature/spritesheet-animations/mwi-avatar-plus/modules/ui/styles.js?v=7
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/feature/spritesheet-animations/mwi-avatar-plus/modules/ui/toast.js?v=1
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/feature/spritesheet-animations/mwi-avatar-plus/modules/ui/color-picker.js?v=2
