@@ -49,8 +49,9 @@ function applyCustomAvatar() {
                 return false;
             }
 
-            // Check if using spritesheet animations
-            const useSpritesheet = settingsMap.spritesheetAvatar && 
+            // Check if using spritesheet animations (requires custom avatar to be enabled too)
+            const useSpritesheet = settingsMap.customAvatar.isTrue &&
+                                   settingsMap.spritesheetAvatar && 
                                    settingsMap.spritesheetAvatar.enabled && 
                                    settingsMap.spritesheetAvatar.idleUrl;
 
@@ -78,7 +79,7 @@ function applyCustomAvatar() {
                 SpriteAnimator.createSpritesheetAvatar(avatar, config);
                 appliedAvatars.add(avatarKey);
                 return true;
-            } else {
+            } else if (settingsMap.customAvatar.isTrue && settingsMap.customAvatar.avatarUrl) {
                 // Use simple image for static avatars
                 let img = avatar.querySelector('img.custom-avatar-img');
                 const avatarInner = avatar.querySelector('.FullAvatar_avatar__2w8kS');
@@ -121,6 +122,9 @@ function applyCustomAvatar() {
                     return true;
                 }
 
+                return false;
+            } else {
+                // No custom avatar configured, keep default avatar visible
                 return false;
             }
         };
