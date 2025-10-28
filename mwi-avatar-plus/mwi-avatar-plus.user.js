@@ -2,7 +2,7 @@
 // @name         MWI-Avatar-Plus
 // @name:en      MWI-Avatar-Plus
 // @namespace    http://tampermonkey.net/
-// @version      2.6.0
+// @version      2.6.1
 // @description:en Visualizing Attack/Heal Effects with SVG Animations + Custom Avatar Support + Auto-Detection + Spritesheet Animations
 // @author       Seisen
 // @license MIT

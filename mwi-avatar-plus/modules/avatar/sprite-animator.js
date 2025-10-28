@@ -19,6 +19,17 @@ const SpriteAnimator = {
         const avatarId = avatarElement._avatarId || ('sprite_' + Date.now() + '_' + Math.floor(Math.random() * 1000000));
         avatarElement._avatarId = avatarId;
 
+        // Debug avatar structure
+        console.log('🏗️ Avatar element structure:', {
+            element: avatarElement,
+            className: avatarElement.className,
+            innerHTML: avatarElement.innerHTML.substring(0, 200),
+            currentStyle: {
+                position: avatarElement.style.position,
+                overflow: avatarElement.style.overflow
+            }
+        });
+        
         // Create or get spritesheet container
         let spriteContainer = avatarElement.querySelector('.sprite-animation-container');
         
@@ -42,12 +53,20 @@ const SpriteAnimator = {
             // Hide default avatar elements
             const avatarInner = avatarElement.querySelector('.FullAvatar_avatar__2w8kS');
             const outfitInner = avatarElement.querySelector('.FullAvatar_avatarOutfit__3GHXg');
+            
+            console.log('👤 Found avatar elements:', {
+                avatarInner: !!avatarInner,
+                outfitInner: !!outfitInner
+            });
+            
             if (avatarInner) avatarInner.style.display = 'none';
             if (outfitInner) outfitInner.style.display = 'none';
             
             avatarElement.style.position = 'relative';
             avatarElement.style.overflow = 'visible';
             avatarElement.insertBefore(spriteContainer, avatarElement.firstChild);
+            
+            console.log('✅ Sprite container created and inserted');
         }
 
         // Animation controller
@@ -100,6 +119,22 @@ const SpriteAnimator = {
                 // Calculate scaling: avatar height / frame height to maintain aspect ratio
                 const scale = `calc(100% * ${frameCount})`;
                 
+                // Debug: check element dimensions
+                const rect = this.element.getBoundingClientRect();
+                console.log('🔍 Element dimensions:', {
+                    width: rect.width,
+                    height: rect.height,
+                    scale,
+                    imageUrl: animConfig.url
+                });
+                
+                // First set background image to check if it loads
+                this.element.style.backgroundImage = `url('${animConfig.url}')`;
+                this.element.style.backgroundSize = `${scale} 100%`;
+                this.element.style.backgroundPosition = '0 center';
+                this.element.style.backgroundRepeat = 'no-repeat';
+                
+                // Then apply full styles
                 this.element.style.cssText = `
                     width: 100%;
                     height: 100%;
@@ -118,6 +153,22 @@ const SpriteAnimator = {
                     background-repeat: no-repeat;
                     animation: sprite-animation-${avatarId} ${duration}ms steps(${frameCount}) ${loop ? 'infinite' : 'forwards'};
                 `;
+                
+                // Debug: Check computed styles
+                setTimeout(() => {
+                    const computedStyle = window.getComputedStyle(this.element);
+                    console.log('🎨 Computed styles:', {
+                        backgroundImage: computedStyle.backgroundImage,
+                        backgroundSize: computedStyle.backgroundSize,
+                        backgroundPosition: computedStyle.backgroundPosition,
+                        animation: computedStyle.animation,
+                        width: computedStyle.width,
+                        height: computedStyle.height,
+                        display: computedStyle.display,
+                        visibility: computedStyle.visibility,
+                        zIndex: computedStyle.zIndex
+                    });
+                }, 100);
 
                 // Create keyframes dynamically
                 const styleId = `sprite-style-${avatarId}`;

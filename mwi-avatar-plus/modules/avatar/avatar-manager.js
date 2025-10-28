@@ -76,6 +76,11 @@ function applyCustomAvatar() {
                     }
                 };
 
+                console.log('🎮 Creating spritesheet avatar with config:', {
+                    settingsMap: settingsMap.spritesheetAvatar,
+                    config
+                });
+
                 SpriteAnimator.createSpritesheetAvatar(avatar, config);
                 appliedAvatars.add(avatarKey);
                 return true;
