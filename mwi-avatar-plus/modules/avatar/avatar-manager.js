@@ -49,48 +49,80 @@ function applyCustomAvatar() {
                 return false;
             }
 
-            let img = avatar.querySelector('img.custom-avatar-img');
-            const avatarInner = avatar.querySelector('.FullAvatar_avatar__2w8kS');
-            const outfitInner = avatar.querySelector('.FullAvatar_avatarOutfit__3GHXg');
+            // Check if using spritesheet animations
+            const useSpritesheet = settingsMap.spritesheetAvatar && 
+                                   settingsMap.spritesheetAvatar.enabled && 
+                                   settingsMap.spritesheetAvatar.idleUrl;
 
-            if (!img) {
-                img = document.createElement('img');
-                img.className = 'custom-avatar-img';
-                img.style.cssText = `
-                    width: 100%;
-                    height: 100%;
-                    object-fit: cover;
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    z-index: 1;
-                    border-radius: inherit;
-                    pointer-events: none;
-                `;
+            if (useSpritesheet) {
+                // Use SpriteAnimator for animated avatars
+                const config = {
+                    idle: {
+                        url: settingsMap.spritesheetAvatar.idleUrl,
+                        frames: settingsMap.spritesheetAvatar.idleFrames || 6,
+                        frameWidth: settingsMap.spritesheetAvatar.frameWidth || 231,
+                        frameHeight: settingsMap.spritesheetAvatar.frameHeight || 190,
+                        duration: settingsMap.spritesheetAvatar.idleDuration || 600,
+                        loop: true
+                    },
+                    cast: {
+                        url: settingsMap.spritesheetAvatar.castUrl || settingsMap.spritesheetAvatar.idleUrl,
+                        frames: settingsMap.spritesheetAvatar.castFrames || 8,
+                        frameWidth: settingsMap.spritesheetAvatar.frameWidth || 231,
+                        frameHeight: settingsMap.spritesheetAvatar.frameHeight || 190,
+                        duration: settingsMap.spritesheetAvatar.castDuration || 800,
+                        loop: false
+                    }
+                };
 
-                avatar.style.position = 'relative';
-                avatar.style.overflow = 'visible';
-
-                if (avatarInner) avatarInner.style.display = 'none';
-                if (outfitInner) outfitInner.style.display = 'none';
-
-                avatar.insertBefore(img, avatar.firstChild);
-            }
-
-            if (img && img.src !== settingsMap.customAvatar.avatarUrl) {
-                img.src = settingsMap.customAvatar.avatarUrl;
-                img.style.zIndex = '1';
-
-                if (avatarInner) avatarInner.style.display = 'none';
-                if (outfitInner) outfitInner.style.display = 'none';
-
-                avatar.style.overflow = 'visible';
-
+                SpriteAnimator.createSpritesheetAvatar(avatar, config);
                 appliedAvatars.add(avatarKey);
                 return true;
-            }
+            } else {
+                // Use simple image for static avatars
+                let img = avatar.querySelector('img.custom-avatar-img');
+                const avatarInner = avatar.querySelector('.FullAvatar_avatar__2w8kS');
+                const outfitInner = avatar.querySelector('.FullAvatar_avatarOutfit__3GHXg');
 
-            return false;
+                if (!img) {
+                    img = document.createElement('img');
+                    img.className = 'custom-avatar-img';
+                    img.style.cssText = `
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover;
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        z-index: 1;
+                        border-radius: inherit;
+                        pointer-events: none;
+                    `;
+
+                    avatar.style.position = 'relative';
+                    avatar.style.overflow = 'visible';
+
+                    if (avatarInner) avatarInner.style.display = 'none';
+                    if (outfitInner) outfitInner.style.display = 'none';
+
+                    avatar.insertBefore(img, avatar.firstChild);
+                }
+
+                if (img && img.src !== settingsMap.customAvatar.avatarUrl) {
+                    img.src = settingsMap.customAvatar.avatarUrl;
+                    img.style.zIndex = '1';
+
+                    if (avatarInner) avatarInner.style.display = 'none';
+                    if (outfitInner) outfitInner.style.display = 'none';
+
+                    avatar.style.overflow = 'visible';
+
+                    appliedAvatars.add(avatarKey);
+                    return true;
+                }
+
+                return false;
+            }
         };
 
         // Apply to header avatar

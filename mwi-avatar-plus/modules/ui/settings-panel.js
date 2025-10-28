@@ -23,6 +23,9 @@ function waitForSetttins() {
             // Custom Avatar Section
             createCustomAvatarSectionNew(insertElem, settingsMap.customAvatar);
 
+            // Spritesheet Avatar Section
+            createSpritesheetAvatarSection(insertElem, settingsMap.spritesheetAvatar);
+
             // My Character Color Section
             createMyCharacterColorSection(insertElem, settingsMap.myCharacterColor);
 
@@ -861,6 +864,172 @@ function createSimpleSetting(insertElem, setting) {
             <span style="color: #fff; font-weight: 500; font-size: 14px;">${setting.desc}</span>
         </div>`
     );
+}
+
+/**
+ * Create Spritesheet Avatar section with controls
+ */
+function createSpritesheetAvatarSection(insertElem, setting) {
+    insertElem.insertAdjacentHTML(
+        "beforeend",
+        `<div class="spritesheet-avatar-section" style="margin-bottom: 20px; padding: 16px; background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(255, 175, 123, 0.1)); border-radius: 12px; border: 1px solid rgba(255, 107, 107, 0.3);">
+            <div class="section-title" style="color: #FF6B6B; font-size: 15px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                🎮 ${isZH ? "精灵动画头像" : "Spritesheet Avatar Animations"}
+            </div>
+            <p style="color: #999; font-size: 12px; margin: 8px 0 12px 0; line-height: 1.5;">
+                ${isZH ? "使用精灵表单图像（spritesheet）为头像添加动画效果。需要idle和cast两个动画。" 
+                       : "Add animated avatar using spritesheet images. Requires idle and cast animation spritesheets."}
+            </p>
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
+                <input type="checkbox" id="spritesheet-enabled" ${setting.enabled ? "checked" : ""}></input>
+                <span style="color: #fff; font-weight: 500; font-size: 14px;">${isZH ? "启用精灵动画" : "Enable Spritesheet Animations"}</span>
+            </div>
+            
+            <!-- Idle Animation -->
+            <div class="sprite-config-row" style="margin-bottom: 16px; padding: 12px; background: rgba(0,0,0,0.2); border-radius: 8px;">
+                <div style="color: #4ECDC4; font-weight: 600; margin-bottom: 8px; font-size: 13px;">
+                    💤 ${isZH ? "待机动画 (Idle)" : "Idle Animation"}
+                </div>
+                <input type="file" id="spritesheet-idle-input" accept="image/*" style="display:none">
+                <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 8px;">
+                    <button id="select-idle-btn" class="settings-button" style="font-size: 12px; padding: 6px 12px;">${isZH ? "📷 选择图片" : "📷 Select Image"}</button>
+                    <span id="idle-file-name" class="file-status ${setting.idleUrl ? 'active' : ''}" style="font-size: 12px;">${setting.idleUrl ? (isZH ? "✓ 已设置" : "✓ Set") : (isZH ? "未选择" : "No file")}</span>
+                </div>
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <label style="display: flex; flex-direction: column; gap: 4px;">
+                        <span style="color: #999; font-size: 11px;">${isZH ? "帧数" : "Frames"}:</span>
+                        <input type="number" id="idle-frames" value="${setting.idleFrames}" min="1" max="100" style="width: 60px; padding: 4px 6px; border-radius: 4px; border: 1px solid #555; background: #2a2a2a; color: white; font-size: 12px;">
+                    </label>
+                    <label style="display: flex; flex-direction: column; gap: 4px;">
+                        <span style="color: #999; font-size: 11px;">${isZH ? "时长(ms)" : "Duration(ms)"}:</span>
+                        <input type="number" id="idle-duration" value="${setting.idleDuration}" min="100" max="5000" step="100" style="width: 80px; padding: 4px 6px; border-radius: 4px; border: 1px solid #555; background: #2a2a2a; color: white; font-size: 12px;">
+                    </label>
+                </div>
+            </div>
+            
+            <!-- Cast Animation -->
+            <div class="sprite-config-row" style="margin-bottom: 16px; padding: 12px; background: rgba(0,0,0,0.2); border-radius: 8px;">
+                <div style="color: #FF6B6B; font-weight: 600; margin-bottom: 8px; font-size: 13px;">
+                    ⚡ ${isZH ? "施法动画 (Cast)" : "Cast Animation"}
+                </div>
+                <input type="file" id="spritesheet-cast-input" accept="image/*" style="display:none">
+                <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 8px;">
+                    <button id="select-cast-btn" class="settings-button" style="font-size: 12px; padding: 6px 12px;">${isZH ? "📷 选择图片" : "📷 Select Image"}</button>
+                    <span id="cast-file-name" class="file-status ${setting.castUrl ? 'active' : ''}" style="font-size: 12px;">${setting.castUrl ? (isZH ? "✓ 已设置" : "✓ Set") : (isZH ? "未选择" : "No file")}</span>
+                </div>
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <label style="display: flex; flex-direction: column; gap: 4px;">
+                        <span style="color: #999; font-size: 11px;">${isZH ? "帧数" : "Frames"}:</span>
+                        <input type="number" id="cast-frames" value="${setting.castFrames}" min="1" max="100" style="width: 60px; padding: 4px 6px; border-radius: 4px; border: 1px solid #555; background: #2a2a2a; color: white; font-size: 12px;">
+                    </label>
+                    <label style="display: flex; flex-direction: column; gap: 4px;">
+                        <span style="color: #999; font-size: 11px;">${isZH ? "时长(ms)" : "Duration(ms)"}:</span>
+                        <input type="number" id="cast-duration" value="${setting.castDuration}" min="100" max="5000" step="100" style="width: 80px; padding: 4px 6px; border-radius: 4px; border: 1px solid #555; background: #2a2a2a; color: white; font-size: 12px;">
+                    </label>
+                </div>
+            </div>
+            
+            <!-- Frame Dimensions -->
+            <div class="sprite-config-row" style="padding: 12px; background: rgba(0,0,0,0.2); border-radius: 8px;">
+                <div style="color: #FFA07A; font-weight: 600; margin-bottom: 8px; font-size: 13px;">
+                    📐 ${isZH ? "精灵尺寸" : "Sprite Dimensions"}
+                </div>
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <label style="display: flex; flex-direction: column; gap: 4px;">
+                        <span style="color: #999; font-size: 11px;">${isZH ? "帧宽度" : "Frame Width"}:</span>
+                        <input type="number" id="frame-width" value="${setting.frameWidth}" min="1" max="1000" style="width: 80px; padding: 4px 6px; border-radius: 4px; border: 1px solid #555; background: #2a2a2a; color: white; font-size: 12px;">
+                    </label>
+                    <label style="display: flex; flex-direction: column; gap: 4px;">
+                        <span style="color: #999; font-size: 11px;">${isZH ? "帧高度" : "Frame Height"}:</span>
+                        <input type="number" id="frame-height" value="${setting.frameHeight}" min="1" max="1000" style="width: 80px; padding: 4px 6px; border-radius: 4px; border: 1px solid #555; background: #2a2a2a; color: white; font-size: 12px;">
+                    </label>
+                </div>
+            </div>
+        </div>`
+    );
+
+    setTimeout(() => {
+        // Enable checkbox
+        const enableCheckbox = document.getElementById('spritesheet-enabled');
+        enableCheckbox?.addEventListener('change', (e) => {
+            settingsMap.spritesheetAvatar.enabled = e.target.checked;
+            localStorage.setItem("tracker_settingsMap", JSON.stringify(settingsMap));
+            appliedAvatars.clear();
+            setTimeout(applyCustomAvatar, 200);
+            showToast(isZH ? '设置已更新！' : 'Settings updated!', 2000);
+        });
+
+        // Idle spritesheet
+        const idleInput = document.getElementById('spritesheet-idle-input');
+        const selectIdleBtn = document.getElementById('select-idle-btn');
+        const idleFileName = document.getElementById('idle-file-name');
+        
+        selectIdleBtn?.addEventListener('click', () => idleInput?.click());
+        idleInput?.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    settingsMap.spritesheetAvatar.idleUrl = event.target.result;
+                    localStorage.setItem("tracker_settingsMap", JSON.stringify(settingsMap));
+                    idleFileName.textContent = isZH ? `✓ ${file.name}` : `✓ ${file.name}`;
+                    idleFileName.classList.add('active');
+                    appliedAvatars.clear();
+                    setTimeout(applyCustomAvatar, 200);
+                    showToast(isZH ? '待机动画已更新！' : 'Idle animation updated!', 2000);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Cast spritesheet
+        const castInput = document.getElementById('spritesheet-cast-input');
+        const selectCastBtn = document.getElementById('select-cast-btn');
+        const castFileName = document.getElementById('cast-file-name');
+        
+        selectCastBtn?.addEventListener('click', () => castInput?.click());
+        castInput?.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    settingsMap.spritesheetAvatar.castUrl = event.target.result;
+                    localStorage.setItem("tracker_settingsMap", JSON.stringify(settingsMap));
+                    castFileName.textContent = isZH ? `✓ ${file.name}` : `✓ ${file.name}`;
+                    castFileName.classList.add('active');
+                    showToast(isZH ? '施法动画已更新！' : 'Cast animation updated!', 2000);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Configuration inputs
+        const idleFramesInput = document.getElementById('idle-frames');
+        const idleDurationInput = document.getElementById('idle-duration');
+        const castFramesInput = document.getElementById('cast-frames');
+        const castDurationInput = document.getElementById('cast-duration');
+        const frameWidthInput = document.getElementById('frame-width');
+        const frameHeightInput = document.getElementById('frame-height');
+
+        const updateConfig = () => {
+            settingsMap.spritesheetAvatar.idleFrames = parseInt(idleFramesInput?.value) || 6;
+            settingsMap.spritesheetAvatar.idleDuration = parseInt(idleDurationInput?.value) || 600;
+            settingsMap.spritesheetAvatar.castFrames = parseInt(castFramesInput?.value) || 8;
+            settingsMap.spritesheetAvatar.castDuration = parseInt(castDurationInput?.value) || 800;
+            settingsMap.spritesheetAvatar.frameWidth = parseInt(frameWidthInput?.value) || 231;
+            settingsMap.spritesheetAvatar.frameHeight = parseInt(frameHeightInput?.value) || 190;
+            localStorage.setItem("tracker_settingsMap", JSON.stringify(settingsMap));
+            appliedAvatars.clear();
+            setTimeout(applyCustomAvatar, 200);
+        };
+
+        idleFramesInput?.addEventListener('change', updateConfig);
+        idleDurationInput?.addEventListener('change', updateConfig);
+        castFramesInput?.addEventListener('change', updateConfig);
+        castDurationInput?.addEventListener('change', updateConfig);
+        frameWidthInput?.addEventListener('change', updateConfig);
+        frameHeightInput?.addEventListener('change', updateConfig);
+    }, 100);
 }
 
 // Export to global scope for Tampermonkey

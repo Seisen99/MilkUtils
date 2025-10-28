@@ -165,6 +165,12 @@ function createEffect(startElem, endElem, hpDiff, index, reversed = false) {
     // console.log(`   Will use SVG animation: ${playerAttackType !== "none" && !reversed && hpDiff >= 0}`);
 
     if (playerAttackType !== "none" && !reversed && hpDiff >= 0) {
+        // Trigger cast animation for player's spritesheet avatar if enabled
+        if (isPlayerWithCustomAvatar && window.SpriteAnimator) {
+            const castDuration = playerAttackType === "melee" ? 300 : 500;
+            SpriteAnimator.triggerCastForPlayer(castDuration);
+        }
+
         // console.log(`   🎨 USING SVG ANIMATION: ${playerAttackType}`);
         if (hpDiff === 0) {
             const path = document.createElementNS("http://www.w3.org/2000/svg", "path");

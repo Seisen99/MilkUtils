@@ -14,6 +14,16 @@ function readSettings() {
                 if (option.id === "customAvatar") {
                     settingsMap[option.id].isTrue = option.isTrue !== undefined ? option.isTrue : false;
                     settingsMap[option.id].avatarUrl = option.avatarUrl || "";
+                } else if (option.id === "spritesheetAvatar") {
+                    settingsMap[option.id].enabled = option.enabled !== undefined ? option.enabled : false;
+                    settingsMap[option.id].idleUrl = option.idleUrl || "";
+                    settingsMap[option.id].castUrl = option.castUrl || "";
+                    settingsMap[option.id].idleFrames = option.idleFrames || 6;
+                    settingsMap[option.id].castFrames = option.castFrames || 8;
+                    settingsMap[option.id].frameWidth = option.frameWidth || 231;
+                    settingsMap[option.id].frameHeight = option.frameHeight || 190;
+                    settingsMap[option.id].idleDuration = option.idleDuration || 600;
+                    settingsMap[option.id].castDuration = option.castDuration || 800;
                 } else {
                     settingsMap[option.id].isTrue = option.isTrue;
                     if (option.isTrueH !== undefined) settingsMap[option.id].isTrueH = option.isTrueH;
