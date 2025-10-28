@@ -51,5 +51,5 @@ function hookWS() {
 }
 
 // Export to global scope for Tampermonkey
-window.hookWS = hookWS;
-window.handleMessage = handleMessage;
+unsafeWindow.hookWS = hookWS;
+unsafeWindow.handleMessage = handleMessage;

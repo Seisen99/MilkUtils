@@ -20,8 +20,8 @@ function getToolsSpeedBuffByActionHrid(actionHrid) {
 
     for (const item of characterItems) {
         if (item.itemLocationHrid.includes("_tool")) {
-            const buffName = window.actionHridToToolsSpeedBuffNamesMap[actionDetailMap[actionHrid].type];
-            const enhanceBonus = 1 + window.itemEnhanceLevelToBuffBonusMap[item.enhancementLevel] / 100;
+            const buffName = unsafeWindow.actionHridToToolsSpeedBuffNamesMap[actionDetailMap[actionHrid].type];
+            const enhanceBonus = 1 + unsafeWindow.itemEnhanceLevelToBuffBonusMap[item.enhancementLevel] / 100;
             const buff = itemDetailMap[item.itemHrid].equipmentDetail?.noncombatStats[buffName] || 0;
             totalBuff += buff * enhanceBonus;
         }
@@ -53,7 +53,7 @@ function getItemEffiBuffByActionHrid(actionHrid) {
         const itemDetail = itemDetailMap[item.itemHrid];
         const specificStat = itemDetail?.equipmentDetail?.noncombatStats[propertyName];
         if (specificStat && specificStat > 0) {
-            const enhanceBonus = 1 + window.itemEnhanceLevelToBuffBonusMap[item.enhancementLevel] / 100;
+            const enhanceBonus = 1 + unsafeWindow.itemEnhanceLevelToBuffBonusMap[item.enhancementLevel] / 100;
             buff += specificStat * enhanceBonus;
         }
     }
@@ -73,7 +73,7 @@ function getHousesEffBuffByActionHrid(actionHrid) {
         return 0;
     }
 
-    const houseName = window.actionHridToHouseNamesMap[actionDetailMap[actionHrid].type];
+    const houseName = unsafeWindow.actionHridToHouseNamesMap[actionDetailMap[actionHrid].type];
     if (!houseName) {
         return 0;
     }
@@ -148,7 +148,7 @@ function getTeaBuffsByActionHrid(actionHrid) {
 }
 
 // Export to global scope for Tampermonkey
-window.getToolsSpeedBuffByActionHrid = getToolsSpeedBuffByActionHrid;
-window.getItemEffiBuffByActionHrid = getItemEffiBuffByActionHrid;
-window.getHousesEffBuffByActionHrid = getHousesEffBuffByActionHrid;
-window.getTeaBuffsByActionHrid = getTeaBuffsByActionHrid;
+unsafeWindow.getToolsSpeedBuffByActionHrid = getToolsSpeedBuffByActionHrid;
+unsafeWindow.getItemEffiBuffByActionHrid = getItemEffiBuffByActionHrid;
+unsafeWindow.getHousesEffBuffByActionHrid = getHousesEffBuffByActionHrid;
+unsafeWindow.getTeaBuffsByActionHrid = getTeaBuffsByActionHrid;

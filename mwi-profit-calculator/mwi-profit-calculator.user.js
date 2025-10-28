@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MWI Profit Calculator
 // @namespace    http://tampermonkey.net/
-// @version      2.0.0
+// @version      2.0.1
 // @description  Calculate production profit for MilkyWayIdle items with detailed tooltips (Refactored)
 // @author       Seisen
 // @match        https://www.milkywayidle.com/*
@@ -13,14 +13,14 @@
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @require      https://cdn.jsdelivr.net/npm/lz-string@1.5.0/libs/lz-string.min.js
-// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/core/constants.js?v=1
-// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/core/data-manager.js?v=1
-// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/core/websocket.js?v=1
-// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/api/market-api.js?v=1
-// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/calculations/buffs.js?v=1
-// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/calculations/profit.js?v=1
-// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/ui/formatter.js?v=1
-// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/ui/tooltip.js?v=1
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/core/constants.js?v=2
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/core/data-manager.js?v=2
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/core/websocket.js?v=2
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/api/market-api.js?v=2
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/calculations/buffs.js?v=2
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/calculations/profit.js?v=2
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/ui/formatter.js?v=2
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/ui/tooltip.js?v=2
 // ==/UserScript==
 
 /**
@@ -45,5 +45,5 @@
     // Initialize tooltip observer
     initializeTooltipObserver();
 
-    console.log("MWI Profit Calculator v2.0.0 loaded successfully!");
+    console.log("MWI Profit Calculator v2.0.1 loaded successfully!");
 })();

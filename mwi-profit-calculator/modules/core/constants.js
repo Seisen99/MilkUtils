@@ -64,10 +64,10 @@ const itemEnhanceLevelToBuffBonusMap = {
 };
 
 // Export to global scope for Tampermonkey
-window.MARKET_API_URL = MARKET_API_URL;
-window.SCRIPT_COLOR_TOOLTIP = SCRIPT_COLOR_TOOLTIP;
-window.THOUSAND_SEPERATOR = THOUSAND_SEPERATOR;
-window.MARKET_CACHE_DURATION = MARKET_CACHE_DURATION;
-window.actionHridToToolsSpeedBuffNamesMap = actionHridToToolsSpeedBuffNamesMap;
-window.actionHridToHouseNamesMap = actionHridToHouseNamesMap;
-window.itemEnhanceLevelToBuffBonusMap = itemEnhanceLevelToBuffBonusMap;
+unsafeWindow.MARKET_API_URL = MARKET_API_URL;
+unsafeWindow.SCRIPT_COLOR_TOOLTIP = SCRIPT_COLOR_TOOLTIP;
+unsafeWindow.THOUSAND_SEPERATOR = THOUSAND_SEPERATOR;
+unsafeWindow.MARKET_CACHE_DURATION = MARKET_CACHE_DURATION;
+unsafeWindow.actionHridToToolsSpeedBuffNamesMap = actionHridToToolsSpeedBuffNamesMap;
+unsafeWindow.actionHridToHouseNamesMap = actionHridToHouseNamesMap;
+unsafeWindow.itemEnhanceLevelToBuffBonusMap = itemEnhanceLevelToBuffBonusMap;

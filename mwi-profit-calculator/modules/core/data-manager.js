@@ -142,14 +142,14 @@ function getItemHridFromName(itemName) {
 initializeStaticData();
 
 // Export to global scope for Tampermonkey
-window.decompressInitClientData = decompressInitClientData;
-window.initializeStaticData = initializeStaticData;
-window.updateCharacterData = updateCharacterData;
-window.updateClientData = updateClientData;
-window.getCharacterSkills = getCharacterSkills;
-window.getCharacterItems = getCharacterItems;
-window.getCharacterHouseRoomMap = getCharacterHouseRoomMap;
-window.getActionTypeDrinkSlotsMap = getActionTypeDrinkSlotsMap;
-window.getActionDetailMap = getActionDetailMap;
-window.getItemDetailMap = getItemDetailMap;
-window.getItemHridFromName = getItemHridFromName;
+unsafeWindow.decompressInitClientData = decompressInitClientData;
+unsafeWindow.initializeStaticData = initializeStaticData;
+unsafeWindow.updateCharacterData = updateCharacterData;
+unsafeWindow.updateClientData = updateClientData;
+unsafeWindow.getCharacterSkills = getCharacterSkills;
+unsafeWindow.getCharacterItems = getCharacterItems;
+unsafeWindow.getCharacterHouseRoomMap = getCharacterHouseRoomMap;
+unsafeWindow.getActionTypeDrinkSlotsMap = getActionTypeDrinkSlotsMap;
+unsafeWindow.getActionDetailMap = getActionDetailMap;
+unsafeWindow.getItemDetailMap = getItemDetailMap;
+unsafeWindow.getItemHridFromName = getItemHridFromName;

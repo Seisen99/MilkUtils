@@ -70,7 +70,7 @@ async function handleTooltipItem(tooltip) {
     let appendHTMLStr = "";
 
     // Show market prices
-    appendHTMLStr += `<div style="color: ${window.SCRIPT_COLOR_TOOLTIP};">Price: ${numberFormatter(ask)} / ${numberFormatter(bid)}</div>`;
+    appendHTMLStr += `<div style="color: ${unsafeWindow.SCRIPT_COLOR_TOOLTIP};">Price: ${numberFormatter(ask)} / ${numberFormatter(bid)}</div>`;
 
     // Calculate profit if this item is producible
     const actionHrid = getActionHridFromItemName(itemName);
@@ -86,19 +86,19 @@ async function handleTooltipItem(tooltip) {
     }
 
     // Add profit information header
-    appendHTMLStr += `<div style="color: ${window.SCRIPT_COLOR_TOOLTIP}; font-size: 0.625rem;">Production profit (Ask price in, Bid price out after tax; Not including processing tea, community buffs, rare drops, pouch buffs):</div>`;
+    appendHTMLStr += `<div style="color: ${unsafeWindow.SCRIPT_COLOR_TOOLTIP}; font-size: 0.625rem;">Production profit (Ask price in, Bid price out after tax; Not including processing tea, community buffs, rare drops, pouch buffs):</div>`;
 
     // Show input materials table for production actions
     if (profit.isProduction && profit.inputItems.length > 0) {
         appendHTMLStr += `
-            <div style="color: ${window.SCRIPT_COLOR_TOOLTIP}; font-size: 0.625rem;">
+            <div style="color: ${unsafeWindow.SCRIPT_COLOR_TOOLTIP}; font-size: 0.625rem;">
                 <table style="width:100%; border-collapse: collapse;">
-                    <tr style="border-bottom: 1px solid ${window.SCRIPT_COLOR_TOOLTIP};">
+                    <tr style="border-bottom: 1px solid ${unsafeWindow.SCRIPT_COLOR_TOOLTIP};">
                         <th style="text-align: left;">Material</th>
                         <th style="text-align: center;">Count</th>
                         <th style="text-align: right;">Ask</th>
                     </tr>
-                    <tr style="border-bottom: 1px solid ${window.SCRIPT_COLOR_TOOLTIP};">
+                    <tr style="border-bottom: 1px solid ${unsafeWindow.SCRIPT_COLOR_TOOLTIP};">
                         <td style="text-align: left;"><b>Total</b></td>
                         <td style="text-align: center;"><b>${profit.inputItems.reduce((sum, item) => sum + item.count, 0)}</b></td>
                         <td style="text-align: right;"><b>${numberFormatter(profit.totalResourcesAskPricePerAction)}</b></td>
@@ -116,7 +116,7 @@ async function handleTooltipItem(tooltip) {
     }
 
     // Show buff details
-    appendHTMLStr += `<div style="color: ${window.SCRIPT_COLOR_TOOLTIP}; font-size: 0.625rem;">${profit.baseTimePerActionSec.toFixed(
+    appendHTMLStr += `<div style="color: ${unsafeWindow.SCRIPT_COLOR_TOOLTIP}; font-size: 0.625rem;">${profit.baseTimePerActionSec.toFixed(
         2
     )}s base speed, x${profit.droprate} base drop rate, +${profit.toolPercent}% tool speed, +${profit.levelEffBuff}% level eff, +${
         profit.houseEffBuff
@@ -125,17 +125,17 @@ async function handleTooltipItem(tooltip) {
     }% tea extra outcome, +${profit.teaBuffs.lessResource}% tea lower resource</div>`;
 
     // Show drinks consumption
-    appendHTMLStr += `<div style="color: ${window.SCRIPT_COLOR_TOOLTIP}; font-size: 0.625rem;">Drinks consumed per hour: ${numberFormatter(
+    appendHTMLStr += `<div style="color: ${unsafeWindow.SCRIPT_COLOR_TOOLTIP}; font-size: 0.625rem;">Drinks consumed per hour: ${numberFormatter(
         profit.drinksConsumedPerHourAskPrice
     )}</div>`;
 
     // Show production statistics
-    appendHTMLStr += `<div style="color: ${window.SCRIPT_COLOR_TOOLTIP}; font-size: 0.625rem;">Actions per hour: ${Number(
+    appendHTMLStr += `<div style="color: ${unsafeWindow.SCRIPT_COLOR_TOOLTIP}; font-size: 0.625rem;">Actions per hour: ${Number(
         profit.actionPerHour
     ).toFixed(1)} times, Production per hour: ${Number(profit.itemPerHour + profit.extraFreeItemPerHour).toFixed(1)} items</div>`;
 
     // Show profit summary
-    appendHTMLStr += `<div style="color: ${window.SCRIPT_COLOR_TOOLTIP};">Profit: ${numberFormatter(
+    appendHTMLStr += `<div style="color: ${unsafeWindow.SCRIPT_COLOR_TOOLTIP};">Profit: ${numberFormatter(
         profit.profitPerHour / profit.actionPerHour
     )}/action, ${numberFormatter(profit.profitPerHour)}/hour, ${numberFormatter(24 * profit.profitPerHour)}/day</div>`;
 
@@ -163,7 +163,7 @@ function initializeTooltipObserver() {
 }
 
 // Export to global scope for Tampermonkey
-window.getOriTextFromElement = getOriTextFromElement;
-window.getActionHridFromItemName = getActionHridFromItemName;
-window.handleTooltipItem = handleTooltipItem;
-window.initializeTooltipObserver = initializeTooltipObserver;
+unsafeWindow.getOriTextFromElement = getOriTextFromElement;
+unsafeWindow.getActionHridFromItemName = getActionHridFromItemName;
+unsafeWindow.handleTooltipItem = handleTooltipItem;
+unsafeWindow.initializeTooltipObserver = initializeTooltipObserver;

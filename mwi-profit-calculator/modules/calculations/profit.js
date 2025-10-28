@@ -133,4 +133,4 @@ async function calculateProfit(itemHrid, actionHrid, marketJson) {
 }
 
 // Export to global scope for Tampermonkey
-window.calculateProfit = calculateProfit;
+unsafeWindow.calculateProfit = calculateProfit;

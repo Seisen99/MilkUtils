@@ -32,4 +32,4 @@ function numberFormatter(num, digits = 1) {
 }
 
 // Export to global scope for Tampermonkey
-window.numberFormatter = numberFormatter;
+unsafeWindow.numberFormatter = numberFormatter;

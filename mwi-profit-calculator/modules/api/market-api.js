@@ -12,7 +12,7 @@ async function fetchMarketJSON(forceFetch = false) {
     if (
         !forceFetch &&
         localStorage.getItem("MWI_ProfitCalc_marketAPI_timestamp") &&
-        Date.now() - localStorage.getItem("MWI_ProfitCalc_marketAPI_timestamp") < window.MARKET_CACHE_DURATION
+        Date.now() - localStorage.getItem("MWI_ProfitCalc_marketAPI_timestamp") < unsafeWindow.MARKET_CACHE_DURATION
     ) {
         return JSON.parse(localStorage.getItem("MWI_ProfitCalc_marketAPI_json"));
     }
@@ -29,7 +29,7 @@ async function fetchMarketJSON(forceFetch = false) {
     // Fetch from API
     console.log("Fetching market data from API...");
     const response = await sendRequest({
-        url: window.MARKET_API_URL,
+        url: unsafeWindow.MARKET_API_URL,
         method: "GET",
         synchronous: true,
         timeout: 5000,
@@ -61,4 +61,4 @@ async function fetchMarketJSON(forceFetch = false) {
 }
 
 // Export to global scope for Tampermonkey
-window.fetchMarketJSON = fetchMarketJSON;
+unsafeWindow.fetchMarketJSON = fetchMarketJSON;
