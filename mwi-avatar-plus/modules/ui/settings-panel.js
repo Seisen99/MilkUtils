@@ -964,12 +964,24 @@ function createSpritesheetAvatarSection(insertElem, setting) {
         const selectIdleBtn = document.getElementById('select-idle-btn');
         const idleFileName = document.getElementById('idle-file-name');
         
-        selectIdleBtn?.addEventListener('click', () => idleInput?.click());
+        console.log('🔧 Spritesheet elements found:', {
+            idleInput: !!idleInput,
+            selectIdleBtn: !!selectIdleBtn,
+            idleFileName: !!idleFileName
+        });
+        
+        selectIdleBtn?.addEventListener('click', () => {
+            console.log('📷 Idle button clicked');
+            idleInput?.click();
+        });
         idleInput?.addEventListener('change', (e) => {
+            console.log('📁 Idle file selected');
             const file = e.target.files[0];
             if (file) {
+                console.log('📄 Reading file:', file.name, file.size);
                 const reader = new FileReader();
                 reader.onload = (event) => {
+                    console.log('✅ Idle file loaded, length:', event.target.result.length);
                     settingsMap.spritesheetAvatar.idleUrl = event.target.result;
                     localStorage.setItem("tracker_settingsMap", JSON.stringify(settingsMap));
                     idleFileName.textContent = isZH ? `✓ ${file.name}` : `✓ ${file.name}`;
@@ -977,6 +989,9 @@ function createSpritesheetAvatarSection(insertElem, setting) {
                     appliedAvatars.clear();
                     setTimeout(applyCustomAvatar, 200);
                     showToast(isZH ? '待机动画已更新！' : 'Idle animation updated!', 2000);
+                };
+                reader.onerror = (error) => {
+                    console.error('❌ Error reading file:', error);
                 };
                 reader.readAsDataURL(file);
             }
@@ -987,17 +1002,34 @@ function createSpritesheetAvatarSection(insertElem, setting) {
         const selectCastBtn = document.getElementById('select-cast-btn');
         const castFileName = document.getElementById('cast-file-name');
         
-        selectCastBtn?.addEventListener('click', () => castInput?.click());
+        console.log('🔧 Cast elements found:', {
+            castInput: !!castInput,
+            selectCastBtn: !!selectCastBtn,
+            castFileName: !!castFileName
+        });
+        
+        selectCastBtn?.addEventListener('click', () => {
+            console.log('⚡ Cast button clicked');
+            castInput?.click();
+        });
         castInput?.addEventListener('change', (e) => {
+            console.log('📁 Cast file selected');
             const file = e.target.files[0];
             if (file) {
+                console.log('📄 Reading file:', file.name, file.size);
                 const reader = new FileReader();
                 reader.onload = (event) => {
+                    console.log('✅ Cast file loaded, length:', event.target.result.length);
                     settingsMap.spritesheetAvatar.castUrl = event.target.result;
                     localStorage.setItem("tracker_settingsMap", JSON.stringify(settingsMap));
                     castFileName.textContent = isZH ? `✓ ${file.name}` : `✓ ${file.name}`;
                     castFileName.classList.add('active');
+                    appliedAvatars.clear();
+                    setTimeout(applyCustomAvatar, 200);
                     showToast(isZH ? '施法动画已更新！' : 'Cast animation updated!', 2000);
+                };
+                reader.onerror = (error) => {
+                    console.error('❌ Error reading cast file:', error);
                 };
                 reader.readAsDataURL(file);
             }
