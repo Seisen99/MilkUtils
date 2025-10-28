@@ -85,9 +85,6 @@ async function handleTooltipItem(tooltip) {
         return;
     }
 
-    // Add profit information header
-    appendHTMLStr += `<div style="color: ${unsafeWindow.SCRIPT_COLOR_TOOLTIP}; font-size: 0.625rem;">Production profit (Ask price in, Bid price out after tax; Not including processing tea, community buffs, rare drops, pouch buffs):</div>`;
-
     // Show input materials table for production actions
     if (profit.isProduction && profit.inputItems.length > 0) {
         appendHTMLStr += `
@@ -115,29 +112,62 @@ async function handleTooltipItem(tooltip) {
         appendHTMLStr += `</table></div>`;
     }
 
-    // Show buff details
-    appendHTMLStr += `<div style="color: ${unsafeWindow.SCRIPT_COLOR_TOOLTIP}; font-size: 0.625rem;">${profit.baseTimePerActionSec.toFixed(
-        2
-    )}s base speed, x${profit.droprate} base drop rate, +${profit.toolPercent}% tool speed, +${profit.levelEffBuff}% level eff, +${
-        profit.houseEffBuff
-    }% house eff, +${profit.teaBuffs.efficiency}% tea eff, +${profit.itemEffiBuff}% equipment eff, +${
-        profit.teaBuffs.quantity
-    }% tea extra outcome, +${profit.teaBuffs.lessResource}% tea lower resource</div>`;
+    // Show production statistics
+    appendHTMLStr += `<div style="color: ${unsafeWindow.SCRIPT_COLOR_TOOLTIP}; font-size: 0.625rem; margin-top: 4px;">
+        <b>Production:</b> ${Number(profit.actionPerHour).toFixed(1)} actions/h → ${Number(profit.itemPerHour + profit.extraFreeItemPerHour).toFixed(1)} items/h
+    </div>`;
+
+    // Show Processing Tea bonus (if active)
+    if (profit.hasProcessingTea && profit.processingTeaItemsPerHour > 0) {
+        const itemDetailMap = getItemDetailMap();
+        const processedItemName = itemDetailMap[profit.processedItemHrid]?.name || "Processed";
+        appendHTMLStr += `<div style="color: #FFD700; font-size: 0.625rem;">
+            <b>🍵 Processing Tea:</b> ${Number(profit.processingTeaItemsPerHour).toFixed(1)} ${processedItemName}/h 
+            (+${numberFormatter(profit.processingTeaBonusPerHour)}/h)
+        </div>`;
+    }
+
+    // Show Essence drops (if any)
+    if (profit.essenceDetails && profit.essenceDetails.length > 0) {
+        appendHTMLStr += `<div style="color: #9C27B0; font-size: 0.625rem;">
+            <b>✨ Essences:</b> +${numberFormatter(profit.essenceValuePerHour)}/h`;
+        for (const essence of profit.essenceDetails) {
+            if (essence.dropRate >= 0.01) { // Only show if >= 1%
+                appendHTMLStr += `<br>&nbsp;&nbsp;• ${essence.name}: ${Number(essence.perHour).toFixed(2)}/h`;
+            }
+        }
+        appendHTMLStr += `</div>`;
+    }
+
+    // Show Rare drops (if any)
+    if (profit.rareDropDetails && profit.rareDropDetails.length > 0) {
+        appendHTMLStr += `<div style="color: #FF6B6B; font-size: 0.625rem;">
+            <b>💎 Rare Drops:</b> +${numberFormatter(profit.rareDropsValuePerHour)}/h`;
+        for (const rare of profit.rareDropDetails) {
+            const ratePercent = (rare.dropRate * 100).toFixed(rare.dropRate < 0.01 ? 3 : 2);
+            appendHTMLStr += `<br>&nbsp;&nbsp;• ${rare.name} (${ratePercent}%): ${numberFormatter(rare.valuePerHour)}/h`;
+        }
+        appendHTMLStr += `</div>`;
+    }
 
     // Show drinks consumption
-    appendHTMLStr += `<div style="color: ${unsafeWindow.SCRIPT_COLOR_TOOLTIP}; font-size: 0.625rem;">Drinks consumed per hour: ${numberFormatter(
-        profit.drinksConsumedPerHourAskPrice
-    )}</div>`;
+    if (profit.drinksConsumedPerHourAskPrice > 0) {
+        appendHTMLStr += `<div style="color: ${unsafeWindow.SCRIPT_COLOR_TOOLTIP}; font-size: 0.625rem; margin-top: 4px;">
+            <b>Drinks cost:</b> -${numberFormatter(profit.drinksConsumedPerHourAskPrice)}/h
+        </div>`;
+    }
 
-    // Show production statistics
-    appendHTMLStr += `<div style="color: ${unsafeWindow.SCRIPT_COLOR_TOOLTIP}; font-size: 0.625rem;">Actions per hour: ${Number(
-        profit.actionPerHour
-    ).toFixed(1)} times, Production per hour: ${Number(profit.itemPerHour + profit.extraFreeItemPerHour).toFixed(1)} items</div>`;
+    // Show profit summary (bold and bigger)
+    appendHTMLStr += `<div style="color: ${unsafeWindow.SCRIPT_COLOR_TOOLTIP}; margin-top: 6px; font-weight: bold;">
+        <b>💰 Profit:</b> ${numberFormatter(profit.profitPerHour / profit.actionPerHour)}/action, 
+        ${numberFormatter(profit.profitPerHour)}/hour, 
+        ${numberFormatter(24 * profit.profitPerHour)}/day
+    </div>`;
 
-    // Show profit summary
-    appendHTMLStr += `<div style="color: ${unsafeWindow.SCRIPT_COLOR_TOOLTIP};">Profit: ${numberFormatter(
-        profit.profitPerHour / profit.actionPerHour
-    )}/action, ${numberFormatter(profit.profitPerHour)}/hour, ${numberFormatter(24 * profit.profitPerHour)}/day</div>`;
+    // Show buff summary (collapsed)
+    appendHTMLStr += `<div style="color: ${unsafeWindow.SCRIPT_COLOR_TOOLTIP}; font-size: 0.5625rem; margin-top: 4px; opacity: 0.7;">
+        Buffs: +${profit.totalEfficiency.toFixed(1)}% efficiency (${profit.levelEffBuff}% level, ${profit.houseEffBuff}% house, ${profit.teaBuffs.efficiency}% tea, ${profit.itemEffiBuff}% equip), +${profit.toolPercent}% speed
+    </div>`;
 
     insertAfterElem.insertAdjacentHTML("afterend", appendHTMLStr);
 }

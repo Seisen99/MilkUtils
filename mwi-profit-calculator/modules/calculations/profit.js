@@ -98,15 +98,84 @@ async function calculateProfit(itemHrid, actionHrid, marketJson) {
     const bid = marketJson?.marketData[itemHrid]?.[0].b || 0;
     const bidAfterTax = bid * 0.98; // 2% market tax
 
-    // Calculate profit per hour
+    // ===== NEW: Calculate Essence drops value =====
+    let essenceValuePerHour = 0;
+    let essenceDetails = [];
+    if (actionDetailMap[actionHrid].essenceDropTable) {
+        for (const essence of actionDetailMap[actionHrid].essenceDropTable) {
+            const essencePrice = getItemValue(essence.itemHrid, marketJson);
+            const avgEssencePerAction = essence.dropRate * (essence.minCount + essence.maxCount) / 2;
+            const essencePerHour = actionPerHour * avgEssencePerAction;
+            const essenceValue = essencePerHour * essencePrice;
+            essenceValuePerHour += essenceValue;
+            
+            essenceDetails.push({
+                itemHrid: essence.itemHrid,
+                name: itemDetailMap[essence.itemHrid]?.name || "Unknown",
+                dropRate: essence.dropRate,
+                perHour: essencePerHour,
+                valuePerHour: essenceValue
+            });
+        }
+    }
+
+    // ===== NEW: Calculate Rare drops value =====
+    let rareDropsValuePerHour = 0;
+    let rareDropDetails = [];
+    if (actionDetailMap[actionHrid].rareDropTable) {
+        for (const rare of actionDetailMap[actionHrid].rareDropTable) {
+            const rarePrice = getItemValue(rare.itemHrid, marketJson);
+            const avgRarePerAction = rare.dropRate * (rare.minCount + rare.maxCount) / 2;
+            const rarePerHour = actionPerHour * avgRarePerAction;
+            const rareValue = rarePerHour * rarePrice;
+            rareDropsValuePerHour += rareValue;
+            
+            rareDropDetails.push({
+                itemHrid: rare.itemHrid,
+                name: itemDetailMap[rare.itemHrid]?.name || "Unknown",
+                dropRate: rare.dropRate,
+                perHour: rarePerHour,
+                valuePerHour: rareValue
+            });
+        }
+    }
+
+    // ===== NEW: Calculate Processing Tea bonus =====
+    let processingTeaBonusPerHour = 0;
+    let processingTeaItemsPerHour = 0;
+    let processedItemHrid = null;
+    const hasProcessingTea = teaBuffs.upgradedProduct > 0;
+    
+    if (!isProduction && hasProcessingTea) {
+        processedItemHrid = getProcessedItem(itemHrid);
+        if (processedItemHrid) {
+            const rawPrice = bidAfterTax;
+            const processedPrice = getItemValue(processedItemHrid, marketJson);
+            const priceDifference = processedPrice - rawPrice;
+            
+            // 15% of items become processed directly
+            processingTeaItemsPerHour = itemPerHour * 0.15;
+            processingTeaBonusPerHour = processingTeaItemsPerHour * priceDifference;
+        }
+    }
+
+    // Calculate profit per hour (including all bonuses)
     let profitPerHour;
     if (isProduction) {
         profitPerHour =
             itemPerHour * (bidAfterTax - totalResourcesAskPricePerAction / droprate) +
-            extraFreeItemPerHour * bidAfterTax -
+            extraFreeItemPerHour * bidAfterTax +
+            essenceValuePerHour +
+            rareDropsValuePerHour -
             drinksConsumedPerHourAskPrice;
     } else {
-        profitPerHour = itemPerHour * bidAfterTax + extraFreeItemPerHour * bidAfterTax - drinksConsumedPerHourAskPrice;
+        profitPerHour = 
+            itemPerHour * bidAfterTax + 
+            extraFreeItemPerHour * bidAfterTax + 
+            processingTeaBonusPerHour +
+            essenceValuePerHour +
+            rareDropsValuePerHour -
+            drinksConsumedPerHourAskPrice;
     }
 
     return {
@@ -129,6 +198,15 @@ async function calculateProfit(itemHrid, actionHrid, marketJson) {
         bid,
         bidAfterTax,
         profitPerHour,
+        // New fields
+        essenceValuePerHour,
+        essenceDetails,
+        rareDropsValuePerHour,
+        rareDropDetails,
+        processingTeaBonusPerHour,
+        processingTeaItemsPerHour,
+        processedItemHrid,
+        hasProcessingTea,
     };
 }
 
