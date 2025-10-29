@@ -8,6 +8,8 @@
 // @match        https://test.milkywayidle.com/*
 // @icon         https://www.milkywayidle.com/favicon.svg
 // @grant        GM_addStyle
+// @updateURL    https://cdn.jsdelivr.net/gh/Seisen99/MilkUtils@master/mwi-profit-calculator/mwi-profit-calculator.user.js
+// @downloadURL  https://cdn.jsdelivr.net/gh/Seisen99/MilkUtils@master/mwi-profit-calculator/mwi-profit-calculator.user.js
 // @grant        GM.xmlHttpRequest
 // @grant        GM_xmlhttpRequest
 // @grant        GM_getValue

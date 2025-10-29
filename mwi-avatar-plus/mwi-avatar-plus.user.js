@@ -12,8 +12,6 @@
 // @grant        none
 // @updateURL    https://cdn.jsdelivr.net/gh/Seisen99/MilkUtils@master/mwi-avatar-plus/mwi-avatar-plus.user.js
 // @downloadURL  https://cdn.jsdelivr.net/gh/Seisen99/MilkUtils@master/mwi-avatar-plus/mwi-avatar-plus.user.js
-// DEV NOTE: Pour forcer un refresh immédiat pendant le dev, utilise un commit hash spécifique
-// ou purge le cache JSDelivr via : https://www.jsdelivr.com/tools/purge
 // @require      https://cdn.jsdelivr.net/gh/Seisen99/MilkUtils@master/mwi-avatar-plus/modules/utils/geometry.js?v=1
 // @require      https://cdn.jsdelivr.net/gh/Seisen99/MilkUtils@master/mwi-avatar-plus/modules/utils/colors.js?v=1
 // @require      https://cdn.jsdelivr.net/gh/Seisen99/MilkUtils@master/mwi-avatar-plus/modules/core/constants.js?v=4
