@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MWI Profit Calculator
 // @namespace    http://tampermonkey.net/
-// @version      3.1.4
+// @version      3.2.0
 // @description  Calculate production profit with essences, rare drops, and processing tea bonus
 // @author       Seisen
 // @match        https://www.milkywayidle.com/*
@@ -24,7 +24,7 @@
 // @require      https://cdn.jsdelivr.net/gh/Seisen99/MilkUtils@master/mwi-profit-calculator/modules/calculations/chest-values.js?v=4
 // @require      https://cdn.jsdelivr.net/gh/Seisen99/MilkUtils@master/mwi-profit-calculator/modules/calculations/profit.js?v=6
 // @require      https://cdn.jsdelivr.net/gh/Seisen99/MilkUtils@master/mwi-profit-calculator/modules/ui/formatter.js?v=2
-// @require      https://cdn.jsdelivr.net/gh/Seisen99/MilkUtils@master/mwi-profit-calculator/modules/ui/tooltip.js?v=13
+// @require      https://cdn.jsdelivr.net/gh/Seisen99/MilkUtils@master/mwi-profit-calculator/modules/ui/tooltip.js?v=14
 // ==/UserScript==
 
 
@@ -40,9 +40,9 @@
     // Initialize tooltip observer
     initializeTooltipObserver();
 
-    console.log("MWI Profit Calculator v3.1.4 loaded successfully!");
-    console.log("  ✓ Progressive tooltip loading (instant price display)");
-    console.log("  ✓ Essences calculation enabled");
-    console.log("  ✓ Rare drops calculation enabled");
-    console.log("  ✓ Processing Tea bonus enabled");
+    console.log("MWI Profit Calculator v3.2.0 loaded successfully!");
+    console.log("  ✓ Instant tooltip display (no lag)");
+    console.log("  ✓ Press K to calculate profit details");
+    console.log("  ✓ Profit calculation caching enabled");
+    console.log("  ✓ Essences, rare drops, and processing tea support");
 })();
