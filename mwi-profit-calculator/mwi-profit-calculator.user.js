@@ -24,8 +24,8 @@
 // @require      https://cdn.jsdelivr.net/gh/Seisen99/MilkUtils@master/mwi-profit-calculator/modules/calculations/chest-values.js?v=4
 // @require      https://cdn.jsdelivr.net/gh/Seisen99/MilkUtils@master/mwi-profit-calculator/modules/calculations/profit.js?v=6
 // @require      https://cdn.jsdelivr.net/gh/Seisen99/MilkUtils@master/mwi-profit-calculator/modules/ui/formatter.js?v=2
-// @require      https://cdn.jsdelivr.net/gh/Seisen99/MilkUtils@master/mwi-profit-calculator/modules/ui/fixed-panel.js?v=1
-// @require      https://cdn.jsdelivr.net/gh/Seisen99/MilkUtils@master/mwi-profit-calculator/modules/ui/tooltip.js?v=15
+// @require      https://cdn.jsdelivr.net/gh/Seisen99/MilkUtils@515ad46/mwi-profit-calculator/modules/ui/fixed-panel.js
+// @require      https://cdn.jsdelivr.net/gh/Seisen99/MilkUtils@515ad46/mwi-profit-calculator/modules/ui/tooltip.js
 // ==/UserScript==
 
 
