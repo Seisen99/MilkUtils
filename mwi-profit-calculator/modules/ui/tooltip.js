@@ -41,7 +41,7 @@ function getActionHridFromItemName(name) {
  * Handle tooltip display for an item (progressive loading)
  * @param {HTMLElement} tooltip - Tooltip element
  */
-async function handleTooltipItem(tooltip) {
+function handleTooltipItem(tooltip) {
     const itemNameElem = tooltip.querySelector("div.ItemTooltipText_name__2JAHA span");
     if (!itemNameElem) return;
 
@@ -69,37 +69,36 @@ async function handleTooltipItem(tooltip) {
 
     if (!insertAfterElem) return;
 
-    // Get market data
-    const marketJson = await fetchMarketJSON();
-    if (!marketJson) return;
+    // Get market data and display price immediately
+    fetchMarketJSON().then(marketJson => {
+        if (!marketJson) return;
 
-    const ask = marketJson?.marketData[itemHrid]?.[0].a;
-    const bid = marketJson?.marketData[itemHrid]?.[0].b;
+        const ask = marketJson?.marketData[itemHrid]?.[0].a;
+        const bid = marketJson?.marketData[itemHrid]?.[0].b;
 
-    // STEP 1: Show market prices IMMEDIATELY (fast)
-    let priceHTML = `<div style="color: ${unsafeWindow.SCRIPT_COLOR_TOOLTIP};">Price: ${numberFormatter(ask)} / ${numberFormatter(bid)}`;
-    if (stackQuantity > 1) {
-        priceHTML += `<br><span style="opacity: 0.8;">Total (×${stackQuantity}): ${numberFormatter(ask * stackQuantity)} / ${numberFormatter(bid * stackQuantity)}</span>`;
-    }
-    priceHTML += `</div>`;
+        // STEP 1: Show market prices IMMEDIATELY (fast)
+        let priceHTML = `<div style="color: ${unsafeWindow.SCRIPT_COLOR_TOOLTIP};">Price: ${numberFormatter(ask)} / ${numberFormatter(bid)}`;
+        if (stackQuantity > 1) {
+            priceHTML += `<br><span style="opacity: 0.8;">Total (×${stackQuantity}): ${numberFormatter(ask * stackQuantity)} / ${numberFormatter(bid * stackQuantity)}</span>`;
+        }
+        priceHTML += `</div>`;
 
-    // Check if this item is producible
-    const actionHrid = getActionHridFromItemName(itemName);
-    if (!actionHrid) {
-        // Not producible, just show price
-        insertAfterElem.insertAdjacentHTML("afterend", priceHTML);
-        return;
-    }
+        // Check if this item is producible
+        const actionHrid = getActionHridFromItemName(itemName);
+        if (!actionHrid) {
+            // Not producible, just show price
+            insertAfterElem.insertAdjacentHTML("afterend", priceHTML);
+            return;
+        }
 
-    // STEP 2: Show price + loading indicator for profit calculation
-    const loadingHTML = `<div class="profit-loading-indicator" data-item-hrid="${itemHrid}" style="color: ${unsafeWindow.SCRIPT_COLOR_TOOLTIP}; font-size: 0.625rem; margin-top: 4px; opacity: 0.6;">
-        ⏳ Calculating profit...
-    </div>`;
-    insertAfterElem.insertAdjacentHTML("afterend", priceHTML + loadingHTML);
+        // STEP 2: Show price + loading indicator for profit calculation
+        const loadingHTML = `<div class="profit-loading-indicator" data-item-hrid="${itemHrid}" style="color: ${unsafeWindow.SCRIPT_COLOR_TOOLTIP}; font-size: 0.625rem; margin-top: 4px; opacity: 0.6;">
+            ⏳ Calculating profit...
+        </div>`;
+        insertAfterElem.insertAdjacentHTML("afterend", priceHTML + loadingHTML);
 
-    // STEP 3: Calculate profit asynchronously (may be slow)
-    try {
-        const profit = await calculateProfit(itemHrid, actionHrid, marketJson);
+        // STEP 3: Calculate profit asynchronously in background (non-blocking)
+        calculateProfit(itemHrid, actionHrid, marketJson).then(profit => {
         
         // Check if tooltip still exists (user might have moved mouse away)
         const loadingElem = tooltip.querySelector(`.profit-loading-indicator[data-item-hrid="${itemHrid}"]`);
@@ -198,28 +197,31 @@ async function handleTooltipItem(tooltip) {
             Buffs: +${profit.totalEfficiency.toFixed(1)}% efficiency (${profit.levelEffBuff}% level, ${profit.houseEffBuff}% house, ${profit.teaBuffs.efficiency}% tea, ${profit.itemEffiBuff}% equip), +${profit.toolPercent}% speed
         </div>`;
 
-        // STEP 5: Replace loading indicator with profit data
-        loadingElem.outerHTML = profitHTML;
+            // STEP 5: Replace loading indicator with profit data
+            loadingElem.outerHTML = profitHTML;
 
-    } catch (error) {
-        console.error("Error calculating profit:", error);
-        const loadingElem = tooltip.querySelector(`.profit-loading-indicator[data-item-hrid="${itemHrid}"]`);
-        if (loadingElem) {
-            loadingElem.outerHTML = `<div style="color: #FF6B6B; font-size: 0.625rem;">❌ Error calculating profit</div>`;
-        }
-    }
+        }).catch(error => {
+            console.error("Error calculating profit:", error);
+            const loadingElem = tooltip.querySelector(`.profit-loading-indicator[data-item-hrid="${itemHrid}"]`);
+            if (loadingElem) {
+                loadingElem.outerHTML = `<div style="color: #FF6B6B; font-size: 0.625rem;">❌ Error calculating profit</div>`;
+            }
+        });
+    }).catch(error => {
+        console.error("Error fetching market data:", error);
+    });
 }
 
 /**
  * Initialize tooltip observer
  */
 function initializeTooltipObserver() {
-    const tooltipObserver = new MutationObserver(async function (mutations) {
+    const tooltipObserver = new MutationObserver(function (mutations) {
         for (const mutation of mutations) {
             for (const added of mutation.addedNodes) {
                 if (added.classList && added.classList.contains("MuiTooltip-popper")) {
                     if (added.querySelector("div.ItemTooltipText_name__2JAHA")) {
-                        await handleTooltipItem(added);
+                        handleTooltipItem(added);
                     }
                 }
             }
