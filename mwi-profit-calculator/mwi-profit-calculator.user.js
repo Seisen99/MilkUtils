@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MWI Profit Calculator
 // @namespace    http://tampermonkey.net/
-// @version      3.0.4
+// @version      3.1.0
 // @description  Calculate production profit with essences, rare drops, and processing tea bonus
 // @author       Seisen
 // @match        https://www.milkywayidle.com/*
@@ -22,11 +22,16 @@
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/calculations/chest-values.js?v=4
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/calculations/profit.js?v=6
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/ui/formatter.js?v=2
-// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/ui/tooltip.js?v=999&nocache=87654321
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/ui/tooltip.js?v=10
 // ==/UserScript==
 
 /**
- * MWI Profit Calculator v3.0.4
+ * MWI Profit Calculator v3.1.0
+ *
+ * NEW in v3.1.0:
+ * - Progressive tooltip loading: price displays instantly, profit calculates asynchronously
+ * - Loading indicator shows while calculating profit for items with complex calculations
+ * - Fixed stack quantity parsing for large numbers (supports both commas and spaces)
  *
  * NEW in v3.0.3:
  * - Rare Find buff from equipped items now applied to rare drop calculations
@@ -64,7 +69,8 @@
     // Initialize tooltip observer
     initializeTooltipObserver();
 
-    console.log("MWI Profit Calculator v3.0.1 loaded successfully!");
+    console.log("MWI Profit Calculator v3.1.0 loaded successfully!");
+    console.log("  ✓ Progressive tooltip loading (instant price display)");
     console.log("  ✓ Essences calculation enabled");
     console.log("  ✓ Rare drops calculation enabled");
     console.log("  ✓ Processing Tea bonus enabled");
