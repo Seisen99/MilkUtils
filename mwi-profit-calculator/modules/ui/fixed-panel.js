@@ -20,15 +20,15 @@ function initializeFixedPanel() {
         position: fixed;
         bottom: 20px;
         left: 20px;
-        width: 480px;
-        max-height: 600px;
+        width: 320px;
+        max-height: calc(100vh - 80px);
         overflow-y: auto;
         background: linear-gradient(135deg, rgba(20, 30, 40, 0.98) 0%, rgba(30, 40, 50, 0.98) 100%);
-        border: 2px solid rgba(76, 175, 80, 0.5);
-        border-radius: 12px;
-        padding: 16px;
+        border: 1px solid rgba(76, 175, 80, 0.5);
+        border-radius: 4px;
+        padding: 4px;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        font-size: 14px;
+        font-size: 11px;
         color: #e0e0e0;
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
         z-index: 99999;
@@ -57,11 +57,11 @@ function initializeFixedPanel() {
             background: rgba(76, 175, 80, 0.7);
         }
         .mwi-profit-section {
-            margin: 12px 0;
-            padding: 10px;
+            margin: 6px 0;
+            padding: 6px;
             background: rgba(0, 0, 0, 0.2);
-            border-radius: 6px;
-            border-left: 3px solid rgba(76, 175, 80, 0.6);
+            border-radius: 4px;
+            border-left: 2px solid rgba(76, 175, 80, 0.6);
         }
         .mwi-profit-table {
             width: 100%;
@@ -70,8 +70,9 @@ function initializeFixedPanel() {
         }
         .mwi-profit-table th,
         .mwi-profit-table td {
-            padding: 6px 8px;
+            padding: 3px 5px;
             text-align: left;
+            font-size: 10px;
         }
         .mwi-profit-table th {
             border-bottom: 1px solid rgba(76, 175, 80, 0.4);
@@ -123,12 +124,12 @@ function updateFixedPanelPrice(data) {
     const { itemName, ask, bid, stackQuantity, isProducible } = data;
 
     let html = `
-        <div style="margin-bottom: 14px; padding-bottom: 12px; border-bottom: 2px solid rgba(76, 175, 80, 0.3);">
-            <div style="font-size: 18px; font-weight: bold; color: #4CAF50; margin-bottom: 8px;">
+        <div style="margin-bottom: 6px; padding-bottom: 4px; border-bottom: 1px solid rgba(76, 175, 80, 0.3);">
+            <div style="font-size: 12px; font-weight: bold; color: #4CAF50; margin-bottom: 3px;">
                 ${itemName}
             </div>
-            <div style="font-size: 15px; color: #90EE90;">
-                <span style="font-weight: 600;">Market Price:</span> 
+            <div style="font-size: 10px; color: #90EE90;">
+                <span style="font-weight: 600;">Price:</span> 
                 <span style="color: #fff;">${numberFormatter(ask)}</span> / 
                 <span style="color: #fff;">${numberFormatter(bid)}</span>
             </div>
@@ -136,8 +137,8 @@ function updateFixedPanelPrice(data) {
 
     if (stackQuantity > 1) {
         html += `
-            <div style="font-size: 13px; color: #b0b0b0; margin-top: 4px;">
-                Stack Total (×${stackQuantity}): 
+            <div style="font-size: 9px; color: #b0b0b0; margin-top: 2px;">
+                Total (×${stackQuantity}): 
                 <span style="color: #fff;">${numberFormatter(ask * stackQuantity)}</span> / 
                 <span style="color: #fff;">${numberFormatter(bid * stackQuantity)}</span>
             </div>
@@ -148,19 +149,19 @@ function updateFixedPanelPrice(data) {
 
     if (isProducible) {
         html += `
-            <div style="text-align: center; padding: 12px; background: rgba(76, 175, 80, 0.15); border-radius: 8px; border: 1px solid rgba(76, 175, 80, 0.3);">
-                <div style="font-size: 16px; color: #90EE90; margin-bottom: 4px;">
-                    💡 Press <span style="font-weight: bold; font-size: 18px; color: #4CAF50; padding: 2px 8px; background: rgba(76, 175, 80, 0.2); border-radius: 4px;">K</span> to calculate profit
+            <div style="text-align: center; padding: 6px; background: rgba(76, 175, 80, 0.15); border-radius: 4px; border: 1px solid rgba(76, 175, 80, 0.3);">
+                <div style="font-size: 11px; color: #90EE90; margin-bottom: 2px;">
+                    💡 Press <span style="font-weight: bold; font-size: 12px; color: #4CAF50; padding: 1px 4px; background: rgba(76, 175, 80, 0.2); border-radius: 3px;">K</span> for profit
                 </div>
-                <div style="font-size: 12px; color: #b0b0b0; margin-top: 4px;">
-                    Detailed production analysis available
+                <div style="font-size: 9px; color: #b0b0b0; margin-top: 2px;">
+                    Production analysis
                 </div>
             </div>
         `;
     } else {
         html += `
-            <div style="text-align: center; padding: 8px; color: #888; font-size: 13px; font-style: italic;">
-                This item cannot be produced
+            <div style="text-align: center; padding: 4px; color: #888; font-size: 10px; font-style: italic;">
+                Cannot be produced
             </div>
         `;
     }
@@ -184,11 +185,11 @@ function updateFixedPanelProfit(data) {
     const { itemName, ask, bid, stackQuantity, profit } = data;
 
     let html = `
-        <div style="margin-bottom: 14px; padding-bottom: 12px; border-bottom: 2px solid rgba(76, 175, 80, 0.3);">
-            <div style="font-size: 18px; font-weight: bold; color: #4CAF50; margin-bottom: 8px;">
+        <div style="margin-bottom: 6px; padding-bottom: 4px; border-bottom: 1px solid rgba(76, 175, 80, 0.3);">
+            <div style="font-size: 12px; font-weight: bold; color: #4CAF50; margin-bottom: 3px;">
                 ${itemName}
             </div>
-            <div style="font-size: 15px; color: #90EE90;">
+            <div style="font-size: 10px; color: #90EE90;">
                 <span style="font-weight: 600;">Market Price:</span> 
                 <span style="color: #fff;">${numberFormatter(ask)}</span> / 
                 <span style="color: #fff;">${numberFormatter(bid)}</span>
@@ -197,7 +198,7 @@ function updateFixedPanelProfit(data) {
 
     if (stackQuantity > 1) {
         html += `
-            <div style="font-size: 13px; color: #b0b0b0; margin-top: 4px;">
+            <div style="font-size: 9px; color: #b0b0b0; margin-top: 4px;">
                 Stack Total (×${stackQuantity}): 
                 <span style="color: #fff;">${numberFormatter(ask * stackQuantity)}</span> / 
                 <span style="color: #fff;">${numberFormatter(bid * stackQuantity)}</span>
@@ -211,7 +212,7 @@ function updateFixedPanelProfit(data) {
     if (profit.isProduction && profit.inputItems.length > 0) {
         html += `
             <div class="mwi-profit-section">
-                <div style="font-weight: 600; color: #4CAF50; margin-bottom: 8px; font-size: 15px;">
+                <div style="font-weight: 600; color: #4CAF50; margin-bottom: 3px; font-size: 10px;">
                     📦 Input Materials
                 </div>
                 <table class="mwi-profit-table">
@@ -248,10 +249,10 @@ function updateFixedPanelProfit(data) {
     // Production statistics
     html += `
         <div class="mwi-profit-section">
-            <div style="font-weight: 600; color: #4CAF50; margin-bottom: 6px; font-size: 15px;">
+            <div style="font-weight: 600; color: #4CAF50; margin-bottom: 6px; font-size: 10px;">
                 ⚙️ Production Rate
             </div>
-            <div style="font-size: 14px;">
+            <div style="font-size: 10px;">
                 <strong>${Number(profit.actionPerHour).toFixed(1)}</strong> actions/h → 
                 <strong>${Number(profit.itemPerHour + profit.extraFreeItemPerHour).toFixed(1)}</strong> items/h
             </div>
@@ -264,10 +265,10 @@ function updateFixedPanelProfit(data) {
         const processedItemName = itemDetailMap[profit.processedItemHrid]?.name || "Processed";
         html += `
             <div class="mwi-profit-section" style="border-left-color: #FFD700;">
-                <div style="font-weight: 600; color: #FFD700; margin-bottom: 6px; font-size: 15px;">
+                <div style="font-weight: 600; color: #FFD700; margin-bottom: 6px; font-size: 10px;">
                     🍵 Processing Tea Bonus
                 </div>
-                <div style="font-size: 14px;">
+                <div style="font-size: 10px;">
                     ${Number(profit.processingTeaItemsPerHour).toFixed(1)} ${processedItemName}/h
                     <div style="color: #FFD700; font-weight: 600; margin-top: 4px;">
                         +${numberFormatter(profit.processingTeaBonusPerHour)}/h
@@ -281,17 +282,17 @@ function updateFixedPanelProfit(data) {
     if (profit.essenceDetails && profit.essenceDetails.length > 0) {
         html += `
             <div class="mwi-profit-section" style="border-left-color: #9C27B0;">
-                <div style="font-weight: 600; color: #BB86FC; margin-bottom: 6px; font-size: 15px;">
+                <div style="font-weight: 600; color: #BB86FC; margin-bottom: 6px; font-size: 10px;">
                     ✨ Essence Drops
                 </div>
-                <div style="color: #BB86FC; font-weight: 600; font-size: 14px; margin-bottom: 6px;">
+                <div style="color: #BB86FC; font-weight: 600; font-size: 10px; margin-bottom: 6px;">
                     +${numberFormatter(profit.essenceValuePerHour)}/h
                 </div>
         `;
         for (const essence of profit.essenceDetails) {
             if (essence.dropRate >= 0.01) {
                 html += `
-                    <div style="font-size: 13px; margin-left: 8px; color: #d0d0d0;">
+                    <div style="font-size: 9px; margin-left: 8px; color: #d0d0d0;">
                         • ${essence.name}: ${Number(essence.perHour).toFixed(2)}/h
                     </div>
                 `;
@@ -304,17 +305,17 @@ function updateFixedPanelProfit(data) {
     if (profit.rareDropDetails && profit.rareDropDetails.length > 0) {
         html += `
             <div class="mwi-profit-section" style="border-left-color: #FF6B6B;">
-                <div style="font-weight: 600; color: #FF8A8A; margin-bottom: 6px; font-size: 15px;">
+                <div style="font-weight: 600; color: #FF8A8A; margin-bottom: 6px; font-size: 10px;">
                     💎 Rare Drops
                 </div>
-                <div style="color: #FF8A8A; font-weight: 600; font-size: 14px; margin-bottom: 6px;">
+                <div style="color: #FF8A8A; font-weight: 600; font-size: 10px; margin-bottom: 6px;">
                     +${numberFormatter(profit.rareDropsValuePerHour)}/h
                 </div>
         `;
         for (const rare of profit.rareDropDetails) {
             const ratePercent = (rare.dropRate * 100).toFixed(rare.dropRate < 0.01 ? 3 : 2);
             html += `
-                <div style="font-size: 13px; margin-left: 8px; color: #d0d0d0;">
+                <div style="font-size: 9px; margin-left: 8px; color: #d0d0d0;">
                     • ${rare.name} (${ratePercent}%): ${numberFormatter(rare.valuePerHour)}/h
                 </div>
             `;
@@ -326,10 +327,10 @@ function updateFixedPanelProfit(data) {
     if (profit.drinksConsumedPerHourAskPrice > 0) {
         html += `
             <div class="mwi-profit-section" style="border-left-color: #FF5722;">
-                <div style="font-weight: 600; color: #FF7043; margin-bottom: 6px; font-size: 15px;">
+                <div style="font-weight: 600; color: #FF7043; margin-bottom: 6px; font-size: 10px;">
                     🍺 Drinks Cost
                 </div>
-                <div style="font-size: 14px; color: #FF7043;">
+                <div style="font-size: 10px; color: #FF7043;">
                     -${numberFormatter(profit.drinksConsumedPerHourAskPrice)}/h
                 </div>
             </div>
@@ -338,11 +339,11 @@ function updateFixedPanelProfit(data) {
 
     // Profit summary (highlighted)
     html += `
-        <div style="margin-top: 16px; padding: 14px; background: linear-gradient(135deg, rgba(76, 175, 80, 0.2) 0%, rgba(56, 142, 60, 0.2) 100%); border-radius: 8px; border: 2px solid rgba(76, 175, 80, 0.5);">
-            <div style="font-size: 17px; font-weight: bold; color: #4CAF50; margin-bottom: 8px;">
+        <div style="margin-top: 6px; padding: 6px; background: linear-gradient(135deg, rgba(76, 175, 80, 0.2) 0%, rgba(56, 142, 60, 0.2) 100%); border-radius: 4px; border: 1px solid rgba(76, 175, 80, 0.5);">
+            <div style="font-size: 12px; font-weight: bold; color: #4CAF50; margin-bottom: 3px;">
                 💰 Profit Analysis
             </div>
-            <div style="font-size: 15px; line-height: 1.6;">
+            <div style="font-size: 10px; line-height: 1.6;">
                 <div><strong>${numberFormatter(profit.profitPerHour / profit.actionPerHour)}</strong> per action</div>
                 <div><strong style="color: #90EE90;">${numberFormatter(profit.profitPerHour)}</strong> per hour</div>
                 <div><strong style="color: #76FF03;">${numberFormatter(24 * profit.profitPerHour)}</strong> per day</div>
@@ -352,7 +353,7 @@ function updateFixedPanelProfit(data) {
 
     // Buff summary
     html += `
-        <div style="margin-top: 12px; padding: 10px; background: rgba(0, 0, 0, 0.2); border-radius: 6px; font-size: 12px; color: #999;">
+        <div style="margin-top: 4px; padding: 4px; background: rgba(0, 0, 0, 0.2); border-radius: 6px; font-size: 12px; color: #999;">
             <strong>Active Buffs:</strong> +${profit.totalEfficiency.toFixed(1)}% efficiency 
             (${profit.levelEffBuff}% level, ${profit.houseEffBuff}% house, ${profit.teaBuffs.efficiency}% tea, ${profit.itemEffiBuff}% equip), 
             +${profit.toolPercent}% speed
@@ -375,8 +376,8 @@ function showFixedPanelCalculating(itemName) {
     
     if (prompt) {
         prompt.innerHTML = `
-            <div style="text-align: center; padding: 12px; color: #90EE90;">
-                <div style="font-size: 15px;">⏳ Calculating profit details...</div>
+            <div style="text-align: center; padding: 5px; color: #90EE90;">
+                <div style="font-size: 10px;">⏳ Calculating profit details...</div>
             </div>
         `;
     }
