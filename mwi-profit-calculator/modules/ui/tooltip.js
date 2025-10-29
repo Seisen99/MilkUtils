@@ -144,7 +144,7 @@ function buildProfitHTML(profit) {
 async function calculateAndDisplayProfit() {
     if (!currentTooltipData) return;
 
-    const { tooltip, itemHrid, actionHrid, stackQuantity, profitIndicatorElem } = currentTooltipData;
+    const { tooltip, itemHrid, actionHrid, stackQuantity, profitIndicatorElem, itemName, ask, bid } = currentTooltipData;
 
     // Check if tooltip still exists
     if (!document.body.contains(tooltip) || !profitIndicatorElem) return;
@@ -153,11 +153,25 @@ async function calculateAndDisplayProfit() {
     if (profitCache.has(itemHrid)) {
         const profit = profitCache.get(itemHrid);
         profitIndicatorElem.outerHTML = buildProfitHTML(profit);
+        
+        // Update fixed panel with cached profit
+        if (unsafeWindow.updateFixedPanelProfit) {
+            unsafeWindow.updateFixedPanelProfit({
+                itemName,
+                ask,
+                bid,
+                stackQuantity,
+                profit
+            });
+        }
         return;
     }
 
-    // Show calculating indicator
+    // Show calculating indicator in both tooltip and fixed panel
     profitIndicatorElem.innerHTML = `<span style="opacity: 0.6;">⏳ Calculating...</span>`;
+    if (unsafeWindow.showFixedPanelCalculating) {
+        unsafeWindow.showFixedPanelCalculating(itemName);
+    }
 
     try {
         const marketJson = await fetchMarketJSON();
@@ -179,9 +193,20 @@ async function calculateAndDisplayProfit() {
         // Cache the result
         profitCache.set(itemHrid, profit);
 
-        // Build and display profit HTML
+        // Build and display profit HTML in tooltip
         const profitHTML = buildProfitHTML(profit);
         profitIndicatorElem.outerHTML = profitHTML;
+
+        // Update fixed panel with profit data
+        if (unsafeWindow.updateFixedPanelProfit) {
+            unsafeWindow.updateFixedPanelProfit({
+                itemName,
+                ask,
+                bid,
+                stackQuantity,
+                profit
+            });
+        }
 
     } catch (error) {
         console.error("Error calculating profit:", error);
@@ -259,8 +284,22 @@ function handleTooltipItem(tooltip) {
             itemHrid,
             actionHrid,
             stackQuantity,
-            profitIndicatorElem
+            profitIndicatorElem,
+            itemName,
+            ask,
+            bid
         };
+
+        // Update fixed panel with price data
+        if (unsafeWindow.updateFixedPanelPrice) {
+            unsafeWindow.updateFixedPanelPrice({
+                itemName,
+                ask,
+                bid,
+                stackQuantity,
+                isProducible: !!actionHrid
+            });
+        }
 
     }).catch(error => {
         console.error("Error fetching market data:", error);
@@ -303,6 +342,10 @@ function initializeTooltipObserver() {
                 if (removed.classList && removed.classList.contains("MuiTooltip-popper")) {
                     if (currentTooltipData && currentTooltipData.tooltip === removed) {
                         currentTooltipData = null;
+                        // Hide fixed panel when tooltip is removed
+                        if (unsafeWindow.hideFixedPanel) {
+                            unsafeWindow.hideFixedPanel();
+                        }
                     }
                 }
             }
@@ -314,7 +357,13 @@ function initializeTooltipObserver() {
     // Add keyboard event listener
     document.addEventListener('keydown', handleKeyboardShortcut);
     
+    // Initialize fixed panel
+    if (unsafeWindow.initializeFixedPanel) {
+        unsafeWindow.initializeFixedPanel();
+    }
+    
     console.log("Tooltip observer initialized (Press K to calculate profit)");
+    console.log("Fixed panel initialized (bottom-left corner)");
 }
 
 // Export to global scope for Tampermonkey
