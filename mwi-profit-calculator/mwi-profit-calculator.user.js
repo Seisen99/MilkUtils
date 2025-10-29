@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MWI Profit Calculator
 // @namespace    http://tampermonkey.net/
-// @version      3.0.1
+// @version      3.0.2
 // @description  Calculate production profit with essences, rare drops, and processing tea bonus
 // @author       Seisen
 // @match        https://www.milkywayidle.com/*
@@ -22,11 +22,15 @@
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/calculations/chest-values.js?v=4
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/calculations/profit.js?v=4
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/ui/formatter.js?v=2
-// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/ui/tooltip.js?v=4
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/ui/tooltip.js?v=5
 // ==/UserScript==
 
 /**
- * MWI Profit Calculator v3.0.1
+ * MWI Profit Calculator v3.0.2
+ *
+ * FIX in v3.0.2:
+ * - Show total stack value in tooltip when hovering items with quantity > 1
+ * - Display: "Price: 100 / 95" + "Total (×50): 5,000 / 4,750"
  *
  * FIX in v3.0.1:
  * - Fixed unsafeWindow references for getItemValue and getProcessedItem

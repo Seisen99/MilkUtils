@@ -49,11 +49,18 @@ async function handleTooltipItem(tooltip) {
     const itemHrid = getItemHridFromName(itemName);
     if (!itemHrid) return;
 
-    // Find insertion point
+    // Find insertion point and extract stack quantity
     let insertAfterElem = null;
+    let stackQuantity = 1;
     const amountSpan = tooltip.querySelectorAll("span")[1];
     if (amountSpan && getOriTextFromElement(amountSpan).includes("Amount:")) {
         insertAfterElem = amountSpan.parentNode.nextSibling;
+        // Extract quantity from "Amount: 50" text
+        const amountText = getOriTextFromElement(amountSpan);
+        const match = amountText.match(/Amount:\s*(\d+)/);
+        if (match) {
+            stackQuantity = parseInt(match[1]);
+        }
     } else {
         insertAfterElem = tooltip.querySelectorAll("span")[0].parentNode.nextSibling;
     }
@@ -69,8 +76,12 @@ async function handleTooltipItem(tooltip) {
 
     let appendHTMLStr = "";
 
-    // Show market prices
-    appendHTMLStr += `<div style="color: ${unsafeWindow.SCRIPT_COLOR_TOOLTIP};">Price: ${numberFormatter(ask)} / ${numberFormatter(bid)}</div>`;
+    // Show market prices (unit price + total if stack > 1)
+    appendHTMLStr += `<div style="color: ${unsafeWindow.SCRIPT_COLOR_TOOLTIP};">Price: ${numberFormatter(ask)} / ${numberFormatter(bid)}`;
+    if (stackQuantity > 1) {
+        appendHTMLStr += `<br><span style="opacity: 0.8;">Total (×${stackQuantity}): ${numberFormatter(ask * stackQuantity)} / ${numberFormatter(bid * stackQuantity)}</span>`;
+    }
+    appendHTMLStr += `</div>`;
 
     // Calculate profit if this item is producible
     const actionHrid = getActionHridFromItemName(itemName);
