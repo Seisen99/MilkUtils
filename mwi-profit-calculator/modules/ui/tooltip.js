@@ -55,11 +55,17 @@ async function handleTooltipItem(tooltip) {
     const amountSpan = tooltip.querySelectorAll("span")[1];
     if (amountSpan && getOriTextFromElement(amountSpan).includes("Amount:")) {
         insertAfterElem = amountSpan.parentNode.nextSibling;
-        // Extract quantity from "Amount: 50" text
+        // Extract quantity from "Amount: 50" or "Amount: 37,000" or "Amount: 37 000" text
         const amountText = getOriTextFromElement(amountSpan);
-        const match = amountText.match(/Amount:\s*(\d+)/);
+        console.log("DEBUG - Amount text:", amountText);
+        const match = amountText.match(/Amount:\s*([\d,\s]+)/);
+        console.log("DEBUG - Regex match:", match);
         if (match) {
-            stackQuantity = parseInt(match[1]);
+            // Remove commas AND spaces before parsing (37,000 → 37000 or 37 000 → 37000)
+            const cleanNumber = match[1].replace(/[,\s]/g, '');
+            console.log("DEBUG - Clean number:", cleanNumber);
+            stackQuantity = parseInt(cleanNumber);
+            console.log("DEBUG - Stack quantity:", stackQuantity);
         }
     } else {
         insertAfterElem = tooltip.querySelectorAll("span")[0].parentNode.nextSibling;
