@@ -92,7 +92,7 @@ async function handleTooltipItem(tooltip) {
     }
 
     // STEP 2: Show price + loading indicator for profit calculation
-    const loadingHTML = `<div id="profit-loading-${itemHrid}" style="color: ${unsafeWindow.SCRIPT_COLOR_TOOLTIP}; font-size: 0.625rem; margin-top: 4px; opacity: 0.6;">
+    const loadingHTML = `<div class="profit-loading-indicator" data-item-hrid="${itemHrid}" style="color: ${unsafeWindow.SCRIPT_COLOR_TOOLTIP}; font-size: 0.625rem; margin-top: 4px; opacity: 0.6;">
         ⏳ Calculating profit...
     </div>`;
     insertAfterElem.insertAdjacentHTML("afterend", priceHTML + loadingHTML);
@@ -102,7 +102,7 @@ async function handleTooltipItem(tooltip) {
         const profit = await calculateProfit(itemHrid, actionHrid, marketJson);
         
         // Check if tooltip still exists (user might have moved mouse away)
-        const loadingElem = tooltip.querySelector(`#profit-loading-${itemHrid}`);
+        const loadingElem = tooltip.querySelector(`.profit-loading-indicator[data-item-hrid="${itemHrid}"]`);
         if (!loadingElem) return; // Tooltip was removed, abort
         
         if (!profit) {
@@ -203,7 +203,7 @@ async function handleTooltipItem(tooltip) {
 
     } catch (error) {
         console.error("Error calculating profit:", error);
-        const loadingElem = tooltip.querySelector(`#profit-loading-${itemHrid}`);
+        const loadingElem = tooltip.querySelector(`.profit-loading-indicator[data-item-hrid="${itemHrid}"]`);
         if (loadingElem) {
             loadingElem.outerHTML = `<div style="color: #FF6B6B; font-size: 0.625rem;">❌ Error calculating profit</div>`;
         }
