@@ -97,8 +97,10 @@ function handleTooltipItem(tooltip) {
         </div>`;
         insertAfterElem.insertAdjacentHTML("afterend", priceHTML + loadingHTML);
 
-        // STEP 3: Calculate profit asynchronously in background (non-blocking)
-        calculateProfit(itemHrid, actionHrid, marketJson).then(profit => {
+        // STEP 3: Force browser to render DOM before starting profit calculation
+        // setTimeout with 0ms pushes calculation to next event loop, allowing browser to paint
+        setTimeout(() => {
+            calculateProfit(itemHrid, actionHrid, marketJson).then(profit => {
         
         // Check if tooltip still exists (user might have moved mouse away)
         const loadingElem = tooltip.querySelector(`.profit-loading-indicator[data-item-hrid="${itemHrid}"]`);
@@ -197,16 +199,17 @@ function handleTooltipItem(tooltip) {
             Buffs: +${profit.totalEfficiency.toFixed(1)}% efficiency (${profit.levelEffBuff}% level, ${profit.houseEffBuff}% house, ${profit.teaBuffs.efficiency}% tea, ${profit.itemEffiBuff}% equip), +${profit.toolPercent}% speed
         </div>`;
 
-            // STEP 5: Replace loading indicator with profit data
-            loadingElem.outerHTML = profitHTML;
+                // STEP 5: Replace loading indicator with profit data
+                loadingElem.outerHTML = profitHTML;
 
-        }).catch(error => {
-            console.error("Error calculating profit:", error);
-            const loadingElem = tooltip.querySelector(`.profit-loading-indicator[data-item-hrid="${itemHrid}"]`);
-            if (loadingElem) {
-                loadingElem.outerHTML = `<div style="color: #FF6B6B; font-size: 0.625rem;">❌ Error calculating profit</div>`;
-            }
-        });
+            }).catch(error => {
+                console.error("Error calculating profit:", error);
+                const loadingElem = tooltip.querySelector(`.profit-loading-indicator[data-item-hrid="${itemHrid}"]`);
+                if (loadingElem) {
+                    loadingElem.outerHTML = `<div style="color: #FF6B6B; font-size: 0.625rem;">❌ Error calculating profit</div>`;
+                }
+            });
+        }, 0); // Force DOM render before calculating profit
     }).catch(error => {
         console.error("Error fetching market data:", error);
     });

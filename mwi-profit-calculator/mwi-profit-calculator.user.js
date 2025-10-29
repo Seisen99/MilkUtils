@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MWI Profit Calculator
 // @namespace    http://tampermonkey.net/
-// @version      3.1.2
+// @version      3.1.3
 // @description  Calculate production profit with essences, rare drops, and processing tea bonus
 // @author       Seisen
 // @match        https://www.milkywayidle.com/*
@@ -22,11 +22,16 @@
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/calculations/chest-values.js?v=4
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/calculations/profit.js?v=6
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/ui/formatter.js?v=2
-// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/ui/tooltip.js?v=12
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/ui/tooltip.js?v=13
 // ==/UserScript==
 
 /**
- * MWI Profit Calculator v3.1.2
+ * MWI Profit Calculator v3.1.3
+ *
+ * FIX in v3.1.3:
+ * - Added setTimeout(0) to force browser render cycle between price display and profit calculation
+ * - This ensures price + loading indicator appear before heavy calculations start
+ * - Should now have visible "⏳ Calculating profit..." indicator
  *
  * FIX in v3.1.2:
  * - Fixed progressive tooltip: removed await/async to allow non-blocking rendering
@@ -78,7 +83,7 @@
     // Initialize tooltip observer
     initializeTooltipObserver();
 
-    console.log("MWI Profit Calculator v3.1.2 loaded successfully!");
+    console.log("MWI Profit Calculator v3.1.3 loaded successfully!");
     console.log("  ✓ Progressive tooltip loading (instant price display)");
     console.log("  ✓ Essences calculation enabled");
     console.log("  ✓ Rare drops calculation enabled");
