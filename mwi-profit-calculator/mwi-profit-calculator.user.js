@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MWI Profit Calculator
 // @namespace    http://tampermonkey.net/
-// @version      3.0.2
+// @version      3.0.3
 // @description  Calculate production profit with essences, rare drops, and processing tea bonus
 // @author       Seisen
 // @match        https://www.milkywayidle.com/*
@@ -17,16 +17,21 @@
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/core/data-manager.js?v=2
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/core/websocket.js?v=2
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/api/market-api.js?v=2
-// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/calculations/buffs.js?v=2
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/calculations/buffs.js?v=6
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/calculations/processing-mapping.js?v=4
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/calculations/chest-values.js?v=4
-// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/calculations/profit.js?v=4
+// @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/calculations/profit.js?v=6
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/ui/formatter.js?v=2
 // @require      https://raw.githubusercontent.com/Seisen99/MilkUtils/master/mwi-profit-calculator/modules/ui/tooltip.js?v=5
 // ==/UserScript==
 
 /**
- * MWI Profit Calculator v3.0.2
+ * MWI Profit Calculator v3.0.3
+ *
+ * NEW in v3.0.3:
+ * - Rare Find buff from equipped items now applied to rare drop calculations
+ * - Supports any equipment with skillingRareFind stat (rings, earrings, necklaces, etc.)
+ * - Enhancement bonuses included in rare find calculation
  *
  * FIX in v3.0.2:
  * - Show total stack value in tooltip when hovering items with quantity > 1

@@ -122,10 +122,13 @@ async function calculateProfit(itemHrid, actionHrid, marketJson) {
     // ===== NEW: Calculate Rare drops value =====
     let rareDropsValuePerHour = 0;
     let rareDropDetails = [];
+    const rareFindBuff = unsafeWindow.getRareFindBuff(); // Get Rare Find from equipped items
+    
     if (actionDetailMap[actionHrid].rareDropTable) {
         for (const rare of actionDetailMap[actionHrid].rareDropTable) {
             const rarePrice = unsafeWindow.getItemValue(rare.itemHrid, marketJson);
-            const avgRarePerAction = rare.dropRate * (rare.minCount + rare.maxCount) / 2;
+            // Apply Rare Find buff to drop rate
+            const avgRarePerAction = rare.dropRate * (1 + rareFindBuff) * (rare.minCount + rare.maxCount) / 2;
             const rarePerHour = actionPerHour * avgRarePerAction;
             const rareValue = rarePerHour * rarePrice;
             rareDropsValuePerHour += rareValue;
@@ -133,7 +136,7 @@ async function calculateProfit(itemHrid, actionHrid, marketJson) {
             rareDropDetails.push({
                 itemHrid: rare.itemHrid,
                 name: itemDetailMap[rare.itemHrid]?.name || "Unknown",
-                dropRate: rare.dropRate,
+                dropRate: rare.dropRate * (1 + rareFindBuff), // Show actual drop rate with buff
                 perHour: rarePerHour,
                 valuePerHour: rareValue
             });

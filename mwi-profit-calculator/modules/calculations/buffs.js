@@ -147,8 +147,40 @@ function getTeaBuffsByActionHrid(actionHrid) {
     return teaBuffs;
 }
 
+/**
+ * Calculate Rare Find buff from equipped items
+ * @returns {number} Total Rare Find buff (e.g., 0.16 for 16%)
+ */
+function getRareFindBuff() {
+    let totalRareFind = 0;
+    const characterItems = getCharacterItems();
+    const itemDetailMap = getItemDetailMap();
+    
+    if (!characterItems || !itemDetailMap) {
+        return 0;
+    }
+    
+    for (const item of characterItems) {
+        // Skip inventory items
+        if (item.itemLocationHrid === "/item_locations/inventory") {
+            continue;
+        }
+        
+        const itemDetail = itemDetailMap[item.itemHrid];
+        const rareFind = itemDetail?.equipmentDetail?.noncombatStats?.skillingRareFind;
+        
+        if (rareFind && rareFind > 0) {
+            const enhanceBonus = 1 + (unsafeWindow.itemEnhanceLevelToBuffBonusMap[item.enhancementLevel] / 100);
+            totalRareFind += rareFind * enhanceBonus;
+        }
+    }
+    
+    return totalRareFind;
+}
+
 // Export to global scope for Tampermonkey
 unsafeWindow.getToolsSpeedBuffByActionHrid = getToolsSpeedBuffByActionHrid;
 unsafeWindow.getItemEffiBuffByActionHrid = getItemEffiBuffByActionHrid;
 unsafeWindow.getHousesEffBuffByActionHrid = getHousesEffBuffByActionHrid;
 unsafeWindow.getTeaBuffsByActionHrid = getTeaBuffsByActionHrid;
+unsafeWindow.getRareFindBuff = getRareFindBuff;
